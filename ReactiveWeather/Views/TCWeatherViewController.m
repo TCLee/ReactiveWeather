@@ -7,29 +7,40 @@
 //
 
 #import "TCWeatherViewController.h"
+
 #import <TSMessages/TSMessage.h>
+#import <LBBlurredImage/UIImageView+LBBlurredImage.h>
 
 @interface TCWeatherViewController ()
+
+@property (nonatomic, weak) IBOutlet UIImageView *backgroundImageView;
+@property (nonatomic, weak) IBOutlet UIImageView *blurredImageView;
+@property (nonatomic, weak) IBOutlet UITableView *tableView;
+
+@property (nonatomic, assign) CGFloat screenHeight;
 
 @end
 
 @implementation TCWeatherViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    // Do any additional setup after loading the view.
-    self.view.backgroundColor = [UIColor redColor];
+    // Save the screen height. We'll need this later to page the weather
+    // data by screen height.
+    self.screenHeight = [UIScreen mainScreen].bounds.size.height;
+
+    // Add blur effect to background image. This will not take effect
+    // until the user scrolls.
+    [self.blurredImageView setImageToBlur:self.backgroundImageView.image
+                               blurRadius:10.0f
+                          completionBlock:nil];
+
+    // Make the table header view fill up the screen.
+    CGRect tableHeaderBounds = self.tableView.tableHeaderView.bounds;
+    tableHeaderBounds.size.height = self.screenHeight;
+    self.tableView.tableHeaderView.bounds = tableHeaderBounds;
 }
 
 // Override to return a lighter status bar style.
@@ -44,15 +55,49 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
+#pragma mark - Views Setup
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+#pragma mark - UITableViewDataSource
+
+// Our table view only has 2 sections: Hourly Forecast and Daily Forecast.
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    return 2;
 }
-*/
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    // TODO: Return count of forecast
+    return 0;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString * const CellIdentifier = @"TCWeatherCell";
+    UITableViewCell *cell =
+        [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                      reuseIdentifier:CellIdentifier];
+    }
+
+    // Forecast cells are not selectable.
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundColor = [UIColor colorWithWhite:0 alpha:0.2];
+    cell.textLabel.textColor = [UIColor whiteColor];
+    cell.detailTextLabel.textColor = [UIColor whiteColor];
+
+    // TODO: Setup the cell
+
+    return cell;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // TODO: Determine cell height based on screen
+    return 44;
+}
 @end

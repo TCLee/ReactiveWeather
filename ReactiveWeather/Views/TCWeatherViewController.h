@@ -7,5 +7,6 @@
 //
 
 @interface TCWeatherViewController : UIViewController
+    <UITableViewDataSource, UITableViewDelegate>
 
 @end

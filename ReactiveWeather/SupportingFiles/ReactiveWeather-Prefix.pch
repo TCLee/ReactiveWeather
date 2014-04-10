@@ -13,4 +13,8 @@
 #ifdef __OBJC__
     @import UIKit;
     @import Foundation;
+
+    // ReactiveCocoa will be used a lot in this project. So, it makes it
+    // easier to include it in this prefix header file.
+    #import <ReactiveCocoa/ReactiveCocoa.h>
 #endif

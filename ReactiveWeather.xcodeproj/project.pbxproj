@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		423AD25A3DD641E28D652F8B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9D96D5E2444F2CAF6A49EE /* libPods.a */; };
+		813D20EA18F6807500706C73 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 813D20E918F6807500706C73 /* MainStoryboard.storyboard */; };
 		81876C4718F66E86000F0F06 /* TCWeatherViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81876C4618F66E86000F0F06 /* TCWeatherViewController.m */; };
 		81876C4818F67412000F0F06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD318F648C400072D47 /* Foundation.framework */; };
 		81D8EFD618F648C400072D47 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD518F648C400072D47 /* CoreGraphics.framework */; };
@@ -35,6 +36,7 @@
 
 /* Begin PBXFileReference section */
 		1C99FB92361F4916A7F8D568 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		813D20E918F6807500706C73 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		81876C4518F66E86000F0F06 /* TCWeatherViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherViewController.h; sourceTree = "<group>"; };
 		81876C4618F66E86000F0F06 /* TCWeatherViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherViewController.m; sourceTree = "<group>"; };
 		81D8EFD018F648C400072D47 /* ReactiveWeather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReactiveWeather.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,6 +183,7 @@
 		81D8F03118F64AB200072D47 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				813D20E918F6807500706C73 /* MainStoryboard.storyboard */,
 				81876C4518F66E86000F0F06 /* TCWeatherViewController.h */,
 				81876C4618F66E86000F0F06 /* TCWeatherViewController.m */,
 			);
@@ -265,6 +268,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				813D20EA18F6807500706C73 /* MainStoryboard.storyboard in Resources */,
 				81D8F00A18F6495F00072D47 /* Images.xcassets in Resources */,
 				81D8F00B18F6495F00072D47 /* InfoPlist.strings in Resources */,
 			);

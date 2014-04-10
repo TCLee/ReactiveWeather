@@ -15,13 +15,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-
-    // Set our custom view controller as the root view controller.
-    self.window.rootViewController = [[TCWeatherViewController alloc] init];
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
-
+//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//
+//    // Set our custom view controller as the root view controller.
+//    self.window.rootViewController = [[TCWeatherViewController alloc] init];
+//    self.window.backgroundColor = [UIColor whiteColor];
+//    [self.window makeKeyAndVisible];
+//
     // Make the root view controller the default view controller to display
     // the banner alerts on top.
     [TSMessage setDefaultViewController:self.window.rootViewController];
