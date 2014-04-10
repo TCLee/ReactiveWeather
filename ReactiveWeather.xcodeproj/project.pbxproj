@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		423AD25A3DD641E28D652F8B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9D96D5E2444F2CAF6A49EE /* libPods.a */; };
 		81876C4718F66E86000F0F06 /* TCWeatherViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81876C4618F66E86000F0F06 /* TCWeatherViewController.m */; };
-		81D8EFD418F648C400072D47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD318F648C400072D47 /* Foundation.framework */; };
+		81876C4818F67412000F0F06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD318F648C400072D47 /* Foundation.framework */; };
 		81D8EFD618F648C400072D47 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD518F648C400072D47 /* CoreGraphics.framework */; };
 		81D8EFD818F648C400072D47 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD718F648C400072D47 /* UIKit.framework */; };
 		81D8EFE418F648C400072D47 /* TCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 81D8EFE318F648C400072D47 /* TCAppDelegate.m */; };
@@ -61,9 +61,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81876C4818F67412000F0F06 /* Foundation.framework in Frameworks */,
 				81D8EFD618F648C400072D47 /* CoreGraphics.framework in Frameworks */,
 				81D8EFD818F648C400072D47 /* UIKit.framework in Frameworks */,
-				81D8EFD418F648C400072D47 /* Foundation.framework in Frameworks */,
 				423AD25A3DD641E28D652F8B /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
