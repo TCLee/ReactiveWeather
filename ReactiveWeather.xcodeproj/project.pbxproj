@@ -10,6 +10,7 @@
 		423AD25A3DD641E28D652F8B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9D96D5E2444F2CAF6A49EE /* libPods.a */; };
 		810DAC3B18F7BECE00959877 /* TCWeatherCondition.m in Sources */ = {isa = PBXBuildFile; fileRef = 810DAC3A18F7BECE00959877 /* TCWeatherCondition.m */; };
 		810DAC3E18F7D18200959877 /* TCDailyForecast.m in Sources */ = {isa = PBXBuildFile; fileRef = 810DAC3D18F7D18200959877 /* TCDailyForecast.m */; };
+		810DAC4118F7D79300959877 /* TCWeatherService.m in Sources */ = {isa = PBXBuildFile; fileRef = 810DAC4018F7D79300959877 /* TCWeatherService.m */; };
 		813D20EA18F6807500706C73 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 813D20E918F6807500706C73 /* MainStoryboard.storyboard */; };
 		81876C4718F66E86000F0F06 /* TCWeatherViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81876C4618F66E86000F0F06 /* TCWeatherViewController.m */; };
 		81876C4818F67412000F0F06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD318F648C400072D47 /* Foundation.framework */; };
@@ -42,6 +43,8 @@
 		810DAC3A18F7BECE00959877 /* TCWeatherCondition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherCondition.m; sourceTree = "<group>"; };
 		810DAC3C18F7D18200959877 /* TCDailyForecast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCDailyForecast.h; sourceTree = "<group>"; };
 		810DAC3D18F7D18200959877 /* TCDailyForecast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCDailyForecast.m; sourceTree = "<group>"; };
+		810DAC3F18F7D79300959877 /* TCWeatherService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherService.h; sourceTree = "<group>"; };
+		810DAC4018F7D79300959877 /* TCWeatherService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherService.m; sourceTree = "<group>"; };
 		813D20E918F6807500706C73 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		81876C4518F66E86000F0F06 /* TCWeatherViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherViewController.h; sourceTree = "<group>"; };
 		81876C4618F66E86000F0F06 /* TCWeatherViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherViewController.m; sourceTree = "<group>"; };
@@ -179,6 +182,8 @@
 				810DAC3A18F7BECE00959877 /* TCWeatherCondition.m */,
 				810DAC3C18F7D18200959877 /* TCDailyForecast.h */,
 				810DAC3D18F7D18200959877 /* TCDailyForecast.m */,
+				810DAC3F18F7D79300959877 /* TCWeatherService.h */,
+				810DAC4018F7D79300959877 /* TCWeatherService.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -333,6 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				810DAC3E18F7D18200959877 /* TCDailyForecast.m in Sources */,
+				810DAC4118F7D79300959877 /* TCWeatherService.m in Sources */,
 				81D8F00C18F6495F00072D47 /* main.m in Sources */,
 				810DAC3B18F7BECE00959877 /* TCWeatherCondition.m in Sources */,
 				81D8EFE418F648C400072D47 /* TCAppDelegate.m in Sources */,
