@@ -1,14 +1,14 @@
 //
-//  TCWeatherCondition.m
+//  TCWeather.m
 //  ReactiveWeather
 //
 //  Created by Lee Tze Cheun on 4/11/14.
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
-#import "TCWeatherCondition.h"
+#import "TCWeather.h"
 
-@implementation TCWeatherCondition
+@implementation TCWeather
 
 #pragma mark OpenWeatherMap Icon to Custom Icon Mapping
 
@@ -49,7 +49,7 @@
 
 - (NSString *)imageName
 {
-    return TCWeatherCondition.imageMap[self.icon];
+    return TCWeather.imageMap[self.icon];
 }
 
 #pragma mark - JSON to Objective-C Properties Mapping

@@ -7,7 +7,7 @@
 //
 
 #import "TCWeatherService.h"
-#import "TCWeatherCondition.h"
+#import "TCWeather.h"
 #import "TCDailyForecast.h"
 
 @interface TCWeatherService ()
@@ -142,7 +142,7 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
     // to a TCWeatherCondition object.
     return [[self JSONObjectFromURL:[self currentWeatherURLWithCoordinate:coordinate]]
             tryMap:^(NSDictionary *JSONObject, NSError **errorPtr) {
-                return [MTLJSONAdapter modelOfClass:[TCWeatherCondition class]
+                return [MTLJSONAdapter modelOfClass:[TCWeather class]
                                  fromJSONDictionary:JSONObject
                                               error:errorPtr];
             }];
@@ -151,7 +151,7 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
 - (RACSignal *)hourlyForecastsForLocation:(CLLocationCoordinate2D)coordinate
 {
     return [self forecastWithURL:[self hourlyForecastURLWithCoordinate:coordinate]
-                      modelClass:[TCWeatherCondition class]];
+                      modelClass:[TCWeather class]];
 }
 
 - (RACSignal *)dailyForecastsForLocation:(CLLocationCoordinate2D)coordinate

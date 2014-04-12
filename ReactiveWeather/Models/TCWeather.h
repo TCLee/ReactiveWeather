@@ -1,5 +1,5 @@
 //
-//  TCWeatherCondition.h
+//  TCWeather.h
 //  ReactiveWeather
 //
 //  Created by Lee Tze Cheun on 4/11/14.
@@ -12,7 +12,7 @@
  * Model class that represents the weather data returned from 
  * OpenWeatherMap's API.
  */
-@interface TCWeatherCondition : MTLModel
+@interface TCWeather : MTLModel
 <MTLJSONSerializing>
 
 @property (nonatomic, strong) NSDate *date;

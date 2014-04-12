@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
-#import "TCWeatherCondition.h"
+#import "TCWeather.h"
 
-@interface TCDailyForecast : TCWeatherCondition
+@interface TCDailyForecast : TCWeather
 
 @end
