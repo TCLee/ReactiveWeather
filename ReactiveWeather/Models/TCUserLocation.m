@@ -9,6 +9,21 @@
 #import "TCUserLocation.h"
 
 /**
+ * The block that will be called when the user's location has 
+ * been found.
+ *
+ * @param location The user's current location.
+ */
+typedef void(^TCUserLocationSuccessBlock)(CLLocation *location);
+
+/**
+ * The block that will be called when location service fails.
+ *
+ * @param error The @c NSError object describing the failure.
+ */
+typedef void(^TCUserLocationFailureBlock)(NSError *error);
+
+/**
  * Cached location data that is older than this maximum limit will be
  * discarded.
  */
@@ -40,6 +55,23 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 60.0f;
     }
 
     return self;
+}
+
+- (RACSignal *)currentLocation
+{
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [self findCurrentLocationWithSuccess:^(CLLocation *location) {
+            [subscriber sendNext:location];
+            [subscriber sendCompleted];
+        } failure:^(NSError *error) {
+            [subscriber sendError:error];
+        }];
+
+        // Stop the location service when this signal is disposed.
+        return [RACDisposable disposableWithBlock:^{
+            [self.locationManager stopUpdatingLocation];
+        }];
+    }];
 }
 
 - (void)findCurrentLocationWithSuccess:(TCUserLocationSuccessBlock)success

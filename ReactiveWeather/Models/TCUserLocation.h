@@ -8,16 +8,18 @@
 
 @import CoreLocation;
 
-typedef void(^TCUserLocationSuccessBlock)(CLLocation *location);
-typedef void(^TCUserLocationFailureBlock)(NSError *error);
-
 /**
  * This class encapsulates the Core Location code to find the 
  * user's current location.
  */
 @interface TCUserLocation : NSObject <CLLocationManagerDelegate>
 
-- (void)findCurrentLocationWithSuccess:(TCUserLocationSuccessBlock)success
-                               failure:(TCUserLocationFailureBlock)failure;
+/**
+ * Starts the location service to find the user's current location.
+ *
+ * @return A signal that will send the user's current location 
+ *         then complete.
+ */
+- (RACSignal *)currentLocation;
 
 @end
