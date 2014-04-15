@@ -17,4 +17,5 @@
     // ReactiveCocoa will be used a lot in this project. So, it makes it
     // easier to include it in this prefix header file.
     #import <ReactiveCocoa/ReactiveCocoa.h>
+    #import <ReactiveCocoa/RACEXTScope.h>
 #endif
