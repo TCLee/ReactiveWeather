@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="GnW-FJ-8z7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="GnW-FJ-8z7">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -7,7 +7,7 @@
         <!--Weather View Controller-->
         <scene sceneID="O3k-ye-Wjq">
             <objects>
-                <viewController id="GnW-FJ-8z7" customClass="TCWeatherViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TCWeatherViewController" id="GnW-FJ-8z7" customClass="TCWeatherViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Cdm-2x-xMx"/>
                         <viewControllerLayoutGuide type="bottom" id="P2w-u4-CZp"/>
@@ -110,10 +110,16 @@
                             <constraint firstItem="BUW-dS-CCX" firstAttribute="leading" secondItem="g4H-12-E1p" secondAttribute="leading" id="pmX-4f-UKS"/>
                         </constraints>
                     </view>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="backgroundImageView" destination="BUW-dS-CCX" id="JPN-Tj-cGb"/>
                         <outlet property="blurredImageView" destination="QzE-56-oQn" id="ZaU-zD-iCb"/>
+                        <outlet property="cityLabel" destination="VkW-RK-t21" id="phs-H2-vyI"/>
+                        <outlet property="conditionsLabel" destination="hbi-Jr-C5G" id="Oz3-VW-aON"/>
+                        <outlet property="iconView" destination="ljk-Vh-4bm" id="PQV-Bi-nhY"/>
+                        <outlet property="maxMinTemperatureLabel" destination="7Al-ZV-bPI" id="xCx-l4-oAb"/>
                         <outlet property="tableView" destination="E83-JD-csm" id="EdD-YP-hjV"/>
+                        <outlet property="temperatureLabel" destination="04o-pT-VaX" id="zXK-qZ-icn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mr1-Zm-Wkn" userLabel="First Responder" sceneMemberID="firstResponder"/>
