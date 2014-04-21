@@ -7,8 +7,11 @@
 //
 
 #import "TCAppDelegate.h"
+
 #import "TCWeatherViewController.h"
 #import "TCWeatherViewModel.h"
+#import "TCLocationService.h"
+#import "TCWeatherService.h"
 
 @implementation TCAppDelegate
 
@@ -16,7 +19,9 @@
 {
     TCWeatherViewController *weatherViewController =
         (TCWeatherViewController *) self.window.rootViewController;    
-    weatherViewController.viewModel = [[TCWeatherViewModel alloc] init];
+    weatherViewController.viewModel =
+        [[TCWeatherViewModel alloc] initWithLocationService:[TCLocationService new]
+                                             weatherService:[TCWeatherService new]];
 
     return YES;
 }
