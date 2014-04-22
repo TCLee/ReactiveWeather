@@ -17,11 +17,17 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    TCWeatherViewController *weatherViewController =
-        (TCWeatherViewController *) self.window.rootViewController;    
-    weatherViewController.viewModel =
-        [[TCWeatherViewModel alloc] initWithLocationService:[TCLocationService new]
-                                             weatherService:[TCWeatherService new]];
+    // Create the view model with its service classes.
+    TCLocationService *locationService = [[TCLocationService alloc] init];
+    TCWeatherService *weatherService = [[TCWeatherService alloc] init];
+    TCWeatherViewModel *viewModel =
+        [[TCWeatherViewModel alloc] initWithLocationService:locationService
+                                             weatherService:weatherService];
+
+    // Pass the view model to the view layer (view controller + view).
+    TCWeatherViewController *viewController =
+        (TCWeatherViewController *) self.window.rootViewController;
+    viewController.viewModel = viewModel;
 
     return YES;
 }
