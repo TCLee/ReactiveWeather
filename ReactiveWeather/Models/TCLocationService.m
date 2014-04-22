@@ -46,7 +46,7 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
 - (RACSignal *)currentLocationSignal
 {
     __block NSUInteger subscriberCount = 0;
-    __block RACDisposable *subjectDisposable = nil;
+    __block RACCompoundDisposable *subjectDisposable = nil;
     __block RACSubject *locationSubject = nil;
 
     return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
@@ -61,14 +61,15 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
 
                 locationSubject = [RACReplaySubject
                                    replaySubjectWithCapacity:1];
-                subjectDisposable = [[self locationUpdatesSignal]
-                                     subscribe:locationSubject];
+                subjectDisposable = [RACCompoundDisposable compoundDisposable];
 
-                [[self locationUpdatesSignal] subscribe:locationSubject];
+                [subjectDisposable addDisposable:
+                 [[self locationUpdateSignal] subscribe:locationSubject]];
 
-                [[self errorSignal] subscribeNext:^(NSError *error) {
+                [subjectDisposable addDisposable:
+                 [[self errorSignal] subscribeNext:^(NSError *error) {
                     [locationSubject sendError:error];
-                }];
+                 }]];
             }
         }
 
@@ -83,6 +84,9 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
                 // this signal has new subscribers.
                 if (--subscriberCount == 0) {
                     [self.locationManager stopUpdatingLocation];
+
+                    [subjectDisposable dispose];
+                    subjectDisposable = nil;
                 }
             }
         }];
@@ -108,12 +112,53 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
 
 #pragma mark Private Methods
 
+- (RACSignal *)locationUpdateWithErrorEventSignal
+{
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [[self locationUpdateSignal] subscribe:subscriber];
+
+        [[self errorSignal] subscribeNext:^(NSError *error) {
+            [subscriber sendError:error];
+        }];
+
+        return nil;
+    }];
+}
+
 /**
  * Signal of location updates sent by location services when it has started.
  */
-- (RACSignal *)locationUpdatesSignal
+- (RACSignal *)locationUpdateSignal
 {
-    return [[[[self valueForCLLocationManagerDelegateSelector:
+    RACSignal *newLocationSignal =
+        [[self valueForCLLocationManagerDelegateSelector:
+          @selector(locationManager:didUpdateLocations:)]
+          map:^(NSArray *locations) {
+              // Get the most recent location data, which is at the end of
+              // the array.
+              return locations.lastObject;
+          }];
+
+    return [[[[RACSignal
+         if:[RACSignal return:@(nil != self.locationManager.location)]
+         then:[RACSignal return:self.locationManager.location]
+         else:newLocationSignal]
+         filter:^BOOL(CLLocation *location) {
+             // Location data can be returned from the cache. Make sure that
+             // location data is not too old. Otherwise, we will be using
+             // stale location data.
+             NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
+             return locationAge <= TCMaxAcceptableLocationAge;
+         }]
+         filter:^BOOL(CLLocation *location) {
+             // A negative value for the horizontalAccuracy indicates that
+             // the location’s latitude and longitude are invalid.
+             return (location.horizontalAccuracy > 0 &&
+                     location.horizontalAccuracy <= kCLLocationAccuracyKilometer);
+         }]
+         setNameWithFormat:@"%@ locationUpdate", self];
+
+    return [[[[[self valueForCLLocationManagerDelegateSelector:
                @selector(locationManager:didUpdateLocations:)]
               map:^(NSArray *locations) {
                   // Get the most recent location data, which is at the end of the array.
@@ -131,7 +176,8 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
                   // the location’s latitude and longitude are invalid.
                   return (location.horizontalAccuracy > 0 &&
                           location.horizontalAccuracy <= kCLLocationAccuracyKilometer);
-              }];
+              }]
+              setNameWithFormat:@"%@ locationUpdatesSignal", self];
 }
 
 /**
@@ -140,7 +186,7 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
  */
 - (RACSignal *)errorSignal
 {
-    return [[self valueForCLLocationManagerDelegateSelector:
+    return [[[self valueForCLLocationManagerDelegateSelector:
              @selector(locationManager:didFailWithError:)]
              filter:^BOOL(NSError *error) {
                  // If the location service is unable to retrieve a location
@@ -149,7 +195,8 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
                  // error and wait for a new event.
                  return !(error.domain == kCLErrorDomain &&
                           error.code == kCLErrorLocationUnknown);
-             }];
+             }]
+             setNameWithFormat:@"%@ errorSignal", self];
 }
 
 /**
