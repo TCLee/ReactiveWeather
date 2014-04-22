@@ -1,158 +1,173 @@
 //
-//  TCUserLocation.m
+//  TCLocationService.m
 //  ReactiveWeather
 //
 //  Created by Lee Tze Cheun on 4/12/14.
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
-#import "TCUserLocation.h"
+@import CoreLocation;
 
-/**
- * The block that will be called when the user's location has 
- * been found.
- *
- * @param location The user's current location.
- */
-typedef void(^TCUserLocationSuccessBlock)(CLLocation *location);
-
-/**
- * The block that will be called when location service fails.
- *
- * @param error The @c NSError object describing the failure.
- */
-typedef void(^TCUserLocationFailureBlock)(NSError *error);
+#import "TCLocationService.h"
 
 /**
  * Cached location data that is older than this maximum limit will be
- * discarded.
+ * discarded. The age is calculated in seconds.
  */
-static const NSTimeInterval TCMaxAcceptableLocationAge = 60.0f;
+static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
 
-@interface TCUserLocation ()
+// Privately adopt the CLLocationManagerDelegate protocol.
+@interface TCLocationService () <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
-@property (nonatomic, copy) TCUserLocationSuccessBlock successBlock;
-@property (nonatomic, copy) TCUserLocationFailureBlock failureBlock;
-
 @end
 
-@implementation TCUserLocation
+@implementation TCLocationService
+
+#pragma mark Public Methods
 
 - (instancetype)init
 {
     self = [super init];
+    if (!self) { return nil; }
 
-    if (self) {
-        _locationManager = [[CLLocationManager alloc] init];
+    _locationManager = [[CLLocationManager alloc] init];
 
-        // Since we're getting the weather forecast for a city, we do not
-        // need very accurate location data.
-        _locationManager.delegate = self;
-        _locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
-        _locationManager.distanceFilter = 1000;
-    }
+    // Since we're getting the weather forecast for a city, we do not
+    // need very accurate location data.
+    _locationManager.delegate = self;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
+    _locationManager.distanceFilter = 1000;
 
     return self;
 }
 
-- (RACSignal *)currentLocation
+- (RACSignal *)currentLocationSignal
 {
-    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        [self findCurrentLocationWithSuccess:^(CLLocation *location) {
-            [subscriber sendNext:location];
-            [subscriber sendCompleted];
-        } failure:^(NSError *error) {
-            [subscriber sendError:error];
-        }];
+    __block NSUInteger subscriberCount = 0;
+    __block RACDisposable *subjectDisposable = nil;
+    __block RACSubject *locationSubject = nil;
 
-        // Stop the location service when this signal is disposed.
+    return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        @synchronized(self) {
+            // If this is the first subscriber to this signal, start the
+            // location updates.
+            if (++subscriberCount == 1) {
+                [self.locationManager startUpdatingLocation];
+
+                // Location updates signal and error signal will only have the
+                // subject as the subscriber.
+
+                locationSubject = [RACReplaySubject
+                                   replaySubjectWithCapacity:1];
+                subjectDisposable = [[self locationUpdatesSignal]
+                                     subscribe:locationSubject];
+
+                [[self locationUpdatesSignal] subscribe:locationSubject];
+
+                [[self errorSignal] subscribeNext:^(NSError *error) {
+                    [locationSubject sendError:error];
+                }];
+            }
+        }
+
+        // Subscribers will be connected to the subject, so that they can
+        // share the same location data.
+        [locationSubject subscribe:subscriber];
+
         return [RACDisposable disposableWithBlock:^{
-            [self.locationManager stopUpdatingLocation];
+            @synchronized(self) {
+                // If we have no more subscribers, we will stop the
+                // location updates. It will be restarted again, when
+                // this signal has new subscribers.
+                if (--subscriberCount == 0) {
+                    [self.locationManager stopUpdatingLocation];
+                }
+            }
         }];
-    }];
+    }] setNameWithFormat:@"%@ -currentLocationSignal", self];
 }
 
-- (void)findCurrentLocationWithSuccess:(TCUserLocationSuccessBlock)success
-                               failure:(TCUserLocationFailureBlock)failure
+- (RACSignal *)authorizedSignal
 {
-    NSParameterAssert(success);
-    NSParameterAssert(failure);
+    // Returns the current authorization status value and
+    // concatenates subsequent values delivered to the delegate.
+    return [[[[RACSignal return:@(CLLocationManager.authorizationStatus)]
+             concat:[self valueForCLLocationManagerDelegateSelector:
+                     @selector(locationManager:didUpdateLocations:)]]
+             map:^(NSNumber *authorizationStatus) {
+                 CLAuthorizationStatus status = authorizationStatus.unsignedIntegerValue;
 
-    self.successBlock = success;
-    self.failureBlock = failure;
-
-    [self.locationManager startUpdatingLocation];
+                 // YES if we're authorized to use location service; NO otherwise.
+                 return @(status == kCLAuthorizationStatusAuthorized ||
+                          status == kCLAuthorizationStatusNotDetermined);
+             }]
+             setNameWithFormat:@"%@ -authorizedSignal", self];
 }
 
-#pragma mark - CLLocationManagerDelegate
+#pragma mark Private Methods
 
-- (void)locationManager:(CLLocationManager *)manager
-     didUpdateLocations:(NSArray *)locations
+/**
+ * Signal of location updates sent by location services when it has started.
+ */
+- (RACSignal *)locationUpdatesSignal
 {
-    // Get the most recent location data, which is at the end of the array.
-    CLLocation *latestLocation = [locations lastObject];
-
-    // Make sure the location data is not too old. Otherwise, we will be
-    // using stale location data.
-    NSTimeInterval locationAge = [latestLocation.timestamp timeIntervalSinceNow];
-    if (abs(locationAge <= TCMaxAcceptableLocationAge)) {
-        // Callback with location data and stop location services to
-        // save battery power.
-        [manager stopUpdatingLocation];
-        self.successBlock(latestLocation);
-    }
+    return [[[[self valueForCLLocationManagerDelegateSelector:
+               @selector(locationManager:didUpdateLocations:)]
+              map:^(NSArray *locations) {
+                  // Get the most recent location data, which is at the end of the array.
+                  return locations.lastObject;
+              }]
+              filter:^BOOL(CLLocation *location) {
+                  // Location data can be returned from the cache. Make sure that
+                  // location data is not too old. Otherwise, we will be using
+                  // stale location data.
+                  NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
+                  return locationAge <= TCMaxAcceptableLocationAge;
+              }]
+              filter:^BOOL(CLLocation *location) {
+                  // A negative value for the horizontalAccuracy indicates that
+                  // the location’s latitude and longitude are invalid.
+                  return (location.horizontalAccuracy > 0 &&
+                          location.horizontalAccuracy <= kCLLocationAccuracyKilometer);
+              }];
 }
 
-- (void)locationManager:(CLLocationManager *)manager
-       didFailWithError:(NSError *)error
+/**
+ * Signal of @c NSError objects sent by location services on failure
+ * to retrieve location.
+ */
+- (RACSignal *)errorSignal
 {
-    // If the location service is unable to retrieve a location
-    // right away, it reports a kCLErrorLocationUnknown error and
-    // keeps trying. In such a situation, you can simply ignore the
-    // error and wait for a new event.
-    if (error.domain == kCLErrorDomain &&
-        error.code == kCLErrorLocationUnknown) {
-        return;
-    }
-
-    // If the user denies your application’s use of the location service,
-    // it reports a kCLErrorDenied error. Upon receiving such an error, you
-    // should stop the location service. When user re-enables permission
-    // for your app, you can restart the location service.
-    if (error.domain == kCLErrorDomain &&
-        error.code == kCLErrorDenied) {
-        [manager stopUpdatingLocation];
-        return;
-    }
-
-    // For any other errors, we stop the location service and
-    // callback with error.
-    [manager stopUpdatingLocation];
-    self.failureBlock(error);
+    return [[self valueForCLLocationManagerDelegateSelector:
+             @selector(locationManager:didFailWithError:)]
+             filter:^BOOL(NSError *error) {
+                 // If the location service is unable to retrieve a location
+                 // right away, it reports a kCLErrorLocationUnknown error and
+                 // keeps trying. In such a situation, you can simply ignore the
+                 // error and wait for a new event.
+                 return !(error.domain == kCLErrorDomain &&
+                          error.code == kCLErrorLocationUnknown);
+             }];
 }
 
-- (void)locationManager:(CLLocationManager *)manager
-didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+/**
+ * Returns the second argument of the CLLocationManagerDelegate methods.
+ *
+ * The first argument is the CLLocationManager instance that we ignore.
+ * The second argument is the value that we want.
+ */
+- (RACSignal *)valueForCLLocationManagerDelegateSelector:(SEL)selector
 {
-    switch (status) {
-        // User has authorized us to use location services, so
-        // we can start locating the user.
-        case kCLAuthorizationStatusAuthorized:
-            [manager startUpdatingLocation];
-            break;
-
-        // Our app has been denied access to location service, so
-        // stop asking for location updates.
-        case kCLAuthorizationStatusDenied:
-        case kCLAuthorizationStatusRestricted:
-            [manager stopUpdatingLocation];
-            break;
-
-        default:
-            break;
-    }
+    return [[self rac_signalForSelector:selector
+                          fromProtocol:@protocol(CLLocationManagerDelegate)]
+            map:^(RACTuple *args) {
+                // The use of args.second will be deprecated in RAC 3.0,
+                // so we use subscripting instead.
+                return args[1];
+            }];
 }
 
 @end
+
