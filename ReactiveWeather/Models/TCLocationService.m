@@ -10,6 +10,29 @@
 
 #import "TCLocationService.h"
 
+@interface RACSignal (TCOperatorAdditions)
+
+- (RACSignal *)replayLastLazily;
+
+@end
+
+@implementation RACSignal (TCOperatorAdditions)
+
+- (RACSignal *)replayLastLazily
+{
+    RACMulticastConnection *connection =
+        [self multicast:[RACReplaySubject replaySubjectWithCapacity:1]];
+
+    return [[RACSignal
+             defer:^{
+                 [connection connect];
+                 return connection.signal;
+             }]
+             setNameWithFormat:@"[%@] -replayLastLazily", self.name];
+}
+
+@end
+
 /**
  * Cached location data that is older than this maximum limit will be
  * discarded. The age is calculated in seconds.
@@ -43,11 +66,11 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
     return self;
 }
 
-- (RACSignal *)currentLocationSignal
+- (RACSignal *)currentLocation
 {
     __block NSUInteger subscriberCount = 0;
 
-    return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
         @synchronized(self) {
             // If this is the first subscriber to this signal, start the
             // location updates.
@@ -57,11 +80,7 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
             }
         }
 
-        // Subscribe to the merged signal that will send location updates
-        // or a possible error event.
-        [[RACSignal merge:@[[self locationUpdatesSignal],
-                            [self errorSignal]]]
-         subscribe:subscriber];
+        [[self locationUpdatesSignal] subscribe:subscriber];
 
         return [RACDisposable disposableWithBlock:^{
             @synchronized(self) {
@@ -74,10 +93,10 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
                 }
             }
         }];
-    }] setNameWithFormat:@"%@ -currentLocationSignal", self];
+    }] setNameWithFormat:@"%@ -currentLocation", self];
 }
 
-- (RACSignal *)authorizedSignal
+- (RACSignal *)isAuthorized
 {
     // Returns the current authorization status value and
     // concatenates subsequent values delivered to the delegate.
@@ -91,41 +110,55 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
                  return @(status == kCLAuthorizationStatusAuthorized ||
                           status == kCLAuthorizationStatusNotDetermined);
              }]
-             setNameWithFormat:@"%@ -authorizedSignal", self];
+             setNameWithFormat:@"%@ -isAuthorized", self];
 }
 
 #pragma mark Private Methods
 
 /**
  * Signal of location updates sent by location services when it has started.
+ *
+ * This signal terminates with an error event if 
+ * @c locationManager:didFailWithError: is called.
  */
 - (RACSignal *)locationUpdatesSignal
 {
-    return [[[[[self valueForCLLocationManagerDelegateSelector:
-               @selector(locationManager:didUpdateLocations:)]
-               map:^(NSArray *locations) {
-                   // Get the most recent location data, which is at the end of the array.
-                   return locations.lastObject;
-               }]
-               filter:^BOOL(CLLocation *location) {
-                   // Location data can be returned from the cache. Make sure that
-                   // location data is not too old. Otherwise, we will be using
-                   // stale location data.
-                   NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
-                   return locationAge <= TCMaxAcceptableLocationAge;
-               }]
-               filter:^BOOL(CLLocation *location) {
-                   // A negative value for the horizontalAccuracy indicates that
-                   // the location’s latitude and longitude are invalid.
-                   return (location.horizontalAccuracy > 0 &&
-                           location.horizontalAccuracy <= kCLLocationAccuracyKilometer);
-               }]
-               setNameWithFormat:@"%@ -locationUpdatesSignal", self];
+    RACSignal *locationUpdates =
+        [[[[self valueForCLLocationManagerDelegateSelector:
+            @selector(locationManager:didUpdateLocations:)]
+         map:^(NSArray *locations) {
+             // Get the most recent location data, which is at the end of the array.
+             return locations.lastObject;
+         }]
+         filter:^BOOL(CLLocation *location) {
+             // Location data can be returned from the cache. Make sure that
+             // location data is not too old. Otherwise, we will be using
+             // stale location data.
+             NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
+             return locationAge <= TCMaxAcceptableLocationAge;
+         }]
+         filter:^BOOL(CLLocation *location) {
+             // A negative value for the horizontalAccuracy indicates that
+             // the location’s latitude and longitude are invalid.
+             return (location.horizontalAccuracy > 0 &&
+                     location.horizontalAccuracy <= kCLLocationAccuracyKilometer);
+         }];
+
+    // Location updates signal does not include any error events. So,
+    // we merge it with the error signal to get the error events.
+    //
+    // We also need to replay the most recent location value to later
+    // subscribers, so that they will get the location updates too.
+    // Otherwise, they may subscribe after the location update event
+    // and get nothing.
+    return [[[RACSignal merge:@[locationUpdates, self.errorSignal]]
+             replayLastLazily]
+             setNameWithFormat:@"%@ -locationUpdatesSignal", self];
 }
 
 /**
  * Signal that sends an error event when location services failed to
- * retrieve location.
+ * retrieve a location value.
  */
 - (RACSignal *)errorSignal
 {
