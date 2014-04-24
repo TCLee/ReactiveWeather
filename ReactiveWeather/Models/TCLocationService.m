@@ -9,29 +9,7 @@
 @import CoreLocation;
 
 #import "TCLocationService.h"
-
-@interface RACSignal (TCOperatorAdditions)
-
-- (RACSignal *)replayLastLazily;
-
-@end
-
-@implementation RACSignal (TCOperatorAdditions)
-
-- (RACSignal *)replayLastLazily
-{
-    RACMulticastConnection *connection =
-        [self multicast:[RACReplaySubject replaySubjectWithCapacity:1]];
-
-    return [[RACSignal
-             defer:^{
-                 [connection connect];
-                 return connection.signal;
-             }]
-             setNameWithFormat:@"[%@] -replayLastLazily", self.name];
-}
-
-@end
+#import "RACSignal+TCOperatorAdditions.h"
 
 /**
  * Cached location data that is older than this maximum limit will be
