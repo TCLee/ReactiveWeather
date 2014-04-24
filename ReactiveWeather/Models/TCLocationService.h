@@ -21,7 +21,8 @@
  * at least one subscriber.
  *
  * @return A signal which will send location updates or an error event. 
- *         This signal will @b never complete.
+ *         This is an infinite signal, so use the @c take: operators to
+ *         terminate this signal.
  */
 - (RACSignal *)currentLocationSignal;
 
