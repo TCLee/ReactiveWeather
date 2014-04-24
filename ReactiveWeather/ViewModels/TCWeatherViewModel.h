@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
-@import CoreLocation;
-
 @class TCWeatherService;
 @class TCLocationService;
 @class TCWeather;

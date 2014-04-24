@@ -24,9 +24,10 @@
  */
 @property (nonatomic, strong) TCLocationService *locationService;
 
-//@property (nonatomic, strong) TCWeather *currentWeather;
-//@property (nonatomic, copy) NSArray *hourlyForecasts;
-//@property (nonatomic, copy) NSArray *dailyForecasts;
+@property (nonatomic, strong) CLLocation *currentLocation;
+@property (nonatomic, strong) TCWeather *currentWeather;
+@property (nonatomic, copy) NSArray *hourlyForecasts;
+@property (nonatomic, copy) NSArray *dailyForecasts;
 
 @end
 
@@ -40,43 +41,9 @@
     _locationService = locationService;
     _weatherService  = weatherService;
 
-    // Signal of user's current location.
-    RACSignal *currentLocationSignal = [self.locationService locationSignal];
-
-    // Weather service will use the location data from the current
-    // location signal to create 3 individual weather data signals.
-    // (i.e. splitting the current location signal)
-    RACSignal *currentWeatherSignal  =
-        [currentLocationSignal flattenMap:^(CLLocation *location) {
-            return [self.weatherService
-                    currentConditionForLocation:location.coordinate];
-        }];
-    RACSignal *hourlyForecastsSignal =
-        [currentLocationSignal flattenMap:^(CLLocation *location) {
-            return [self.weatherService
-                    hourlyForecastsForLocation:location.coordinate];
-        }];
-    RACSignal *dailyForecastsSignal  =
-        [currentLocationSignal flattenMap:^(CLLocation *location) {
-            return [self.weatherService
-                    dailyForecastsForLocation:location.coordinate];
-        }];
-
-    // Bind the weather data properties to their signals.
-    // Before binding we have to make sure the signal is "safe" for binding.
-    RAC(self, currentWeather)  = [self safeSignalForBinding:currentWeatherSignal];
-    RAC(self, hourlyForecasts) = [self safeSignalForBinding:hourlyForecastsSignal];
-    RAC(self, dailyForecasts)  = [self safeSignalForBinding:dailyForecastsSignal];
-
-    // When the command is executed, it will find the user's current location
-    // and then fetch all the weather data. We merge the various signals
-    // together to perform the operations as a single group.
     _fetchWeatherCommand =
-        [[RACCommand alloc] initWithSignalBlock:^(id input) {
-            return [RACSignal merge:@[currentLocationSignal,
-                                      currentWeatherSignal,
-                                      hourlyForecastsSignal,
-                                      dailyForecastsSignal]];
+        [[RACCommand alloc] initWithSignalBlock:^(__unused id input) {
+            return [self fetchWeather];
         }];
 
     // When this view model has become active, we want to
@@ -90,20 +57,76 @@
 }
 
 /**
- * Returns a signal that is safe for binding to properties.
+ * Fetches the latest weather data for the user's current location.
  *
- * @param unsafeSignal An unsafe signal in this case means a signal that 
- *                     sends its values on another thread that is not the main 
- *                     thread and could possibly send an error event.
- *
- * @return A signal that is guaranteed to be safe for binding to properties using the @c RAC() macro.
+ * @return A signal that will send @c complete when the latest weather
+ *         data has been fetched or @c error if the operation failed.
  */
-- (RACSignal *)safeSignalForBinding:(RACSignal *)unsafeSignal
+- (RACSignal *)fetchWeather
 {
-    return [[[unsafeSignal
-              logError]
-              catchTo:RACSignal.empty]
-              deliverOn:RACScheduler.mainThreadScheduler];
+    // Take only 1 location value, since we don't need to track the user.
+    RAC(self, currentLocation) =
+        [[self.locationService currentLocation] take:1];
+
+    // Skip 1 to skip the initial value and ignore nil values, since
+    // we can't do anything with a `nil` location.
+    RACSignal *currentLocationSignal = [[RACObserve(self, currentLocation)
+                                         skip:1]
+                                         ignore:nil];
+
+    return [[RACSignal
+            merge:@[[self updateCurrentWeatherConditionWithLocation:currentLocationSignal],
+                    [self updateHourlyForecastWithLocation:currentLocationSignal],
+                    [self updateDailyForecastWithLocation:currentLocationSignal]]]
+            ignoreValues];
+}
+
+/** 
+ * Fetches the latest current weather data and updates the view 
+ * model's property.
+ */
+- (RACSignal *)updateCurrentWeatherConditionWithLocation:(RACSignal *)locationSignal
+{
+    return [[locationSignal
+            flattenMap:^(CLLocation *location) {
+                return [self.weatherService
+                        currentConditionForLocation:location.coordinate];
+            }]
+            doNext:^(TCWeather *currentWeatherCondition) {
+                self.currentWeather = currentWeatherCondition;
+            }];
+}
+
+/**
+ * Fetches the latest hourly forecast data and updates the view
+ * model's property.
+ */
+- (RACSignal *)updateHourlyForecastWithLocation:(RACSignal *)locationSignal
+{
+    return [[locationSignal
+            flattenMap:^(CLLocation *location) {
+                return [self.weatherService
+                        hourlyForecastsForLocation:location.coordinate];
+            }]
+            doNext:^(NSArray *hourlyForecasts) {
+                self.hourlyForecasts = hourlyForecasts;
+            }];
+}
+
+/**
+ * Fetches the latest daily forecast data and updates the view
+ * model's property.
+ */
+- (RACSignal *)updateDailyForecastWithLocation:(RACSignal *)locationSignal
+{
+    return [[locationSignal
+            flattenMap:^(CLLocation *location) {
+                return [self.weatherService
+                        dailyForecastsForLocation:location.coordinate];
+            }]
+            doNext:^(NSArray *dailyForecasts) {
+                self.dailyForecasts = dailyForecasts;
+            }];
 }
 
 @end
