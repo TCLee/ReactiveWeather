@@ -57,6 +57,18 @@
     __block NSUInteger subscriberCount = 0;
 
     return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
+
+//        // If cached location is good enough, then send the cached value to
+//        // the subscriber.
+//        CLLocation *cachedLocation = self.locationManager.location;
+//        if ([self isAcceptableLocation:cachedLocation
+//                          withAccuracy:self.locationManager.desiredAccuracy
+//                             andMaxAge:self.maxCacheAge]) {
+//            [subscriber sendNext:cachedLocation];
+//        } else {
+//
+//        }
+//
         @synchronized(self) {
             // If this is the first subscriber to this signal, start the
             // location updates.
@@ -107,6 +119,33 @@
 #pragma mark Private Methods
 
 /**
+ * Returns @c YES if @c location matches the given accuracy and age; 
+ * @c NO otherwise.
+ */
+- (BOOL)isAcceptableLocation:(CLLocation *)location
+                withAccuracy:(CLLocationAccuracy)desiredAccuracy
+                   andMaxAge:(NSTimeInterval)maxAge
+{
+    // `nil` is definitely unacceptable!
+    if (nil == location) { return NO; }
+
+    // Location data can be returned from the cache. Make sure that
+    // location data is not too old. Otherwise, we will be using
+    // stale location data.
+    NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
+    BOOL isRecentEnough = (locationAge <= maxAge);
+
+    // A negative value for the `horizontalAccuracy` indicates that
+    // the location’s latitude and longitude are invalid.
+    // CLLocationManager `desiredAccuracy` is negative if it is
+    // `kCLLocationAccuracyBestForNavigation` or `kCLLocationAccuracyBest`.
+    BOOL isAccurateEnough = (location.horizontalAccuracy > 0 &&
+                             location.horizontalAccuracy <= MAX(desiredAccuracy, 0));
+
+    return isRecentEnough && isAccurateEnough;
+}
+
+/**
  * Signal of location updates sent by location services when it has started.
  *
  * This signal terminates with an error event if 
@@ -115,7 +154,7 @@
 - (RACSignal *)locationUpdatesSignal
 {
     RACSignal *locationUpdates =
-        [[[[[self rac_signalForSelector:@selector(locationManager:didUpdateLocations:)
+        [[[[self rac_signalForSelector:@selector(locationManager:didUpdateLocations:)
                           fromProtocol:@protocol(CLLocationManagerDelegate)]
          map:^(RACTuple *locationManagerAndLocationArray) {
              RACTupleUnpack(CLLocationManager *locationManager,
@@ -126,23 +165,12 @@
              return RACTuplePack(locationManager, locations.lastObject);
          }]
          filter:^BOOL(RACTuple *locationManagerAndLatestLocation) {
-             // Location data can be returned from the cache. Make sure that
-             // location data is not too old. Otherwise, we will be using
-             // stale location data.
-             CLLocation *location = locationManagerAndLatestLocation[1];
-             NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
-             return locationAge <= self.maxCacheAge;
-         }]
-         filter:^BOOL(RACTuple *locationManagerAndLatestLocation) {
              RACTupleUnpack(CLLocationManager *locationManager,
                             CLLocation *location) = locationManagerAndLatestLocation;
 
-             // A negative value for the `horizontalAccuracy` indicates that
-             // the location’s latitude and longitude are invalid.
-             // CLLocationManager `desiredAccuracy` is negative if it is
-             // `kCLLocationAccuracyBestForNavigation` or `kCLLocationAccuracyBest`.
-             return (location.horizontalAccuracy > 0 &&
-                     location.horizontalAccuracy <= MAX(locationManager.desiredAccuracy, 0));
+             return [self isAcceptableLocation:location
+                                  withAccuracy:locationManager.desiredAccuracy
+                                     andMaxAge:self.maxCacheAge];
          }]
          map:^(RACTuple *locationManagerAndLatestLocation) {
              // We just want the latest location value.
