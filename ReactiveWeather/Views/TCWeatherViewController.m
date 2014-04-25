@@ -7,9 +7,16 @@
 //
 
 #import "TCWeatherViewController.h"
+#import "TCWeatherViewModel.h"
+#import "TCWeather.h"
 
-#import <TSMessages/TSMessage.h>
 #import <LBBlurredImage/UIImageView+LBBlurredImage.h>
+
+/**
+ * The section index on the table view.
+ */
+#define TableSectionHourlyForecast 0
+#define TableSectionDailyForecast  1
 
 @interface TCWeatherViewController ()
 
@@ -17,11 +24,22 @@
 @property (nonatomic, weak) IBOutlet UIImageView *blurredImageView;
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
+@property (nonatomic, weak) IBOutlet UILabel *temperatureLabel;
+@property (nonatomic, weak) IBOutlet UILabel *maxMinTemperatureLabel;
+@property (nonatomic, weak) IBOutlet UILabel *cityLabel;
+@property (nonatomic, weak) IBOutlet UILabel *conditionsLabel;
+@property (nonatomic, weak) IBOutlet UIImageView *iconView;
+
 @property (nonatomic, assign) CGFloat screenHeight;
 
 @end
 
 @implementation TCWeatherViewController
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
 
 - (void)viewDidLoad
 {
@@ -41,21 +59,88 @@
     CGRect tableHeaderBounds = self.tableView.tableHeaderView.bounds;
     tableHeaderBounds.size.height = self.screenHeight;
     self.tableView.tableHeaderView.bounds = tableHeaderBounds;
+
+    [self bindToViewModel];
+    [self bindCurrentWeatherCondition];
+//    [self bindHourlyForecasts];
 }
 
-// Override to return a lighter status bar style.
-- (UIStatusBarStyle)preferredStatusBarStyle
+#pragma mark - ReactiveCocoa Bindings
+
+- (void)bindToViewModel
 {
-    return UIStatusBarStyleLightContent;
+    [self.viewModel.fetchWeatherCommand execute:nil];
+
+    // Redirect all errors from the view model to be displayed
+    // on an alert view.
+    [self rac_liftSelector:@selector(presentError:)
+               withSignals:self.viewModel.fetchWeatherCommand.errors, nil];
 }
 
-- (void)didReceiveMemoryWarning
+- (void)bindCurrentWeatherCondition
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    RAC(self.temperatureLabel, text) =
+        [[RACObserve(self, viewModel.currentWeather.temperature) logAll]
+         map:^(NSNumber *temperature) {
+             return [NSString stringWithFormat:@"%.0f°", temperature.floatValue];
+         }];
+
+    RAC(self.cityLabel, text) =
+        [RACObserve(self.viewModel, currentWeather.locationName)
+         map:^(NSString *locationName) {
+             return [locationName capitalizedString];
+         }];
+
+    RAC(self.conditionsLabel, text) =
+        [RACObserve(self.viewModel, currentWeather.condition)
+         map:^(NSString *condition) {
+             return [condition capitalizedString];
+         }];
+
+    RAC(self.iconView, image) =
+        [[RACObserve(self.viewModel, currentWeather.imageName)
+          ignore:nil]
+          map:^(NSString *imageName) {
+              return [UIImage imageNamed:imageName];
+          }];
+
+    // Combine the max and min temperatures for display in a label.
+    RAC(self.maxMinTemperatureLabel, text) =
+        [[RACObserve(self.viewModel, currentWeather.tempHigh)
+          combineLatestWith:RACObserve(self, viewModel.currentWeather.tempLow)]
+          reduceEach:^(NSNumber *maxTemperature, NSNumber *minTemperature) {
+              return [NSString stringWithFormat:@"%.0f° / %.0f°",
+                      maxTemperature.floatValue, minTemperature.floatValue];
+          }];
 }
 
-#pragma mark - Views Setup
+- (void)bindHourlyForecasts
+{
+    @weakify(self);
+
+    [[RACObserve(self.viewModel, hourlyForecasts)
+      distinctUntilChanged]
+      subscribeNext:^(id _) {
+          @strongify(self);
+          [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:TableSectionHourlyForecast]
+                        withRowAnimation:UITableViewRowAnimationFade];
+      }];
+}
+
+/**
+ * Shows the given @c NSError object's details on a @c UIAlertView.
+ */
+- (void)presentError:(NSError *)error
+{
+	NSLog(@"<%@>: %@", NSStringFromClass([self class]), error);
+
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                                        message:error.localizedRecoverySuggestion
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                              otherButtonTitles:nil];
+	[alertView show];
+}
 
 #pragma mark - UITableViewDataSource
 
@@ -67,8 +152,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // TODO: Return count of forecast
-    return 0;
+    // We’re using table cells for headers here instead of the built-in
+    // section headers which have sticky-scrolling behavior.
+    // We want the headers to scroll along with the content.
+    return (section == TableSectionHourlyForecast ?
+            self.viewModel.hourlyForecasts.count :
+            self.viewModel.dailyForecasts.count) + 1; // Add one more cell for the header.
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
