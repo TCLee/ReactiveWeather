@@ -57,18 +57,6 @@
     __block NSUInteger subscriberCount = 0;
 
     return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
-
-//        // If cached location is good enough, then send the cached value to
-//        // the subscriber.
-//        CLLocation *cachedLocation = self.locationManager.location;
-//        if ([self isAcceptableLocation:cachedLocation
-//                          withAccuracy:self.locationManager.desiredAccuracy
-//                             andMaxAge:self.maxCacheAge]) {
-//            [subscriber sendNext:cachedLocation];
-//        } else {
-//
-//        }
-//
         @synchronized(self) {
             // If this is the first subscriber to this signal, start the
             // location updates.
