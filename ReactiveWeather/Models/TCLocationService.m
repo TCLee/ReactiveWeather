@@ -69,7 +69,7 @@
         // We need to replay the last location value to later
         // subscribers. Otherwise, later subscribers may miss the
         // location update event.
-        [[[self locationUpdatesSignal]
+        [[[self locationUpdate]
           replayLastLazily]
           subscribe:subscriber];
 
@@ -134,48 +134,47 @@
 }
 
 /**
- * Signal of location updates sent by location services when it has started.
+ * Signal of location values sent by location services when
+ * it has started.
  *
- * This signal terminates with an error event if 
- * @c locationManager:didFailWithError: is called.
+ * This signal terminates with an error event if  @c 
+ * locationManager:didFailWithError: is called.
  */
-- (RACSignal *)locationUpdatesSignal
+- (RACSignal *)locationUpdate
 {
-    RACSignal *locationUpdates =
-        [[[[self rac_signalForSelector:@selector(locationManager:didUpdateLocations:)
-                          fromProtocol:@protocol(CLLocationManagerDelegate)]
-         map:^(RACTuple *locationManagerAndLocationArray) {
-             RACTupleUnpack(CLLocationManager *locationManager,
-                            NSArray *locations) = locationManagerAndLocationArray;
+    return [[[[[[self rac_signalForSelector:@selector(locationManager:didUpdateLocations:)
+                               fromProtocol:@protocol(CLLocationManagerDelegate)]
+        map:^(RACTuple *locationManagerAndLocationArray) {
+            RACTupleUnpack(CLLocationManager *locationManager,
+                           NSArray *locations) = locationManagerAndLocationArray;
 
-             // Get the most recent location data, which is at the end of
-             // the array.
-             return RACTuplePack(locationManager, locations.lastObject);
-         }]
-         filter:^BOOL(RACTuple *locationManagerAndLatestLocation) {
-             RACTupleUnpack(CLLocationManager *locationManager,
-                            CLLocation *location) = locationManagerAndLatestLocation;
+            // Get the most recent location data, which is at the end of
+            // the array.
+            return RACTuplePack(locationManager, locations.lastObject);
+        }]
+        filter:^BOOL(RACTuple *locationManagerAndLatestLocation) {
+            RACTupleUnpack(CLLocationManager *locationManager,
+                           CLLocation *location) = locationManagerAndLatestLocation;
 
-             return [self isAcceptableLocation:location
-                                  withAccuracy:locationManager.desiredAccuracy
-                                     andMaxAge:self.maxCacheAge];
-         }]
-         map:^(RACTuple *locationManagerAndLatestLocation) {
-             // We just want the latest location value.
-             return locationManagerAndLatestLocation[1];
-         }];
-
-    // Location updates signal does not include any error events. So,
-    // we merge it with the error signal to get the error events.
-    return [[RACSignal merge:@[locationUpdates, self.errorSignal]]
-             setNameWithFormat:@"%@ -locationUpdatesSignal", self];
+            return [self isAcceptableLocation:location
+                                 withAccuracy:locationManager.desiredAccuracy
+                                    andMaxAge:self.maxCacheAge];
+        }]
+        map:^(RACTuple *locationManagerAndLatestLocation) {
+            // We just want the latest location value.
+            return locationManagerAndLatestLocation[1];
+        }]
+        // Location updates signal does not include any error events.
+        // Merge it with the error signal to get the error events.
+        merge:self.locationError]
+        setNameWithFormat:@"%@ -locationUpdate", self];
 }
 
 /**
  * Signal that sends an error event when location services failed to
  * retrieve a location value.
  */
-- (RACSignal *)errorSignal
+- (RACSignal *)locationError
 {
     return [[[[self valueForCLLocationManagerDelegateSelector:
                @selector(locationManager:didFailWithError:)]
@@ -191,7 +190,7 @@
                 // Terminate this signal with an error event.
                 return [RACSignal error:error];
             }]
-            setNameWithFormat:@"%@ -errorSignal", self];
+            setNameWithFormat:@"%@ -locationError", self];
 }
 
 /**
