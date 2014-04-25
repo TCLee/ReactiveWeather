@@ -80,7 +80,7 @@
 - (void)bindCurrentWeatherCondition
 {
     RAC(self.temperatureLabel, text) =
-        [[RACObserve(self, viewModel.currentWeather.temperature) logAll]
+        [RACObserve(self, viewModel.currentWeather.temperature)
          map:^(NSNumber *temperature) {
              return [NSString stringWithFormat:@"%.0f°", temperature.floatValue];
          }];
