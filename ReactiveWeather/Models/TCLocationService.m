@@ -9,6 +9,7 @@
 @import CoreLocation;
 
 #import "TCLocationService.h"
+#import "RACSignal+TCOperatorAdditions.h"
 
 /**
  * Cached location data that is older than this maximum limit will be
@@ -54,19 +55,15 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
             if (++subscriberCount == 1) {
                 NSLog(@"Location Services Started");
                 [self.locationManager startUpdatingLocation];
-            } else {
-                // Replay most recent cached location to later subscribers.
-                // Later subscribers may subscribe after the location update
-                // event has fired for earlier subscribers.
-                if (self.locationManager.location) {
-                    [subscriber sendNext:self.locationManager.location];
-                }
             }
         }
 
-        // Subscribe to location updates signal to get the latest
-        // location values.
-        [[self locationUpdatesSignal] subscribe:subscriber];
+        // We need to replay the last location value to later
+        // subscribers. Otherwise, later subscribers may miss the
+        // location update event.
+        [[[self locationUpdatesSignal]
+          replayLastLazily]
+          subscribe:subscriber];
 
         return [RACDisposable disposableWithBlock:^{
             @synchronized(self) {

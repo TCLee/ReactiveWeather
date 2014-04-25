@@ -7,8 +7,8 @@
 //
 
 /**
- * The location service class provides a reactive API on top
- * of the Core Location services framework.
+ * The location service class encapsulates the code to find the user's
+ * current location.
  */
 @interface TCLocationService : NSObject 
 
