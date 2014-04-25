@@ -24,7 +24,6 @@
  */
 @property (nonatomic, strong) TCLocationService *locationService;
 
-@property (nonatomic, strong) CLLocation *currentLocation;
 @property (nonatomic, strong) TCWeather *currentWeather;
 @property (nonatomic, copy) NSArray *hourlyForecasts;
 @property (nonatomic, copy) NSArray *dailyForecasts;
@@ -42,7 +41,7 @@
     _weatherService  = weatherService;
 
     _fetchWeatherCommand =
-        [[RACCommand alloc] initWithSignalBlock:^(__unused id input) {
+        [[RACCommand alloc] initWithSignalBlock:^(id _) {
             return [self fetchWeather];
         }];
 
@@ -64,36 +63,38 @@
  */
 - (RACSignal *)fetchWeather
 {
-    // Take only 1 location value, since we don't need to track the user.
-    RAC(self, currentLocation) =
-        [[self.locationService currentLocation] take:1];
-
-    // Skip 1 to skip the initial value and ignore nil values, since
-    // we can't do anything with a `nil` location.
-    RACSignal *currentLocationSignal = [[RACObserve(self, currentLocation)
-                                         skip:1]
-                                         ignore:nil];
-
-    return [[RACSignal
-            merge:@[[self updateCurrentWeatherConditionWithLocation:currentLocationSignal],
-                    [self updateHourlyForecastWithLocation:currentLocationSignal],
-                    [self updateDailyForecastWithLocation:currentLocationSignal]]]
+    return [[[[[[self.locationService currentLocation]
+        // Take only 1 location value, since we don't need to track the user.
+        take:1]
+        // With the current location, we can fetch the latest weather data and
+        // update the view model's properties.
+        map:^(CLLocation *location) {
+            return [[RACSignal merge:@[
+                [self updateCurrentWeatherConditionForLocation:location],
+                [self updateHourlyForecastForLocation:location],
+                [self updateDailyForecastForLocation:location]
+            ]]
+            // Not interested in any values from the signal, since
+            // we're updating the view model's properties only.
             ignoreValues];
+        }]
+        // If current location changes, we want to cancel any in-flight
+        // weather data requests.
+        switchToLatest]
+        logError]
+        setNameWithFormat:@"%@ -fetchWeather", self];
 }
 
-/** 
- * Fetches the latest current weather data and updates the view 
+/**
+ * Fetches the latest current weather data and updates the view
  * model's property.
  */
-- (RACSignal *)updateCurrentWeatherConditionWithLocation:(RACSignal *)locationSignal
+- (RACSignal *)updateCurrentWeatherConditionForLocation:(CLLocation *)location
 {
-    return [[locationSignal
-            flattenMap:^(CLLocation *location) {
-                return [self.weatherService
-                        currentConditionForLocation:location.coordinate];
-            }]
-            doNext:^(TCWeather *currentWeatherCondition) {
-                self.currentWeather = currentWeatherCondition;
+    return [[self.weatherService
+            currentConditionForLocation:location.coordinate]
+            doNext:^(TCWeather *currentCondition) {
+                self.currentWeather = currentCondition;
             }];
 }
 
@@ -101,15 +102,25 @@
  * Fetches the latest hourly forecast data and updates the view
  * model's property.
  */
-- (RACSignal *)updateHourlyForecastWithLocation:(RACSignal *)locationSignal
+- (RACSignal *)updateHourlyForecastForLocation:(CLLocation *)location
 {
-    return [[locationSignal
-            flattenMap:^(CLLocation *location) {
-                return [self.weatherService
-                        hourlyForecastsForLocation:location.coordinate];
-            }]
+    return [[self.weatherService
+            hourlyForecastsForLocation:location.coordinate]
             doNext:^(NSArray *hourlyForecasts) {
                 self.hourlyForecasts = hourlyForecasts;
+            }];
+}
+
+/**
+ * Fetches the latest daily forecast data and updates the view
+ * model's property.
+ */
+- (RACSignal *)updateDailyForecastForLocation:(CLLocation *)location
+{
+    return [[self.weatherService
+            dailyForecastsForLocation:location.coordinate]
+            doNext:^(NSArray *dailyForecasts) {
+                self.dailyForecasts = dailyForecasts;
             }];
 }
 

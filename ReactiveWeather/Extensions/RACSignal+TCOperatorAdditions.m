@@ -20,7 +20,7 @@
                  [connection connect];
                  return connection.signal;
              }]
-            setNameWithFormat:@"[%@] -replayLastLazily", self.name];
+             setNameWithFormat:@"[%@] -replayLastLazily", self.name];
 }
 
 @end
