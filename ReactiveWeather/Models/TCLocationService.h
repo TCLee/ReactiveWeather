@@ -6,11 +6,29 @@
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
+@import CoreLocation;
+
 /**
  * The location service class encapsulates the code to find the user's
  * current location.
  */
-@interface TCLocationService : NSObject 
+@interface TCLocationService : NSObject <CLLocationManagerDelegate>
+
+/**
+ * Initializes and returns a location service object.
+ *
+ * @param accuracy       The accuracy of the location data.
+ * @param distanceFilter The minimum distance (measured in meters) a device must move 
+ *                       horizontally before a location update event is generated.
+ * @param maxCacheAge    Cached location data that is older than this 
+ *                       maximum limit will be discarded. The age is 
+ *                       calculated in seconds.
+ *
+ * @return A location service object initialized with the given values.
+ */
+- (instancetype)initWithAccuracy:(CLLocationAccuracy)accuracy
+                  distanceFilter:(CLLocationDistance)distanceFilter
+                     maxCacheAge:(NSTimeInterval)maxCacheAge;
 
 /**
  * A signal of location updates.

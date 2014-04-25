@@ -6,21 +6,13 @@
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
-@import CoreLocation;
-
 #import "TCLocationService.h"
 #import "RACSignal+TCOperatorAdditions.h"
 
-/**
- * Cached location data that is older than this maximum limit will be
- * discarded. The age is calculated in seconds.
- */
-static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
+@interface TCLocationService ()
 
-// Privately adopt the CLLocationManagerDelegate protocol.
-@interface TCLocationService () <CLLocationManagerDelegate>
-
-@property (nonatomic, strong) CLLocationManager *locationManager;
+@property (nonatomic, strong, readonly) CLLocationManager *locationManager;
+@property (nonatomic, assign, readonly) NSTimeInterval maxCacheAge;
 
 @end
 
@@ -40,6 +32,22 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
     _locationManager.distanceFilter = 1000;
+
+    return self;
+}
+
+- (instancetype)initWithAccuracy:(CLLocationAccuracy)accuracy
+                  distanceFilter:(CLLocationDistance)distanceFilter
+                     maxCacheAge:(NSTimeInterval)maxCacheAge
+{
+    self = [super init];
+    if (!self) { return nil; }
+
+    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager.delegate = self;
+    _locationManager.desiredAccuracy = accuracy;
+    _locationManager.distanceFilter = distanceFilter;
+    _maxCacheAge = maxCacheAge;
 
     return self;
 }
@@ -107,24 +115,38 @@ static const NSTimeInterval TCMaxAcceptableLocationAge = 15.0f;
 - (RACSignal *)locationUpdatesSignal
 {
     RACSignal *locationUpdates =
-        [[[[self valueForCLLocationManagerDelegateSelector:
-            @selector(locationManager:didUpdateLocations:)]
-         map:^(NSArray *locations) {
-             // Get the most recent location data, which is at the end of the array.
-             return locations.lastObject;
+        [[[[[self rac_signalForSelector:@selector(locationManager:didUpdateLocations:)
+                          fromProtocol:@protocol(CLLocationManagerDelegate)]
+         map:^(RACTuple *locationManagerAndLocationArray) {
+             RACTupleUnpack(CLLocationManager *locationManager,
+                            NSArray *locations) = locationManagerAndLocationArray;
+
+             // Get the most recent location data, which is at the end of
+             // the array.
+             return RACTuplePack(locationManager, locations.lastObject);
          }]
-         filter:^BOOL(CLLocation *location) {
+         filter:^BOOL(RACTuple *locationManagerAndLatestLocation) {
              // Location data can be returned from the cache. Make sure that
              // location data is not too old. Otherwise, we will be using
              // stale location data.
+             CLLocation *location = locationManagerAndLatestLocation[1];
              NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
-             return locationAge <= TCMaxAcceptableLocationAge;
+             return locationAge <= self.maxCacheAge;
          }]
-         filter:^BOOL(CLLocation *location) {
-             // A negative value for the horizontalAccuracy indicates that
+         filter:^BOOL(RACTuple *locationManagerAndLatestLocation) {
+             RACTupleUnpack(CLLocationManager *locationManager,
+                            CLLocation *location) = locationManagerAndLatestLocation;
+
+             // A negative value for the `horizontalAccuracy` indicates that
              // the location’s latitude and longitude are invalid.
+             // CLLocationManager `desiredAccuracy` is negative if it is
+             // `kCLLocationAccuracyBestForNavigation` or `kCLLocationAccuracyBest`.
              return (location.horizontalAccuracy > 0 &&
-                     location.horizontalAccuracy <= kCLLocationAccuracyKilometer);
+                     location.horizontalAccuracy <= MAX(locationManager.desiredAccuracy, 0));
+         }]
+         map:^(RACTuple *locationManagerAndLatestLocation) {
+             // We just want the latest location value.
+             return locationManagerAndLatestLocation[1];
          }];
 
     // Location updates signal does not include any error events. So,

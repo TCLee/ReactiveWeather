@@ -18,7 +18,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Create the view model with its service classes.
-    TCLocationService *locationService = [[TCLocationService alloc] init];
+    TCLocationService *locationService =
+        [[TCLocationService alloc] initWithAccuracy:kCLLocationAccuracyKilometer
+                                     distanceFilter:1000.0f
+                                        maxCacheAge:15.0f];
     TCWeatherService *weatherService = [[TCWeatherService alloc] init];
     TCWeatherViewModel *viewModel =
         [[TCWeatherViewModel alloc] initWithLocationService:locationService
