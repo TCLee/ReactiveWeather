@@ -91,8 +91,9 @@
  */
 - (RACSignal *)updateCurrentWeatherConditionForLocation:(CLLocation *)location
 {
-    return [[self.weatherService
+    return [[[self.weatherService
             currentConditionForLocation:location.coordinate]
+            deliverOn:RACScheduler.mainThreadScheduler]
             doNext:^(TCWeather *currentCondition) {
                 self.currentWeather = currentCondition;
             }];
@@ -104,8 +105,9 @@
  */
 - (RACSignal *)updateHourlyForecastForLocation:(CLLocation *)location
 {
-    return [[self.weatherService
+    return [[[self.weatherService
             hourlyForecastsForLocation:location.coordinate]
+            deliverOn:RACScheduler.mainThreadScheduler]
             doNext:^(NSArray *hourlyForecasts) {
                 self.hourlyForecasts = hourlyForecasts;
             }];
@@ -117,24 +119,9 @@
  */
 - (RACSignal *)updateDailyForecastForLocation:(CLLocation *)location
 {
-    return [[self.weatherService
+    return [[[self.weatherService
             dailyForecastsForLocation:location.coordinate]
-            doNext:^(NSArray *dailyForecasts) {
-                self.dailyForecasts = dailyForecasts;
-            }];
-}
-
-/**
- * Fetches the latest daily forecast data and updates the view
- * model's property.
- */
-- (RACSignal *)updateDailyForecastWithLocation:(RACSignal *)locationSignal
-{
-    return [[locationSignal
-            flattenMap:^(CLLocation *location) {
-                return [self.weatherService
-                        dailyForecastsForLocation:location.coordinate];
-            }]
+            deliverOn:RACScheduler.mainThreadScheduler]
             doNext:^(NSArray *dailyForecasts) {
                 self.dailyForecasts = dailyForecasts;
             }];
