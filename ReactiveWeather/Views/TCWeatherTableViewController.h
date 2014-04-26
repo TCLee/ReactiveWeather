@@ -6,6 +6,13 @@
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
+@class TCWeatherViewModel;
+
 @interface TCWeatherTableViewController : UITableViewController
+
+/**
+ * The view model for this view layer.
+ */
+@property (nonatomic, strong) TCWeatherViewModel *viewModel;
 
 @end

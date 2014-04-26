@@ -51,11 +51,6 @@
                     <connections>
                         <outlet property="backgroundImageView" destination="BUW-dS-CCX" id="JPN-Tj-cGb"/>
                         <outlet property="blurredImageView" destination="QzE-56-oQn" id="ZaU-zD-iCb"/>
-                        <outlet property="cityLabel" destination="VkW-RK-t21" id="phs-H2-vyI"/>
-                        <outlet property="conditionsLabel" destination="hbi-Jr-C5G" id="Oz3-VW-aON"/>
-                        <outlet property="iconView" destination="ljk-Vh-4bm" id="PQV-Bi-nhY"/>
-                        <outlet property="maxMinTemperatureLabel" destination="7Al-ZV-bPI" id="xCx-l4-oAb"/>
-                        <outlet property="temperatureLabel" destination="04o-pT-VaX" id="zXK-qZ-icn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mr1-Zm-Wkn" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -186,6 +181,13 @@
                             <outlet property="delegate" destination="OCV-9H-S6O" id="lzU-PT-d80"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <outlet property="cityLabel" destination="VkW-RK-t21" id="78d-4e-CrX"/>
+                        <outlet property="conditionsLabel" destination="hbi-Jr-C5G" id="7yn-ij-xRY"/>
+                        <outlet property="iconView" destination="ljk-Vh-4bm" id="WIX-YT-sCl"/>
+                        <outlet property="maxMinTemperatureLabel" destination="7Al-ZV-bPI" id="Ioj-rQ-nMJ"/>
+                        <outlet property="temperatureLabel" destination="04o-pT-VaX" id="PXk-qL-103"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WHW-uY-UK7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

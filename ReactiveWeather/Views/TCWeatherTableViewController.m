@@ -7,113 +7,75 @@
 //
 
 #import "TCWeatherTableViewController.h"
+#import "TCWeatherViewModel.h"
+#import "TCWeather.h"
+
+/**
+ * The section index on the table view.
+ */
+#define TableSectionHourlyForecast 0
+#define TableSectionDailyForecast  1
+
+static NSString * const HeaderCellIdentifier = @"ForecastHeaderCell";
+static NSString * const DataCellIdentifier = @"ForecastDataCell";
 
 @interface TCWeatherTableViewController ()
+
+@property (nonatomic, weak) IBOutlet UILabel *temperatureLabel;
+@property (nonatomic, weak) IBOutlet UILabel *maxMinTemperatureLabel;
+@property (nonatomic, weak) IBOutlet UILabel *cityLabel;
+@property (nonatomic, weak) IBOutlet UILabel *conditionsLabel;
+@property (nonatomic, weak) IBOutlet UIImageView *iconView;
 
 @end
 
 @implementation TCWeatherTableViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
+#pragma mark Initialize
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [super viewDidLoad];    
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - Table view data source
+#pragma mark Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    // Our table view only has 2 sections:
+    // Hourly Forecast and Daily Forecast.
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    // We’re using table cells for headers here instead of the built-in
+    // section headers which have sticky-scrolling behavior.
+    // We want the headers to scroll along with the content.
+    return (section == TableSectionHourlyForecast ?
+            self.viewModel.hourlyForecasts.count :
+            self.viewModel.dailyForecasts.count) + 1; // Add one more cell for the header.
 }
 
-/*
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
+    // First row will use the Header Prototype Cell.
+    // Next rows will use the Data Prototype Cell.
+    UITableViewCell *cell =
+        [tableView dequeueReusableCellWithIdentifier:
+         (0 == indexPath.row ? HeaderCellIdentifier : DataCellIdentifier)];
+
+    // TODO: Setup the cell
+
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark Table View Delegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+    // TODO: Determine cell height based on screen
+    return 44;
 }
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

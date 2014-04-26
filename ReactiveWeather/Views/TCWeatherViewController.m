@@ -22,13 +22,6 @@
 
 @property (nonatomic, weak) IBOutlet UIImageView *backgroundImageView;
 @property (nonatomic, weak) IBOutlet UIImageView *blurredImageView;
-@property (nonatomic, weak) IBOutlet UITableView *tableView;
-
-@property (nonatomic, weak) IBOutlet UILabel *temperatureLabel;
-@property (nonatomic, weak) IBOutlet UILabel *maxMinTemperatureLabel;
-@property (nonatomic, weak) IBOutlet UILabel *cityLabel;
-@property (nonatomic, weak) IBOutlet UILabel *conditionsLabel;
-@property (nonatomic, weak) IBOutlet UIImageView *iconView;
 
 @property (nonatomic, assign) CGFloat screenHeight;
 
