@@ -8,6 +8,14 @@
 
 @class TCWeatherViewModel;
 
+/**
+ * This table view controller is a child view controller of the
+ * main view controller @c TCWeatherViewController.
+ *
+ * We could not use the @c UITableViewController class directly because 
+ * we needed to add the blurred view underneath the table view, which
+ * @c UITableViewController does not allow.
+ */
 @interface TCWeatherTableViewController : UITableViewController
 
 /**

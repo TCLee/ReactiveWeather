@@ -13,7 +13,6 @@
  * to the user on its views.
  */
 @interface TCWeatherViewController : UIViewController
-<UITableViewDataSource, UITableViewDelegate>
 
 /**
  * The view model for this view layer.
