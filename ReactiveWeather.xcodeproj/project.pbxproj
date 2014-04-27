@@ -15,6 +15,8 @@
 		810DAC7218F9399C00959877 /* TCLocationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 810DAC7118F9399C00959877 /* TCLocationService.m */; };
 		813D20EA18F6807500706C73 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 813D20E918F6807500706C73 /* MainStoryboard.storyboard */; };
 		81790996190B5AD4003166B5 /* TCWeatherTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81790995190B5AD4003166B5 /* TCWeatherTableViewController.m */; };
+		81790999190CE922003166B5 /* TCWeatherForecastCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 81790998190CE922003166B5 /* TCWeatherForecastCell.m */; };
+		8179099C190CEA37003166B5 /* TCForecastViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8179099B190CEA37003166B5 /* TCForecastViewModel.m */; };
 		81876C4718F66E86000F0F06 /* TCWeatherViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81876C4618F66E86000F0F06 /* TCWeatherViewController.m */; };
 		81876C4818F67412000F0F06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD318F648C400072D47 /* Foundation.framework */; };
 		81CFD13A1908F3F10012EACB /* RACSignal+TCOperatorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 81CFD1391908F3F10012EACB /* RACSignal+TCOperatorAdditions.m */; };
@@ -56,6 +58,10 @@
 		813D20E918F6807500706C73 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		81790994190B5AD4003166B5 /* TCWeatherTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherTableViewController.h; sourceTree = "<group>"; };
 		81790995190B5AD4003166B5 /* TCWeatherTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherTableViewController.m; sourceTree = "<group>"; };
+		81790997190CE922003166B5 /* TCWeatherForecastCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherForecastCell.h; sourceTree = "<group>"; };
+		81790998190CE922003166B5 /* TCWeatherForecastCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherForecastCell.m; sourceTree = "<group>"; };
+		8179099A190CEA37003166B5 /* TCForecastViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCForecastViewModel.h; sourceTree = "<group>"; };
+		8179099B190CEA37003166B5 /* TCForecastViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCForecastViewModel.m; sourceTree = "<group>"; };
 		81876C4518F66E86000F0F06 /* TCWeatherViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherViewController.h; sourceTree = "<group>"; };
 		81876C4618F66E86000F0F06 /* TCWeatherViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherViewController.m; sourceTree = "<group>"; };
 		81CFD1381908F3F10012EACB /* RACSignal+TCOperatorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RACSignal+TCOperatorAdditions.h"; sourceTree = "<group>"; };
@@ -217,6 +223,8 @@
 			children = (
 				810DAC6D18F8E49600959877 /* TCWeatherViewModel.h */,
 				810DAC6E18F8E49600959877 /* TCWeatherViewModel.m */,
+				8179099A190CEA37003166B5 /* TCForecastViewModel.h */,
+				8179099B190CEA37003166B5 /* TCForecastViewModel.m */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -229,6 +237,8 @@
 				81876C4618F66E86000F0F06 /* TCWeatherViewController.m */,
 				81790994190B5AD4003166B5 /* TCWeatherTableViewController.h */,
 				81790995190B5AD4003166B5 /* TCWeatherTableViewController.m */,
+				81790997190CE922003166B5 /* TCWeatherForecastCell.h */,
+				81790998190CE922003166B5 /* TCWeatherForecastCell.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -371,9 +381,11 @@
 				81790996190B5AD4003166B5 /* TCWeatherTableViewController.m in Sources */,
 				81D8F00C18F6495F00072D47 /* main.m in Sources */,
 				810DAC6F18F8E49600959877 /* TCWeatherViewModel.m in Sources */,
+				81790999190CE922003166B5 /* TCWeatherForecastCell.m in Sources */,
 				810DAC3B18F7BECE00959877 /* TCWeather.m in Sources */,
 				81CFD13A1908F3F10012EACB /* RACSignal+TCOperatorAdditions.m in Sources */,
 				81D8EFE418F648C400072D47 /* TCAppDelegate.m in Sources */,
+				8179099C190CEA37003166B5 /* TCForecastViewModel.m in Sources */,
 				81876C4718F66E86000F0F06 /* TCWeatherViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
