@@ -1,23 +1,25 @@
 //
-//  TCForecastViewModel.m
+//  TCHourlyForecastViewModel.m
 //  ReactiveWeather
 //
 //  Created by Lee Tze Cheun on 4/27/14.
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
-#import "TCForecastViewModel.h"
+#import "TCHourlyForecastViewModel.h"
+#import "TCWeather.h"
 
-@implementation TCForecastViewModel
+@implementation TCHourlyForecastViewModel
 
-- (instancetype)initWithForecast:(TCWeather *)weather
+- (instancetype)initWithWeather:(TCWeather *)weather
 {
     NSParameterAssert(nil != weather);
 
     self = [super init];
     if (nil == self) { return nil; }
 
-    _weather = weather;
+    _dateAndTime = weather.date;
+    _temperature = weather.temperature;
 
     return self;
 }

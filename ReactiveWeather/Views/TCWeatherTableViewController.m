@@ -7,7 +7,11 @@
 //
 
 #import "TCWeatherTableViewController.h"
+#import "TCHourlyForecastCell.h"
+#import "TCDailyForecastCell.h"
 #import "TCWeatherViewModel.h"
+#import "TCHourlyForecastViewModel.h"
+#import "TCDailyForecastViewModel.h"
 #import "TCWeather.h"
 
 /**
@@ -26,12 +30,6 @@
  * section's header.
  */
 static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
-
-/**
- * The reuse identifier for the cell that will display a weather 
- * forecast data.
- */
-static NSString * const TCDataCellIdentifier = @"TCForecastDataCell";
 
 @interface TCWeatherTableViewController ()
 
@@ -155,15 +153,42 @@ static NSString * const TCDataCellIdentifier = @"TCForecastDataCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // First row will use the Header Prototype Cell to display the
-    // section's header.
-    UITableViewCell *cell =
+    // The first row of each section represents the
+    // header row of the section.
+    if (0 == indexPath.row) {
+        UITableViewCell *headerCell =
+            [tableView dequeueReusableCellWithIdentifier:
+             TCHeaderCellIdentifier];
+
+        headerCell.textLabel.text =
+            (TCTableSectionHourlyForecast == indexPath.section ?
+             NSLocalizedString(@"Hourly Forecast", nil) :
+             NSLocalizedString(@"Daily Forecast", nil));
+
+        return headerCell;
+    }
+
+    // Hourly Forecast Section
+    if (TCTableSectionHourlyForecast == indexPath.section) {
+        TCHourlyForecastCell *hourlyForecastCell =
+            [tableView dequeueReusableCellWithIdentifier:
+             NSStringFromClass(TCHourlyForecastCell.class)];
+
+        // TODO: Get the view model and pass it into the cell view.
+        hourlyForecastCell.viewModel = nil;
+
+        return hourlyForecastCell;
+    }
+
+    // Daily Forecast Section
+    TCDailyForecastCell *dailyForecastCell =
         [tableView dequeueReusableCellWithIdentifier:
-         (0 == indexPath.row ? TCHeaderCellIdentifier : TCDataCellIdentifier)];
+         NSStringFromClass(TCDailyForecastCell.class)];
 
-    // TODO: Create a custom cell class and a view model class for the cell.
+    // TODO: Get the view model and pass it into the cell view.
+    dailyForecastCell.viewModel = nil;
 
-    return cell;
+    return dailyForecastCell;
 }
 
 #pragma mark Table View Delegate
