@@ -25,13 +25,13 @@
  * The reuse identifier for the cell that will display a 
  * section's header.
  */
-static NSString * const TCHeaderCellIdentifier = @"ForecastHeaderCell";
+static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
 
 /**
  * The reuse identifier for the cell that will display a weather 
  * forecast data.
  */
-static NSString * const TCDataCellIdentifier = @"ForecastDataCell";
+static NSString * const TCDataCellIdentifier = @"TCForecastDataCell";
 
 @interface TCWeatherTableViewController ()
 
