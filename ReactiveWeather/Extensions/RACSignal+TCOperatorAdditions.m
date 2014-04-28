@@ -23,19 +23,17 @@
              setNameWithFormat:@"[%@] -replayLastLazily", self.name];
 }
 
-- (instancetype)tc_mapArray:(id (^)(id value))block
+- (instancetype)tc_mapEach:(id (^)(id value))block
 {
     NSParameterAssert(block != nil);
 
-    return [[[self
-        flattenMap:^(NSArray *value) {
-            NSAssert([value isKindOfClass:NSArray.class],
-                     @"-mapArray: only works with an array value.");
-
-            return [value.rac_sequence.signal map:block];
-        }]
-        collect]
-        setNameWithFormat:@"[%@] -mapArray:", self.name];
+    return [[self flattenMap:^(NSArray *value) {
+        NSAssert([value isKindOfClass:NSArray.class],
+                 @"-tc_mapEach: only works with an array value.");
+        
+        return [[value.rac_sequence.signal map:block] collect];
+    }]
+    setNameWithFormat:@"[%@] -tc_mapEach:", self.name];
 }
 
 @end

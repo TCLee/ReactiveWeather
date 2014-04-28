@@ -21,12 +21,14 @@
 @property (nonatomic, strong, readonly) TCWeather *currentWeather;
 
 /**
- * The list of @c TCHourlyForecastViewModel objects.
+ * The list of @c TCHourlyForecastViewModel objects, in the order they should
+ * be presented to the user.
  */
 @property (nonatomic, copy, readonly) NSArray *hourlyForecasts;
 
 /**
- * The list of @c TCDailyForecastViewModel objects.
+ * The list of @c TCDailyForecastViewModel objects, in the order they should
+ * be presented to the user.
  */
 @property (nonatomic, copy, readonly) NSArray *dailyForecasts;
 

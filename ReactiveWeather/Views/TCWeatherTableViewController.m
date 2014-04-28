@@ -141,7 +141,8 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section
 {
     // We’re using table cells for headers here instead of the built-in
     // section headers which have sticky-scrolling behavior.
@@ -151,7 +152,8 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
             self.viewModel.dailyForecasts.count) + 1; // Add one more cell for the header.
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // The first row of each section represents the
     // header row of the section.
@@ -174,8 +176,8 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
             [tableView dequeueReusableCellWithIdentifier:
              NSStringFromClass(TCHourlyForecastCell.class)];
 
-        // TODO: Get the view model and pass it into the cell view.
-        hourlyForecastCell.viewModel = nil;
+        hourlyForecastCell.viewModel =
+            self.viewModel.hourlyForecasts[indexPath.row];
 
         return hourlyForecastCell;
     }
@@ -185,8 +187,8 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
         [tableView dequeueReusableCellWithIdentifier:
          NSStringFromClass(TCDailyForecastCell.class)];
 
-    // TODO: Get the view model and pass it into the cell view.
-    dailyForecastCell.viewModel = nil;
+    dailyForecastCell.viewModel =
+        self.viewModel.dailyForecasts[indexPath.row];
 
     return dailyForecastCell;
 }

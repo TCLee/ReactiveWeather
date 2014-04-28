@@ -94,12 +94,12 @@
  */
 - (RACSignal *)updateCurrentWeatherConditionForLocation:(CLLocation *)location
 {
-    return [[[self.weatherService
-            currentConditionForLocation:location.coordinate]
-            deliverOn:RACScheduler.mainThreadScheduler]
-            doNext:^(TCWeather *currentCondition) {
-                self.currentWeather = currentCondition;
-            }];
+    return [[[[self.weatherService currentConditionForLocation:location.coordinate]
+        deliverOn:RACScheduler.mainThreadScheduler]
+        doNext:^(TCWeather *currentCondition) {
+            self.currentWeather = currentCondition;
+        }]
+        setNameWithFormat:@"%@ -updateCurrentWeatherCondition", self];
 }
 
 /**
@@ -108,16 +108,15 @@
  */
 - (RACSignal *)updateHourlyForecastForLocation:(CLLocation *)location
 {
-    // Map each `TCHourlyForecast` element in the array into an
-    // `TCHourlyForecastViewModel`.
-    return [[[[self.weatherService hourlyForecastsForLocation:location.coordinate]
-        tc_mapArray:^(TCWeather *weather) {
+    return [[[[[self.weatherService dailyForecastsForLocation:location.coordinate]
+        tc_mapEach:^(TCWeather *weather) {
             return [[TCHourlyForecastViewModel alloc] initWithWeather:weather];
         }]
         deliverOn:RACScheduler.mainThreadScheduler]
         doNext:^(NSArray *forecastViewModels) {
             self.hourlyForecasts = forecastViewModels;
-        }];;
+        }]
+        setNameWithFormat:@"%@ -updateHourlyForecast", self];
 }
 
 /**
@@ -126,16 +125,15 @@
  */
 - (RACSignal *)updateDailyForecastForLocation:(CLLocation *)location
 {
-    // Map each `TCDailyForecast` element in the array into an
-    // `TCDailyForecastViewModel`.
-    return [[[[self.weatherService dailyForecastsForLocation:location.coordinate]
-        tc_mapArray:^(TCWeather *weather) {
+    return [[[[[self.weatherService dailyForecastsForLocation:location.coordinate]
+        tc_mapEach:^(TCWeather *weather) {
             return [[TCDailyForecastViewModel alloc] initWithWeather:weather];
         }]
         deliverOn:RACScheduler.mainThreadScheduler]
         doNext:^(NSArray *forecastViewModels) {
             self.dailyForecasts = forecastViewModels;
-        }];
+        }]
+        setNameWithFormat:@"%@ -updateDailyForecast", self];
 }
 
 @end
