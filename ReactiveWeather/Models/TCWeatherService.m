@@ -9,6 +9,7 @@
 #import "TCWeatherService.h"
 #import "TCWeather.h"
 #import "TCDailyForecast.h"
+#import "RACSignal+TCOperatorAdditions.h"
 
 @interface TCWeatherService ()
 
@@ -138,49 +139,46 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
 
 - (RACSignal *)currentConditionForLocation:(CLLocationCoordinate2D)coordinate
 {
-    // Gets the JSON object from OpenWeatherMap API response and map it
-    // to a TCWeatherCondition object.
-    return [[self JSONObjectFromURL:[self currentWeatherURLWithCoordinate:coordinate]]
-            tryMap:^(NSDictionary *JSONObject, NSError **errorPtr) {
-                return [MTLJSONAdapter modelOfClass:[TCWeather class]
-                                 fromJSONDictionary:JSONObject
-                                              error:errorPtr];
-            }];
+    // Gets the JSON response from OpenWeatherMap API response and map it
+    // to a `TCWeatherCondition` object.
+    return [[[self JSONObjectFromURL:[self currentWeatherURLWithCoordinate:coordinate]]
+        tryMap:^(NSDictionary *JSONObject, NSError **errorPtr) {
+            return [MTLJSONAdapter modelOfClass:TCWeather.class
+                             fromJSONDictionary:JSONObject
+                                          error:errorPtr];
+        }]
+        setNameWithFormat:@"%@ -currentConditionForLocation:", self];
 }
 
 - (RACSignal *)hourlyForecastsForLocation:(CLLocationCoordinate2D)coordinate
 {
-    return [self forecastWithURL:[self hourlyForecastURLWithCoordinate:coordinate]
-                      modelClass:[TCWeather class]];
+    return [[self forecastWithURL:[self hourlyForecastURLWithCoordinate:coordinate]
+                      modelClass:TCWeather.class]
+            setNameWithFormat:@"%@ -hourlyForecastsForLocation:", self];
 }
 
 - (RACSignal *)dailyForecastsForLocation:(CLLocationCoordinate2D)coordinate
 {
-    return [self forecastWithURL:[self dailyForecastURLWithCoordinate:coordinate numberOfDays:7]
-                      modelClass:[TCDailyForecast class]];
+    return [[self forecastWithURL:[self dailyForecastURLWithCoordinate:coordinate numberOfDays:7]
+                      modelClass:TCDailyForecast.class]
+            setNameWithFormat:@"%@ -dailyForecastsForLocation:", self];
 }
 
 - (RACSignal *)forecastWithURL:(NSURL *)serviceURL
                     modelClass:(Class)modelClass
 {
-    // Summary: Maps the array of JSON object to an array of model classes.
+    return [[[self JSONObjectFromURL:serviceURL]
+        flattenMap:^(NSDictionary *JSONResponse) {
+            NSArray *forecastList = JSONResponse[@"list"];
 
-    return [[[[self JSONObjectFromURL:serviceURL]
-              // Get the "list" array from the JSON object that contains the
-              // forecast data. Return the array as a RACSignal and flatten it.
-              flattenMap:^(NSDictionary *JSONObject) {
-                  return [JSONObject[@"list"] rac_sequence].signal;
-              }]
-              // Map each forecast JSON object into the equivalent
-              // Objective-C model class.
-              tryMap:^(NSDictionary *forecast, NSError **errorPtr) {
-                  return [MTLJSONAdapter modelOfClass:modelClass
-                                   fromJSONDictionary:forecast
-                                                error:errorPtr];
-              }]
-              // Collect all the individual model objects into an array and
-              // return it as the signal's value.
-              collect];
+            // Maps each JSON item in the array into its equivalent
+            // model class.
+            return [forecastList.rac_sequence.signal tryMap:^(NSDictionary *forecastItem, NSError **errorPtr) {
+                return [MTLJSONAdapter modelOfClass:modelClass fromJSONDictionary:forecastItem error:errorPtr];
+            }];
+        }]
+        // Collect the mapped model objects into an array.
+        collect];
 }
 
 @end
