@@ -7,9 +7,12 @@
 //
 
 #import "TCWeatherViewModel.h"
+#import "TCHourlyForecastViewModel.h"
+#import "TCDailyForecastViewModel.h"
 #import "TCWeather.h"
 #import "TCWeatherService.h"
 #import "TCLocationService.h"
+#import "RACSignal+TCOperatorAdditions.h"
 
 @interface TCWeatherViewModel ()
 
@@ -105,12 +108,16 @@
  */
 - (RACSignal *)updateHourlyForecastForLocation:(CLLocation *)location
 {
-    return [[[self.weatherService
-            hourlyForecastsForLocation:location.coordinate]
-            deliverOn:RACScheduler.mainThreadScheduler]
-            doNext:^(NSArray *hourlyForecasts) {
-                self.hourlyForecasts = hourlyForecasts;
-            }];
+    // Map each `TCHourlyForecast` element in the array into an
+    // `TCHourlyForecastViewModel`.
+    return [[[[self.weatherService hourlyForecastsForLocation:location.coordinate]
+        tc_mapArray:^(TCWeather *weather) {
+            return [[TCHourlyForecastViewModel alloc] initWithWeather:weather];
+        }]
+        deliverOn:RACScheduler.mainThreadScheduler]
+        doNext:^(NSArray *forecastViewModels) {
+            self.hourlyForecasts = forecastViewModels;
+        }];;
 }
 
 /**
@@ -119,12 +126,16 @@
  */
 - (RACSignal *)updateDailyForecastForLocation:(CLLocation *)location
 {
-    return [[[self.weatherService
-            dailyForecastsForLocation:location.coordinate]
-            deliverOn:RACScheduler.mainThreadScheduler]
-            doNext:^(NSArray *dailyForecasts) {
-                self.dailyForecasts = dailyForecasts;
-            }];
+    // Map each `TCDailyForecast` element in the array into an
+    // `TCDailyForecastViewModel`.
+    return [[[[self.weatherService dailyForecastsForLocation:location.coordinate]
+        tc_mapArray:^(TCWeather *weather) {
+            return [[TCDailyForecastViewModel alloc] initWithWeather:weather];
+        }]
+        deliverOn:RACScheduler.mainThreadScheduler]
+        doNext:^(NSArray *forecastViewModels) {
+            self.dailyForecasts = forecastViewModels;
+        }];
 }
 
 @end

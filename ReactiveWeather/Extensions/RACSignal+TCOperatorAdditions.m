@@ -10,7 +10,7 @@
 
 @implementation RACSignal (TCOperatorAdditions)
 
-- (RACSignal *)replayLastLazily
+- (RACSignal *)tc_replayLastLazily
 {
     RACMulticastConnection *connection =
         [self multicast:[RACReplaySubject replaySubjectWithCapacity:1]];
@@ -21,6 +21,21 @@
                  return connection.signal;
              }]
              setNameWithFormat:@"[%@] -replayLastLazily", self.name];
+}
+
+- (instancetype)tc_mapArray:(id (^)(id value))block
+{
+    NSParameterAssert(block != nil);
+
+    return [[[self
+        flattenMap:^(NSArray *value) {
+            NSAssert([value isKindOfClass:NSArray.class],
+                     @"-mapArray: only works with an array value.");
+
+            return [value.rac_sequence.signal map:block];
+        }]
+        collect]
+        setNameWithFormat:@"[%@] -mapArray:", self.name];
 }
 
 @end

@@ -21,14 +21,12 @@
 @property (nonatomic, strong, readonly) TCWeather *currentWeather;
 
 /**
- * The hourly forecast weather data or @c nil if weather data 
- * has not been loaded yet.
+ * The list of @c TCHourlyForecastViewModel objects.
  */
 @property (nonatomic, copy, readonly) NSArray *hourlyForecasts;
 
 /**
- * The daily forecast weather data or @c nil if weather data has 
- * not been loaded yet.
+ * The list of @c TCDailyForecastViewModel objects.
  */
 @property (nonatomic, copy, readonly) NSArray *dailyForecasts;
 

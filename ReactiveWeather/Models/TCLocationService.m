@@ -70,7 +70,7 @@
         // subscribers. Otherwise, later subscribers may miss the
         // location update event.
         [[[self locationUpdate]
-          replayLastLazily]
+          tc_replayLastLazily]
           subscribe:subscriber];
 
         return [RACDisposable disposableWithBlock:^{
