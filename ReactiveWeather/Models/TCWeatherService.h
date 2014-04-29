@@ -18,7 +18,7 @@
  *
  * @param coordinate The coordinate of a location.
  *
- * @return A signal that will send a @c TCWeatherCondition instance
+ * @return A signal that will send a @c TCWeather instance
  *         then complete.
  */
 - (RACSignal *)currentConditionForLocation:(CLLocationCoordinate2D)coordinate;
@@ -27,20 +27,24 @@
  * Fetches the hourly forecasts for the given coordinates.
  *
  * @param coordinate The coordinate of a location.
+ * @param limitTo    Limit the number of forecasts to @c `count`.
  *
- * @return A signal that will send an array of @c TCWeatherCondition
+ * @return A signal that will send an array of @c TCWeather
  *         objects then complete.
  */
-- (RACSignal *)hourlyForecastsForLocation:(CLLocationCoordinate2D)coordinate;
+- (RACSignal *)hourlyForecastsForLocation:(CLLocationCoordinate2D)coordinate
+                                  limitTo:(NSUInteger)count;
 
 /**
  * Fetches the daily forecasts for the given coordinates.
  *
  * @param coordinate The coordinate of a location.
+ * @param limitTo    Limit the number of forecasts to @c `count`.
  *
- * @return A signal that will send an array of @c TCWeatherCondition
+ * @return A signal that will send an array of @c TCWeather
  *         objects then complete.
  */
-- (RACSignal *)dailyForecastsForLocation:(CLLocationCoordinate2D)coordinate;
+- (RACSignal *)dailyForecastsForLocation:(CLLocationCoordinate2D)coordinate
+                                 limitTo:(NSUInteger)count;
 
 @end

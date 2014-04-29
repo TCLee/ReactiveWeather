@@ -10,6 +10,7 @@
 #import "TCWeather.h"
 #import "TCDailyForecast.h"
 #import "RACSignal+TCOperatorAdditions.h"
+#import "CLLocation+TCDebugAdditions.h"
 
 @interface TCWeatherService ()
 
@@ -22,7 +23,7 @@
 
 @implementation TCWeatherService
 
-#pragma mark - Initialize
+#pragma mark Initialize
 
 - (instancetype)init
 {
@@ -34,7 +35,7 @@
     return self;
 }
 
-#pragma mark - OpenWeatherMap API URLs
+#pragma mark OpenWeatherMap URLs
 
 /**
  * URL string template to access OpenWeatherMap public API.
@@ -82,7 +83,7 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
 
 }
 
-#pragma mark - Weather Data Signals
+#pragma mark Fetch Weather Data
 
 /**
  * Fetches a JSON object from the given URL.
@@ -147,25 +148,34 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
                              fromJSONDictionary:JSONObject
                                           error:errorPtr];
         }]
-        setNameWithFormat:@"%@ -currentConditionForLocation:", self];
+        setNameWithFormat:@"%@ -currentConditionForLocation: <%@>",
+                          self, tc_NSStringFromCoordinate(coordinate)];
 }
 
 - (RACSignal *)hourlyForecastsForLocation:(CLLocationCoordinate2D)coordinate
+                                  limitTo:(NSUInteger)count
 {
     return [[self forecastWithURL:[self hourlyForecastURLWithCoordinate:coordinate]
-                      modelClass:TCWeather.class]
-            setNameWithFormat:@"%@ -hourlyForecastsForLocation:", self];
+                      modelClass:TCWeather.class
+                            limit:count]
+            setNameWithFormat:@"%@ -hourlyForecastsForLocation: <%@> limitTo: %lu",
+                              self, tc_NSStringFromCoordinate(coordinate), (unsigned long)count];
+
 }
 
 - (RACSignal *)dailyForecastsForLocation:(CLLocationCoordinate2D)coordinate
+                                 limitTo:(NSUInteger)count
 {
-    return [[self forecastWithURL:[self dailyForecastURLWithCoordinate:coordinate numberOfDays:7]
-                      modelClass:TCDailyForecast.class]
-            setNameWithFormat:@"%@ -dailyForecastsForLocation:", self];
+    return [[self forecastWithURL:[self dailyForecastURLWithCoordinate:coordinate numberOfDays:count]
+                      modelClass:TCDailyForecast.class
+                            limit:count]
+            setNameWithFormat:@"%@ -dailyForecastsForLocation: <%@> limitTo: %lu",
+                              self, tc_NSStringFromCoordinate(coordinate), (unsigned long)count];
 }
 
 - (RACSignal *)forecastWithURL:(NSURL *)serviceURL
                     modelClass:(Class)modelClass
+                         limit:(NSUInteger)count
 {
     return [[[self JSONObjectFromURL:serviceURL]
         flattenMap:^(NSDictionary *JSONResponse) {
@@ -173,11 +183,13 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
 
             // Maps each JSON item in the array into its equivalent
             // model class.
-            return [forecastList.rac_sequence.signal tryMap:^(NSDictionary *forecastItem, NSError **errorPtr) {
-                return [MTLJSONAdapter modelOfClass:modelClass fromJSONDictionary:forecastItem error:errorPtr];
-            }];
+            return [[forecastList.rac_sequence.signal
+                take:count]
+                tryMap:^(NSDictionary *forecastItem, NSError **errorPtr) {
+                    return [MTLJSONAdapter modelOfClass:modelClass fromJSONDictionary:forecastItem error:errorPtr];
+                }];
         }]
-        // Collect the mapped model objects into an array.
+        // Collect the mapped model objects into a single array.
         collect];
 }
 
