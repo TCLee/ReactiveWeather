@@ -41,23 +41,6 @@ install_resource()
       ;;
   esac
 }
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundError.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundError@2x.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundErrorIcon.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundErrorIcon@2x.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundMessage.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundMessage@2x.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundSuccess.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundSuccess@2x.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundSuccessIcon.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundSuccessIcon@2x.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundWarning.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundWarning@2x.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundWarningIcon.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationBackgroundWarningIcon@2x.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationButtonBackground.png"
-install_resource "TSMessages/TSMessages/Resources/Images/NotificationButtonBackground@2x.png"
-install_resource "TSMessages/TSMessages/Resources/TSMessagesDefaultDesign.json"
 
 rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from="$RESOURCES_TO_COPY" / "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 if [[ "${ACTION}" == "install" ]]; then
