@@ -48,8 +48,8 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     [super viewDidLoad];
 
     [self setupView];
-    [self bindCurrentWeatherCondition];
-    [self bindHourlyForecasts];
+    [self bindTableHeaderViewToCurrentCondition];
+    [self bindTableViewToForecasts];
 
     [self.viewModel.fetchWeatherCommand execute:nil];
 
@@ -67,7 +67,7 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     self.tableView.tableHeaderView.bounds = tableHeaderBounds;
 }
 
-- (void)bindCurrentWeatherCondition
+- (void)bindTableHeaderViewToCurrentCondition
 {
     RAC(self.temperatureLabel, text) =
         [RACObserve(self.viewModel, currentWeather.temperature)
@@ -104,17 +104,27 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
           }];
 }
 
-- (void)bindHourlyForecasts
+- (void)bindTableViewToForecasts
 {
     @weakify(self);
 
+    // Hourly Forecasts
     [[RACObserve(self.viewModel, hourlyForecasts)
-      distinctUntilChanged]
-      subscribeNext:^(id _) {
-          @strongify(self);
-          [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:TCTableSectionHourlyForecast]
-                        withRowAnimation:UITableViewRowAnimationFade];
-      }];
+        distinctUntilChanged]
+        subscribeNext:^(id _) {
+            @strongify(self);
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:TCTableSectionHourlyForecast]
+                          withRowAnimation:UITableViewRowAnimationFade];
+        }];
+
+    // Daily Forecasts
+    [[RACObserve(self.viewModel, dailyForecasts)
+        distinctUntilChanged]
+        subscribeNext:^(id _) {
+            @strongify(self);
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:TCTableSectionDailyForecast]
+                          withRowAnimation:UITableViewRowAnimationFade];
+        }];
 }
 
 /**
@@ -124,11 +134,12 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
 {
 	NSLog(@"%@", error);
 
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:error.localizedDescription
-                                                        message:error.localizedRecoverySuggestion
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                              otherButtonTitles:nil];
+	UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:error.localizedDescription
+                                   message:error.localizedRecoverySuggestion
+                                  delegate:nil
+                         cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                         otherButtonTitles:nil];
 	[alertView show];
 }
 
@@ -141,55 +152,41 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView
- numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // We’re using table cells for headers here instead of the built-in
-    // section headers which have sticky-scrolling behavior.
-    // We want the headers to scroll along with the content.
+    // section headers which will stick to the top.
     return (section == TCTableSectionHourlyForecast ?
             self.viewModel.hourlyForecasts.count :
             self.viewModel.dailyForecasts.count) + 1; // Add one more cell for the header.
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // The first row of each section represents the
-    // header row of the section.
+    // The first row of each section represents the header row of
+    // that section.
     if (0 == indexPath.row) {
-        UITableViewCell *headerCell =
-            [tableView dequeueReusableCellWithIdentifier:
-             TCHeaderCellIdentifier];
-
-        headerCell.textLabel.text =
-            (TCTableSectionHourlyForecast == indexPath.section ?
-             NSLocalizedString(@"Hourly Forecast", nil) :
-             NSLocalizedString(@"Daily Forecast", nil));
-
+        UITableViewCell *headerCell = [tableView dequeueReusableCellWithIdentifier:TCHeaderCellIdentifier];
+        headerCell.textLabel.text = (TCTableSectionHourlyForecast == indexPath.section ?
+                                     NSLocalizedString(@"Hourly Forecast", nil) :
+                                     NSLocalizedString(@"Daily Forecast", nil));
         return headerCell;
     }
 
+    // The index path `row` includes the section header row.
+    // Our view model does not include the section header row, so minus 1.
+    NSInteger dataRow = indexPath.row - 1;
+
     // Hourly Forecast Section
     if (TCTableSectionHourlyForecast == indexPath.section) {
-        TCHourlyForecastCell *hourlyForecastCell =
-            [tableView dequeueReusableCellWithIdentifier:
-             NSStringFromClass(TCHourlyForecastCell.class)];
-
-        hourlyForecastCell.viewModel =
-            self.viewModel.hourlyForecasts[indexPath.row];
-
+        TCHourlyForecastCell *hourlyForecastCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(TCHourlyForecastCell.class)];
+        hourlyForecastCell.viewModel = self.viewModel.hourlyForecasts[dataRow];
         return hourlyForecastCell;
     }
 
     // Daily Forecast Section
-    TCDailyForecastCell *dailyForecastCell =
-        [tableView dequeueReusableCellWithIdentifier:
-         NSStringFromClass(TCDailyForecastCell.class)];
-
-    dailyForecastCell.viewModel =
-        self.viewModel.dailyForecasts[indexPath.row];
-
+    TCDailyForecastCell *dailyForecastCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(TCDailyForecastCell.class)];
+    dailyForecastCell.viewModel = self.viewModel.dailyForecasts[dataRow];
     return dailyForecastCell;
 }
 

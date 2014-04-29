@@ -8,22 +8,18 @@
 
 #import "TCDailyForecastCell.h"
 #import "TCDailyForecastViewModel.h"
+
 #import "NSDateFormatter+TCForecastFormattingAdditions.h"
 
 @implementation TCDailyForecastCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style
-              reuseIdentifier:(NSString *)reuseIdentifier
+- (void)awakeFromNib
 {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (nil == self) { return nil; }
+    [super awakeFromNib];
 
-    RAC(self, textLabel.text) =
-        [RACObserve(self, viewModel.date)
-         map:^(NSDate *date) {
-             return [NSDateFormatter.sharedDateFormatter
-                     forecastDayStringFromDate:date];
-         }];
+    RAC(self, textLabel.text) = [RACObserve(self, viewModel.date) map:^(NSDate *date) {
+        return [NSDateFormatter.sharedDateFormatter forecastDayStringFromDate:date];
+    }];
 
     RAC(self, detailTextLabel.text) =
         [RACSignal
@@ -33,8 +29,6 @@
              return [NSString stringWithFormat:@"%.0f° / %.0f°",
                      minTemperature.floatValue, maxTemperature.floatValue];
          }];
-
-    return self;
 }
 
 @end

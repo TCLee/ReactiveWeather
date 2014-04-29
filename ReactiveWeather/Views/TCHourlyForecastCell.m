@@ -13,27 +13,17 @@
 
 @implementation TCHourlyForecastCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style
-              reuseIdentifier:(NSString *)reuseIdentifier
+- (void)awakeFromNib
 {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (nil == self) { return nil; }
+    [super awakeFromNib];
 
-    RAC(self, textLabel.text) =
-        [RACObserve(self, viewModel.dateAndTime)
-         map:^(NSDate *dateAndTime) {
-             return [NSDateFormatter.sharedDateFormatter
-                     forecastHourStringFromDate:dateAndTime];
-         }];
+    RAC(self, textLabel.text) = [RACObserve(self, viewModel.dateAndTime) map:^(NSDate *dateAndTime) {
+        return [NSDateFormatter.sharedDateFormatter forecastHourStringFromDate:dateAndTime];
+    }];
 
-    RAC(self, detailTextLabel.text) =
-        [RACObserve(self, viewModel.temperature)
-         map:^(NSNumber *temperature) {
-             return [NSString stringWithFormat:@"%.0f°",
-                     temperature.floatValue];
-         }];
-
-    return self;
+    RAC(self, detailTextLabel.text) = [RACObserve(self, viewModel.temperature) map:^(NSNumber *temperature) {
+        return [NSString stringWithFormat:@"%.0f°", temperature.floatValue];
+    }];
 }
 
 @end

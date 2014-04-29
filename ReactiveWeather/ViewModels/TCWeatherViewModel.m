@@ -114,7 +114,7 @@
 - (RACSignal *)updateHourlyForecastForLocation:(CLLocation *)location
                                      withLimit:(NSUInteger)count
 {
-    return [[[[[self.weatherService dailyForecastsForLocation:location.coordinate limitTo:count]
+    return [[[[[self.weatherService hourlyForecastsForLocation:location.coordinate limitTo:count]
         tc_mapEach:^(TCWeather *weather) {
             return [[TCHourlyForecastViewModel alloc] initWithWeather:weather];
         }]
