@@ -27,9 +27,12 @@
     TCWeatherService *weatherService = [[TCWeatherService alloc] init];
 
     // Create the view model with the given service classes.
+    // FIXME: Forecast limits should be configured from user settings.
     TCWeatherViewModel *viewModel =
         [[TCWeatherViewModel alloc] initWithLocationService:locationService
-                                             weatherService:weatherService];
+                                             weatherService:weatherService
+                                        hourlyForecastLimit:6
+                                         dailyForecastLimit:6];
 
     // Pass the view model to the view layer (view controller + view).
     TCWeatherViewController *viewController =

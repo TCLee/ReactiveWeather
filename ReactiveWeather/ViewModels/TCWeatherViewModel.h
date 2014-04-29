@@ -42,16 +42,23 @@
 @property (nonatomic, strong, readonly) RACCommand *fetchWeatherCommand;
 
 /**
- * Initializes the view model with the given service classes for accessing 
+ * Initializes the view model with the given service classes for accessing
  * location and weather data.
  *
- * @param locationService The location service used to find
- *                        the user's current location.
- * @param weatherService  The weather service used to fetch the weather data.
+ * @param locationService     The location service used to find
+ *                            the user's current location.
+ * @param weatherService      The weather service used to fetch the weather 
+ *                            data.
+ * @param hourlyForecastCount Limits the number of hourly forecasts
+ *                            fetched to @c `hourlyForecastCount`.
+ * @param dailyForecastCount  Limits the number of daily forecasts
+ *                            fetched to @c `dailyForecastCount`.
  *
  * @return The initialized view model.
  */
 - (instancetype)initWithLocationService:(TCLocationService *)locationService
-                         weatherService:(TCWeatherService *)weatherService;
+                         weatherService:(TCWeatherService *)weatherService
+                    hourlyForecastLimit:(NSUInteger)hourlyForecastCount
+                     dailyForecastLimit:(NSUInteger)dailyForecastCount;
 
 @end
