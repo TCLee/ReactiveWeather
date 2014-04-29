@@ -7,12 +7,13 @@
 //
 
 #import "TCWeatherTableViewController.h"
+#import "TCCurrentConditionView.h"
 #import "TCHourlyForecastCell.h"
 #import "TCDailyForecastCell.h"
 #import "TCWeatherViewModel.h"
+#import "TCCurrentConditionViewModel.h"
 #import "TCHourlyForecastViewModel.h"
 #import "TCDailyForecastViewModel.h"
-#import "TCWeather.h"
 
 /**
  * The section index on the table view.
@@ -33,11 +34,7 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
 
 @interface TCWeatherTableViewController ()
 
-@property (nonatomic, weak) IBOutlet UILabel *temperatureLabel;
-@property (nonatomic, weak) IBOutlet UILabel *maxMinTemperatureLabel;
-@property (nonatomic, weak) IBOutlet UILabel *cityLabel;
-@property (nonatomic, weak) IBOutlet UILabel *conditionsLabel;
-@property (nonatomic, weak) IBOutlet UIImageView *iconView;
+@property (nonatomic, weak) IBOutlet TCCurrentConditionView *currentConditionView;
 
 @end
 
@@ -48,8 +45,9 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     [super viewDidLoad];
 
     [self setupView];
-    [self bindTableHeaderViewToCurrentCondition];
     [self bindTableViewToForecasts];
+
+    RAC(self.currentConditionView, viewModel) = RACObserve(self, viewModel.currentCondition);
 
     [self.viewModel.fetchWeatherCommand execute:nil];
 
@@ -65,43 +63,6 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     CGRect tableHeaderBounds = self.tableView.tableHeaderView.bounds;
     tableHeaderBounds.size.height = TCScreenHeight;
     self.tableView.tableHeaderView.bounds = tableHeaderBounds;
-}
-
-- (void)bindTableHeaderViewToCurrentCondition
-{
-    RAC(self.temperatureLabel, text) =
-        [RACObserve(self.viewModel, currentWeather.temperature)
-         map:^(NSNumber *temperature) {
-             return [NSString stringWithFormat:@"%.0f°", temperature.floatValue];
-         }];
-
-    RAC(self.cityLabel, text) =
-        [RACObserve(self.viewModel, currentWeather.locationName)
-         map:^(NSString *locationName) {
-             return [locationName capitalizedString];
-         }];
-
-    RAC(self.conditionsLabel, text) =
-        [RACObserve(self.viewModel, currentWeather.condition)
-         map:^(NSString *condition) {
-             return [condition capitalizedString];
-         }];
-
-    RAC(self.iconView, image) =
-        [[RACObserve(self.viewModel, currentWeather.imageName)
-          ignore:nil]
-          map:^(NSString *imageName) {
-              return [UIImage imageNamed:imageName];
-          }];
-
-    // Combine the max and min temperatures for display in a label.
-    RAC(self.maxMinTemperatureLabel, text) =
-        [[RACObserve(self.viewModel, currentWeather.tempHigh)
-          combineLatestWith:RACObserve(self, viewModel.currentWeather.tempLow)]
-          reduceEach:^(NSNumber *maxTemperature, NSNumber *minTemperature) {
-              return [NSString stringWithFormat:@"%.0f° / %.0f°",
-                      maxTemperature.floatValue, minTemperature.floatValue];
-          }];
 }
 
 - (void)bindTableViewToForecasts

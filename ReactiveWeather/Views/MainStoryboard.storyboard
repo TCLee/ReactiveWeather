@@ -68,7 +68,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <color key="separatorColor" white="1" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
-                        <view key="tableHeaderView" contentMode="scaleToFill" id="GiX-PD-OOP">
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="GiX-PD-OOP" customClass="TCCurrentConditionView">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -128,6 +128,13 @@
                                 <constraint firstItem="ljk-Vh-4bm" firstAttribute="leading" secondItem="VkW-RK-t21" secondAttribute="leading" id="ux8-pv-ezE"/>
                                 <constraint firstItem="VkW-RK-t21" firstAttribute="top" secondItem="GiX-PD-OOP" secondAttribute="top" constant="20" symbolic="YES" id="zs3-Yw-uhc"/>
                             </constraints>
+                            <connections>
+                                <outlet property="cityLabel" destination="VkW-RK-t21" id="v0N-HO-fHN"/>
+                                <outlet property="conditionsLabel" destination="hbi-Jr-C5G" id="xmV-K6-S7I"/>
+                                <outlet property="iconView" destination="ljk-Vh-4bm" id="fz6-lp-Gxr"/>
+                                <outlet property="maxMinTemperatureLabel" destination="7Al-ZV-bPI" id="IyY-ve-eEj"/>
+                                <outlet property="temperatureLabel" destination="04o-pT-VaX" id="UgW-yt-Nia"/>
+                            </connections>
                         </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TCForecastHeaderCell" textLabel="fvg-1l-opd" style="IBUITableViewCellStyleDefault" id="A84-uu-mOA">
@@ -213,11 +220,7 @@
                         </connections>
                     </tableView>
                     <connections>
-                        <outlet property="cityLabel" destination="VkW-RK-t21" id="78d-4e-CrX"/>
-                        <outlet property="conditionsLabel" destination="hbi-Jr-C5G" id="7yn-ij-xRY"/>
-                        <outlet property="iconView" destination="ljk-Vh-4bm" id="WIX-YT-sCl"/>
-                        <outlet property="maxMinTemperatureLabel" destination="7Al-ZV-bPI" id="Ioj-rQ-nMJ"/>
-                        <outlet property="temperatureLabel" destination="04o-pT-VaX" id="PXk-qL-103"/>
+                        <outlet property="currentConditionView" destination="GiX-PD-OOP" id="ddQ-9c-K89"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WHW-uY-UK7" userLabel="First Responder" sceneMemberID="firstResponder"/>

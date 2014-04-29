@@ -8,7 +8,7 @@
 
 @class TCWeatherService;
 @class TCLocationService;
-@class TCWeather;
+@class TCCurrentConditionViewModel;
 
 #import <ReactiveViewModel/ReactiveViewModel.h>
 
@@ -18,7 +18,7 @@
  * The current weather data or @c nil if weather data has 
  * not been loaded yet.
  */
-@property (nonatomic, strong, readonly) TCWeather *currentWeather;
+@property (nonatomic, strong, readonly) TCCurrentConditionViewModel *currentCondition;
 
 /**
  * The list of @c TCHourlyForecastViewModel objects, in the order they should

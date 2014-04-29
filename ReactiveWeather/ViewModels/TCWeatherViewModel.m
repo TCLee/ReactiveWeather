@@ -7,9 +7,9 @@
 //
 
 #import "TCWeatherViewModel.h"
+#import "TCCurrentConditionViewModel.h"
 #import "TCHourlyForecastViewModel.h"
 #import "TCDailyForecastViewModel.h"
-#import "TCWeather.h"
 #import "TCWeatherService.h"
 #import "TCLocationService.h"
 #import "RACSignal+TCOperatorAdditions.h"
@@ -27,7 +27,7 @@
  */
 @property (nonatomic, strong, readonly) TCLocationService *locationService;
 
-@property (nonatomic, strong) TCWeather *currentWeather;
+@property (nonatomic, strong) TCCurrentConditionViewModel *currentCondition;
 @property (nonatomic, copy) NSArray *hourlyForecasts;
 @property (nonatomic, copy) NSArray *dailyForecasts;
 
@@ -99,10 +99,13 @@
  */
 - (RACSignal *)updateCurrentConditionForLocation:(CLLocation *)location
 {
-    return [[[[self.weatherService currentConditionForLocation:location.coordinate]
+    return [[[[[self.weatherService currentConditionForLocation:location.coordinate]
+        map:^(TCWeather *weather) {
+            return [[TCCurrentConditionViewModel alloc] initWithWeather:weather];
+        }]
         deliverOn:RACScheduler.mainThreadScheduler]
-        doNext:^(TCWeather *currentCondition) {
-            self.currentWeather = currentCondition;
+        doNext:^(TCCurrentConditionViewModel *currentCondition) {
+            self.currentCondition = currentCondition;
         }]
         setNameWithFormat:@"%@ -updateCurrentConditionForLocation: %@", self, location];
 }
