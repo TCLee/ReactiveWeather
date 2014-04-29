@@ -95,14 +95,9 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
  */
 - (RACSignal *)JSONObjectFromURL:(NSURL *)serviceURL
 {
-    NSLog(@"Fetching JSON from URL: %@", serviceURL.absoluteString);
-
-    return [RACSignal createSignal:^(id<RACSubscriber> subscriber) {
+    return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
         NSURLSessionDataTask *dataTask = [self.session dataTaskWithURL:serviceURL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [self handleDataTaskCompletionWithSubscriber:subscriber
-                                            responseData:data
-                                                response:response
-                                                   error:error];
+            [self handleDataTaskCompletionWithSubscriber:subscriber responseData:data response:response error:error];
         }];
         [dataTask resume];
 
@@ -110,19 +105,15 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
         return [RACDisposable disposableWithBlock:^{
             [dataTask cancel];
         }];
-    }];
+    }] setNameWithFormat:@"JSONObjectFromURL: %@", serviceURL];
 }
 
-- (void)handleDataTaskCompletionWithSubscriber:(id<RACSubscriber>)subscriber
-                                  responseData:(NSData *)data
-                                      response:(NSURLResponse *)response
-                                         error:(NSError *)error
+- (void)handleDataTaskCompletionWithSubscriber:(id<RACSubscriber>)subscriber responseData:(NSData *)data response:(NSURLResponse *)response error:(NSError *)error
 {
     if (data) {
         NSError *__autoreleasing parseError = nil;
-        id object = [NSJSONSerialization JSONObjectWithData:data
-                                                    options:kNilOptions
-                                                      error:&parseError];
+        id object = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&parseError];
+        
         if (object) {
             // Success - Send the parsed JSON object and then
             // the signal completes.
@@ -148,8 +139,7 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
                              fromJSONDictionary:JSONObject
                                           error:errorPtr];
         }]
-        setNameWithFormat:@"%@ -currentConditionForLocation: <%@>",
-                          self, tc_NSStringFromCoordinate(coordinate)];
+        setNameWithFormat:@"%@ -currentConditionForLocation: <%@>", self, tc_NSStringFromCoordinate(coordinate)];
 }
 
 - (RACSignal *)hourlyForecastsForLocation:(CLLocationCoordinate2D)coordinate
@@ -158,8 +148,7 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
     return [[self forecastWithURL:[self hourlyForecastURLWithCoordinate:coordinate]
                       modelClass:TCWeather.class
                             limit:count]
-            setNameWithFormat:@"%@ -hourlyForecastsForLocation: <%@> limitTo: %lu",
-                              self, tc_NSStringFromCoordinate(coordinate), (unsigned long)count];
+            setNameWithFormat:@"%@ -hourlyForecastsForLocation: <%@> limitTo: %lu", self, tc_NSStringFromCoordinate(coordinate), (unsigned long)count];
 
 }
 
@@ -169,15 +158,14 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
     return [[self forecastWithURL:[self dailyForecastURLWithCoordinate:coordinate numberOfDays:count]
                       modelClass:TCDailyForecast.class
                             limit:count]
-            setNameWithFormat:@"%@ -dailyForecastsForLocation: <%@> limitTo: %lu",
-                              self, tc_NSStringFromCoordinate(coordinate), (unsigned long)count];
+            setNameWithFormat:@"%@ -dailyForecastsForLocation: <%@> limitTo: %lu", self, tc_NSStringFromCoordinate(coordinate), (unsigned long)count];
 }
 
 - (RACSignal *)forecastWithURL:(NSURL *)serviceURL
                     modelClass:(Class)modelClass
                          limit:(NSUInteger)count
 {
-    return [[[self JSONObjectFromURL:serviceURL]
+    return [[[[self JSONObjectFromURL:serviceURL]
         flattenMap:^(NSDictionary *JSONResponse) {
             NSArray *forecastList = JSONResponse[@"list"];
 
@@ -190,7 +178,8 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
                 }];
         }]
         // Collect the mapped model objects into a single array.
-        collect];
+        collect]
+        setNameWithFormat:@"forecastWithURL: %@ modelClass: %@ limit: %lu", serviceURL, NSStringFromClass(modelClass), (unsigned long)count];
 }
 
 @end
