@@ -21,17 +21,6 @@
 #define TCTableSectionHourlyForecast 0
 #define TCTableSectionDailyForecast  1
 
-/**
- * The current screen's height.
- */
-#define TCScreenHeight UIScreen.mainScreen.bounds.size.height
-
-/**
- * The reuse identifier for the cell that will display a 
- * section's header.
- */
-static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
-
 @interface TCWeatherTableViewController ()
 
 @property (nonatomic, weak) IBOutlet TCCurrentConditionView *currentConditionView;
@@ -44,10 +33,16 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
 {
     [super viewDidLoad];
 
-    [self setupView];
-    [self bindTableViewToForecasts];
+    // Table header view should fill up the table view.
+    // We cannot specify this using autolayout in Interface Builder, so
+    // we use RAC to do so.
+    RAC(self.tableView.tableHeaderView, bounds) = RACObserve(self.tableView, bounds);
 
     RAC(self.currentConditionView, viewModel) = RACObserve(self, viewModel.currentCondition);
+
+    [self bindTableViewToForecasts];
+
+    RAC(self.tableView, rowHeight) = [self rowHeightFromForecastCount];
 
     [self.viewModel.fetchWeatherCommand execute:nil];
 
@@ -55,26 +50,29 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     // on an alert view.
     [self rac_liftSelector:@selector(presentError:)
                withSignals:self.viewModel.fetchWeatherCommand.errors, nil];
+}
 
-
+/**
+ * Returns a signal of @c NSNumber values representing a table view's
+ * row height. 
+ *
+ * The row height value allows all the forecasts in a section to fit 
+ * on a screen.
+ */
+- (RACSignal *)rowHeightFromForecastCount
+{
     const CGFloat tableHeight = self.tableView.bounds.size.height;
     static const CGFloat defaultRowHeight = 44;
 
-    RAC(self.tableView, rowHeight) = [[[RACObserve(self.viewModel, hourlyForecasts)
+    // Hourly Forecasts and Daily Forecasts will have the same count,
+    // so we can use either one.
+    return [[[RACObserve(self.viewModel, hourlyForecasts)
         ignore:nil]
         distinctUntilChanged]
         map:^(NSArray *forecasts) {
-            CGFloat rowCountIncludingHeader = forecasts.count + 1;
+            NSUInteger rowCountIncludingHeader = forecasts.count + 1;
             return (forecasts.count > 0 ? @(tableHeight / rowCountIncludingHeader) : @(defaultRowHeight));
         }];
-}
-
-- (void)setupView
-{
-    // Make the table header view fill up the screen.
-    CGRect tableHeaderBounds = self.tableView.tableHeaderView.bounds;
-    tableHeaderBounds.size.height = TCScreenHeight;
-    self.tableView.tableHeaderView.bounds = tableHeaderBounds;
 }
 
 - (void)bindTableViewToForecasts
@@ -105,7 +103,7 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
  */
 - (void)presentError:(NSError *)error
 {
-	NSLog(@"%@", error);
+	NSLog(@"Error: %@", error);
 
 	UIAlertView *alertView =
         [[UIAlertView alloc] initWithTitle:error.localizedDescription
@@ -139,6 +137,8 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     // The first row of each section represents the header row of
     // that section.
     if (0 == indexPath.row) {
+        static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
+        
         UITableViewCell *headerCell = [tableView dequeueReusableCellWithIdentifier:TCHeaderCellIdentifier];
         headerCell.textLabel.text = (TCTableSectionHourlyForecast == indexPath.section ?
                                      NSLocalizedString(@"Hourly Forecast", nil) :
@@ -162,13 +162,5 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     dailyForecastCell.viewModel = self.viewModel.dailyForecasts[dataRow];
     return dailyForecastCell;
 }
-
-#pragma mark Table View Delegate
-
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    // TODO: Determine cell height based on screen
-//    return 44;
-//}
 
 @end
