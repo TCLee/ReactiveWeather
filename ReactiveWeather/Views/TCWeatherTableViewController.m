@@ -75,6 +75,10 @@
         }];
 }
 
+/**
+ * Reload a table view's specific section when forecast data
+ * is updated.
+ */
 - (void)bindTableViewToForecasts
 {
     @weakify(self);
@@ -125,11 +129,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    NSUInteger rowCount = (section == TCTableSectionHourlyForecast ?
+                           self.viewModel.hourlyForecasts.count :
+                           self.viewModel.dailyForecasts.count);
+
+    // Add one more cell for the header.
     // We’re using table cells for headers here instead of the built-in
     // section headers which will stick to the top.
-    return (section == TCTableSectionHourlyForecast ?
-            self.viewModel.hourlyForecasts.count :
-            self.viewModel.dailyForecasts.count) + 1; // Add one more cell for the header.
+    return (rowCount > 0 ? rowCount + 1 : 0);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -138,7 +145,7 @@
     // that section.
     if (0 == indexPath.row) {
         static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
-        
+
         UITableViewCell *headerCell = [tableView dequeueReusableCellWithIdentifier:TCHeaderCellIdentifier];
         headerCell.textLabel.text = (TCTableSectionHourlyForecast == indexPath.section ?
                                      NSLocalizedString(@"Hourly Forecast", nil) :
