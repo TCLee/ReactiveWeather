@@ -6,11 +6,11 @@
 // project.
 
 
-// LBBlurredImage
-#define COCOAPODS_POD_AVAILABLE_LBBlurredImage
-#define COCOAPODS_VERSION_MAJOR_LBBlurredImage 0
-#define COCOAPODS_VERSION_MINOR_LBBlurredImage 2
-#define COCOAPODS_VERSION_PATCH_LBBlurredImage 0
+// FXBlurView
+#define COCOAPODS_POD_AVAILABLE_FXBlurView
+#define COCOAPODS_VERSION_MAJOR_FXBlurView 1
+#define COCOAPODS_VERSION_MINOR_FXBlurView 6
+#define COCOAPODS_VERSION_PATCH_FXBlurView 1
 
 // Mantle
 #define COCOAPODS_POD_AVAILABLE_Mantle
