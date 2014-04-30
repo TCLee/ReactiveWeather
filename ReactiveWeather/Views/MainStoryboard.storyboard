@@ -82,7 +82,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0°" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="04o-pT-VaX">
-                                    <rect key="frame" x="20" y="363" width="280" height="138"/>
+                                    <rect key="frame" x="20" y="368" width="280" height="138"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-UltraLight" family="Helvetica Neue" pointSize="120"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -96,25 +96,22 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Clear" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hbi-Jr-C5G">
-                                    <rect key="frame" x="60" y="328" width="240" height="22"/>
+                                    <rect key="frame" x="60" y="338" width="240" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="weather-clear" translatesAutoresizingMaskIntoConstraints="NO" id="ljk-Vh-4bm">
-                                    <rect key="frame" x="20" y="323" width="32" height="32"/>
+                                    <rect key="frame" x="20" y="333" width="32" height="32"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="32" id="E89-w7-nkJ"/>
+                                        <constraint firstAttribute="width" constant="32" id="Cvs-eu-KlL"/>
                                     </constraints>
                                 </imageView>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VkW-RK-t21">
-                                    <rect key="frame" x="20" y="20" width="280" height="21"/>
+                                    <rect key="frame" x="20" y="20" width="280" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="21" id="rAM-KF-8kS"/>
-                                    </constraints>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
@@ -122,20 +119,20 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
-                                <constraint firstAttribute="bottom" secondItem="7Al-ZV-bPI" secondAttribute="bottom" constant="20" symbolic="YES" id="5Ek-5d-e3g"/>
-                                <constraint firstItem="7Al-ZV-bPI" firstAttribute="trailing" secondItem="04o-pT-VaX" secondAttribute="trailing" id="GqP-9v-giG"/>
-                                <constraint firstItem="04o-pT-VaX" firstAttribute="top" secondItem="ljk-Vh-4bm" secondAttribute="bottom" constant="8" symbolic="YES" id="Grf-gS-KNX"/>
-                                <constraint firstItem="ljk-Vh-4bm" firstAttribute="leading" secondItem="04o-pT-VaX" secondAttribute="leading" id="HNH-bM-iAL"/>
-                                <constraint firstItem="hbi-Jr-C5G" firstAttribute="centerY" secondItem="ljk-Vh-4bm" secondAttribute="centerY" id="KZd-aa-Pbi"/>
-                                <constraint firstItem="VkW-RK-t21" firstAttribute="trailing" secondItem="hbi-Jr-C5G" secondAttribute="trailing" id="RMz-P4-gT1"/>
-                                <constraint firstItem="04o-pT-VaX" firstAttribute="leading" secondItem="7Al-ZV-bPI" secondAttribute="leading" id="UBg-eg-mf8"/>
-                                <constraint firstItem="hbi-Jr-C5G" firstAttribute="leading" secondItem="ljk-Vh-4bm" secondAttribute="trailing" constant="8" symbolic="YES" id="Xc5-jm-NI0"/>
-                                <constraint firstItem="7Al-ZV-bPI" firstAttribute="top" secondItem="04o-pT-VaX" secondAttribute="bottom" constant="13" id="jnh-nl-OtJ"/>
-                                <constraint firstAttribute="trailing" secondItem="VkW-RK-t21" secondAttribute="trailing" constant="20" symbolic="YES" id="nK0-9a-LXj"/>
-                                <constraint firstItem="VkW-RK-t21" firstAttribute="leading" secondItem="GiX-PD-OOP" secondAttribute="leading" constant="20" symbolic="YES" id="paH-yT-sgP"/>
-                                <constraint firstItem="hbi-Jr-C5G" firstAttribute="trailing" secondItem="04o-pT-VaX" secondAttribute="trailing" id="rzR-GE-16p"/>
-                                <constraint firstItem="ljk-Vh-4bm" firstAttribute="leading" secondItem="VkW-RK-t21" secondAttribute="leading" id="ux8-pv-ezE"/>
-                                <constraint firstItem="VkW-RK-t21" firstAttribute="top" secondItem="GiX-PD-OOP" secondAttribute="top" constant="20" symbolic="YES" id="zs3-Yw-uhc"/>
+                                <constraint firstItem="04o-pT-VaX" firstAttribute="top" secondItem="hbi-Jr-C5G" secondAttribute="bottom" constant="8" symbolic="YES" id="LmP-pJ-82i"/>
+                                <constraint firstAttribute="trailing" secondItem="VkW-RK-t21" secondAttribute="trailing" constant="20" symbolic="YES" id="Rz5-Xw-HzA"/>
+                                <constraint firstItem="hbi-Jr-C5G" firstAttribute="centerY" secondItem="ljk-Vh-4bm" secondAttribute="centerY" id="WNc-gx-UBp"/>
+                                <constraint firstAttribute="bottom" secondItem="7Al-ZV-bPI" secondAttribute="bottom" constant="20" symbolic="YES" id="WS6-wB-u4Q"/>
+                                <constraint firstItem="VkW-RK-t21" firstAttribute="leading" secondItem="GiX-PD-OOP" secondAttribute="leading" constant="20" symbolic="YES" id="XVw-9i-otK"/>
+                                <constraint firstItem="hbi-Jr-C5G" firstAttribute="leading" secondItem="ljk-Vh-4bm" secondAttribute="trailing" constant="8" symbolic="YES" id="Z7T-jI-YhE"/>
+                                <constraint firstAttribute="trailing" secondItem="7Al-ZV-bPI" secondAttribute="trailing" constant="20" symbolic="YES" id="aiK-di-HTd"/>
+                                <constraint firstItem="04o-pT-VaX" firstAttribute="leading" secondItem="GiX-PD-OOP" secondAttribute="leading" constant="20" symbolic="YES" id="cgU-v4-JOO"/>
+                                <constraint firstItem="VkW-RK-t21" firstAttribute="top" secondItem="GiX-PD-OOP" secondAttribute="top" constant="20" symbolic="YES" id="em2-2w-og5"/>
+                                <constraint firstAttribute="trailing" secondItem="hbi-Jr-C5G" secondAttribute="trailing" constant="20" id="icF-Wc-cgA"/>
+                                <constraint firstItem="7Al-ZV-bPI" firstAttribute="top" secondItem="04o-pT-VaX" secondAttribute="bottom" constant="8" symbolic="YES" id="k7J-fA-RbL"/>
+                                <constraint firstItem="ljk-Vh-4bm" firstAttribute="leading" secondItem="GiX-PD-OOP" secondAttribute="leading" constant="20" symbolic="YES" id="kiU-tZ-EAj"/>
+                                <constraint firstAttribute="trailing" secondItem="04o-pT-VaX" secondAttribute="trailing" constant="20" symbolic="YES" id="uPc-gd-ZXC"/>
+                                <constraint firstItem="7Al-ZV-bPI" firstAttribute="leading" secondItem="GiX-PD-OOP" secondAttribute="leading" constant="20" symbolic="YES" id="uyI-bm-ylF"/>
                             </constraints>
                             <connections>
                                 <outlet property="cityLabel" destination="VkW-RK-t21" id="v0N-HO-fHN"/>
