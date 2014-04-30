@@ -55,6 +55,18 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
     // on an alert view.
     [self rac_liftSelector:@selector(presentError:)
                withSignals:self.viewModel.fetchWeatherCommand.errors, nil];
+
+
+    const CGFloat tableHeight = self.tableView.bounds.size.height;
+    static const CGFloat defaultRowHeight = 44;
+
+    RAC(self.tableView, rowHeight) = [[[RACObserve(self.viewModel, hourlyForecasts)
+        ignore:nil]
+        distinctUntilChanged]
+        map:^(NSArray *forecasts) {
+            CGFloat rowCountIncludingHeader = forecasts.count + 1;
+            return (forecasts.count > 0 ? @(tableHeight / rowCountIncludingHeader) : @(defaultRowHeight));
+        }];
 }
 
 - (void)setupView
@@ -153,10 +165,10 @@ static NSString * const TCHeaderCellIdentifier = @"TCForecastHeaderCell";
 
 #pragma mark Table View Delegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // TODO: Determine cell height based on screen
-    return 44;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    // TODO: Determine cell height based on screen
+//    return 44;
+//}
 
 @end
