@@ -20,10 +20,11 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="QzE-56-oQn">
+                            <view multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SBT-id-WIg" customClass="FXBlurView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
                             <containerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="URq-tY-5js">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -35,24 +36,24 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="QzE-56-oQn" secondAttribute="trailing" id="Cra-L3-793"/>
+                            <constraint firstItem="SBT-id-WIg" firstAttribute="leading" secondItem="g4H-12-E1p" secondAttribute="leading" id="FyJ-sq-qWq"/>
                             <constraint firstItem="P2w-u4-CZp" firstAttribute="top" secondItem="BUW-dS-CCX" secondAttribute="bottom" id="GUz-5X-3qg"/>
                             <constraint firstItem="BUW-dS-CCX" firstAttribute="top" secondItem="g4H-12-E1p" secondAttribute="top" id="Jba-b2-CoV"/>
-                            <constraint firstItem="QzE-56-oQn" firstAttribute="top" secondItem="g4H-12-E1p" secondAttribute="top" id="P2z-u3-JRJ"/>
-                            <constraint firstItem="QzE-56-oQn" firstAttribute="leading" secondItem="g4H-12-E1p" secondAttribute="leading" id="STG-Po-tO4"/>
+                            <constraint firstAttribute="trailing" secondItem="SBT-id-WIg" secondAttribute="trailing" id="Tgy-af-fwu"/>
                             <constraint firstAttribute="trailing" secondItem="URq-tY-5js" secondAttribute="trailing" id="XqM-05-fXq"/>
                             <constraint firstItem="P2w-u4-CZp" firstAttribute="top" secondItem="URq-tY-5js" secondAttribute="bottom" id="Zuc-eL-Jc8"/>
                             <constraint firstItem="URq-tY-5js" firstAttribute="top" secondItem="g4H-12-E1p" secondAttribute="top" id="dGc-cF-oFG"/>
                             <constraint firstAttribute="trailing" secondItem="BUW-dS-CCX" secondAttribute="trailing" id="ddS-HP-wDa"/>
                             <constraint firstItem="URq-tY-5js" firstAttribute="leading" secondItem="g4H-12-E1p" secondAttribute="leading" id="esx-Iv-Y8k"/>
-                            <constraint firstItem="P2w-u4-CZp" firstAttribute="top" secondItem="QzE-56-oQn" secondAttribute="bottom" id="l0H-q9-TqH"/>
+                            <constraint firstItem="SBT-id-WIg" firstAttribute="top" secondItem="g4H-12-E1p" secondAttribute="top" id="lDZ-ys-t3s"/>
+                            <constraint firstItem="P2w-u4-CZp" firstAttribute="top" secondItem="SBT-id-WIg" secondAttribute="bottom" id="qsY-3o-syO"/>
                             <constraint firstItem="BUW-dS-CCX" firstAttribute="leading" secondItem="g4H-12-E1p" secondAttribute="leading" id="vte-ZZ-t13"/>
                         </constraints>
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="backgroundImageView" destination="BUW-dS-CCX" id="JPN-Tj-cGb"/>
-                        <outlet property="blurredImageView" destination="QzE-56-oQn" id="ZaU-zD-iCb"/>
+                        <outlet property="blurFXView" destination="SBT-id-WIg" id="w1B-8d-o4e"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mr1-Zm-Wkn" userLabel="First Responder" sceneMemberID="firstResponder"/>
