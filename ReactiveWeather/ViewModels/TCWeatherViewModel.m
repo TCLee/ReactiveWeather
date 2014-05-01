@@ -48,16 +48,19 @@
 
     _fetchWeatherCommand =
         [[RACCommand alloc] initWithSignalBlock:^(id _) {
-            return [self fetchWeatherWithHourlyForecastLimit:hourlyForecastCount
-                                          dailyForecastLimit:dailyForecastCount];
+            // Do not bother fetching weather data if view model is
+            // not currently active.
+            return [self forwardSignalWhileActive:
+                    [self fetchWeatherWithHourlyForecastLimit:hourlyForecastCount
+                                           dailyForecastLimit:dailyForecastCount]];
         }];
 
     // When this view model has become active, we want to
     // automatically fetch the weather data by executing the command.
     [self.didBecomeActiveSignal
-     subscribeNext:^(TCWeatherViewModel *viewModel) {
-         [viewModel.fetchWeatherCommand execute:nil];
-     }];
+        subscribeNext:^(TCWeatherViewModel *viewModel) {
+            [viewModel.fetchWeatherCommand execute:nil];
+        }];
 
     return self;
 }

@@ -40,6 +40,8 @@
     // so we use RAC to do so.
     RAC(self.tableView.tableHeaderView, bounds) = RACObserve(self.tableView, bounds);
 
+    RAC(self, viewModel.active) = [self viewModelShouldBeActive];
+
     RAC(self.currentConditionView, viewModel) = RACObserve(self, viewModel.currentCondition);
 
     [self bindTableViewToForecasts];
@@ -52,6 +54,39 @@
     // on an alert view.
     [self rac_liftSelector:@selector(presentError:)
                withSignals:self.viewModel.fetchWeatherCommand.errors, nil];
+}
+
+/**
+ * Returns a signal of @c NSNumber BOOL values indicating whether the 
+ * view model should be active or not.
+ *
+ * The view model will only perform work when it is active and automatically
+ * cancels any ongoing work if it is inactive.
+ */
+- (RACSignal *)viewModelShouldBeActive
+{
+    RACSignal *viewIsVisible = [[RACSignal
+        merge:@[
+            [[self rac_signalForSelector:@selector(viewDidAppear:)]
+             mapReplace:@YES],
+            [[self rac_signalForSelector:@selector(viewWillDisappear:)]
+             mapReplace:@NO]
+        ]]
+        setNameWithFormat:@"%@ -viewIsVisible", self];
+
+    RACSignal *appIsActive = [[RACSignal
+        merge:@[
+            [[NSNotificationCenter.defaultCenter rac_addObserverForName:UIApplicationDidBecomeActiveNotification object:nil]
+             mapReplace:@YES],
+            [[NSNotificationCenter.defaultCenter rac_addObserverForName:UIApplicationWillResignActiveNotification object:nil]
+             mapReplace:@NO]
+        ]]
+        setNameWithFormat:@"%@ -appIsActive", self];
+
+    return [[[RACSignal
+        combineLatest:@[viewIsVisible, appIsActive]]
+        and]
+        setNameWithFormat:@"%@ -viewModelShouldBeActive", self];
 }
 
 /**
