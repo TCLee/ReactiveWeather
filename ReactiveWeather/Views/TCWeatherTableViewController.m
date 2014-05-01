@@ -15,6 +15,8 @@
 #import "TCHourlyForecastViewModel.h"
 #import "TCDailyForecastViewModel.h"
 
+#import <ReactiveCocoa/UIRefreshControl+RACCommandSupport.h>
+
 /**
  * The section index on the table view.
  */
@@ -34,8 +36,8 @@
     [super viewDidLoad];
 
     // Table header view should fill up the table view.
-    // We cannot specify this using autolayout in Interface Builder, so
-    // we use RAC to do so.
+    // We cannot specify this using autolayout in Interface Builder,
+    // so we use RAC to do so.
     RAC(self.tableView.tableHeaderView, bounds) = RACObserve(self.tableView, bounds);
 
     RAC(self.currentConditionView, viewModel) = RACObserve(self, viewModel.currentCondition);
@@ -44,7 +46,7 @@
 
     RAC(self.tableView, rowHeight) = [self rowHeightFromForecastCount];
 
-    [self.viewModel.fetchWeatherCommand execute:nil];
+    self.refreshControl.rac_command = self.viewModel.fetchWeatherCommand;
 
     // Redirect any errors from the view model to be displayed
     // on an alert view.

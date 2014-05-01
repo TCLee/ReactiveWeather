@@ -225,6 +225,21 @@
                             <outlet property="delegate" destination="OCV-9H-S6O" id="lzU-PT-d80"/>
                         </connections>
                     </tableView>
+                    <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="KOr-VV-CcF">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.40000000000000002" colorSpace="calibratedWhite"/>
+                        <attributedString key="attributedTitle">
+                            <fragment content="Fetching Weather...">
+                                <attributes>
+                                    <color key="NSColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <font key="NSFont" size="18" name="HelveticaNeue-Light"/>
+                                    <font key="NSOriginalFont" size="16" name="HelveticaNeue-Thin"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </refreshControl>
                     <connections>
                         <outlet property="currentConditionView" destination="GiX-PD-OOP" id="ddQ-9c-K89"/>
                     </connections>
