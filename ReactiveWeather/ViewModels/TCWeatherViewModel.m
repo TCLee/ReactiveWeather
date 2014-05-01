@@ -78,14 +78,15 @@
         // With the current location, we can fetch the latest weather data and
         // update the view model's properties.
         map:^(CLLocation *location) {
-            return [[RACSignal merge:@[
-                [self updateCurrentConditionForLocation:location],
-                [self updateHourlyForecastForLocation:location withLimit:hourlyForecastCount],
-                [self updateDailyForecastForLocation:location withLimit:dailyForecastCount]
-            ]]
-            // Not interested in any values from the signal, since
-            // we're updating the view model's properties only.
-            ignoreValues];
+            return [[RACSignal
+                merge:@[
+                    [self updateCurrentConditionForLocation:location],
+                    [self updateHourlyForecastForLocation:location withLimit:hourlyForecastCount],
+                    [self updateDailyForecastForLocation:location withLimit:dailyForecastCount]
+                ]]
+                // Not interested in any values from the signal, since
+                // we're updating the view model's properties only.
+                ignoreValues];
         }]
         // If current location changes, we want to cancel any in-flight
         // weather data requests.
