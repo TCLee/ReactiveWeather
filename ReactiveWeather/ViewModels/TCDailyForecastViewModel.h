@@ -15,6 +15,7 @@
 @property (nonatomic, copy, readonly) NSDate *date;
 @property (nonatomic, copy, readonly) NSNumber *maxTemperature;
 @property (nonatomic, copy, readonly) NSNumber *minTemperature;
+@property (nonatomic, copy, readonly) NSString *iconName;
 
 - (instancetype)initWithWeather:(TCWeather *)weather;
 

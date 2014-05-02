@@ -12,8 +12,9 @@
 
 @interface TCHourlyForecastViewModel : RVMViewModel
 
-@property (nonatomic, strong, readonly) NSDate *dateAndTime;
-@property (nonatomic, strong, readonly) NSNumber *temperature;
+@property (nonatomic, copy, readonly) NSDate *dateAndTime;
+@property (nonatomic, copy, readonly) NSNumber *temperature;
+@property (nonatomic, copy, readonly) NSString *iconName;
 
 - (instancetype)initWithWeather:(TCWeather *)weather;
 
