@@ -29,11 +29,9 @@
         return [NSString stringWithFormat:@"%.0f°", temperature.floatValue];
     }];
 
-    RAC(self.cityLabel, text) = [[RACObserve(self, viewModel.cityName)
-        ignore:nil]
-        map:^(NSString *locationName) {
-            return [locationName capitalizedString];
-        }];
+    RAC(self.cityLabel, text) = [RACObserve(self, viewModel.cityName) map:^(NSString *locationName) {
+        return [locationName capitalizedString];
+    }];
 
     RAC(self.conditionsLabel, text) = [RACObserve(self, viewModel.condition) map:^(NSString *condition) {
         return [condition capitalizedString];
@@ -45,13 +43,14 @@
             return [UIImage imageNamed:imageName];
         }];
 
-    RAC(self.maxMinTemperatureLabel, text) =
-        [RACSignal
-         combineLatest:@[RACObserve(self, viewModel.minTemperature),
-                         RACObserve(self, viewModel.maxTemperature)]
-         reduce:^(NSNumber *minTemperature, NSNumber *maxTemperature) {
-             return [NSString stringWithFormat:@"%.0f° / %.0f°", minTemperature.floatValue, maxTemperature.floatValue];
-         }];
+    RAC(self.maxMinTemperatureLabel, text) = [RACSignal
+        combineLatest:@[
+            RACObserve(self, viewModel.minTemperature),
+            RACObserve(self, viewModel.maxTemperature)
+        ]
+        reduce:^(NSNumber *minTemperature, NSNumber *maxTemperature) {
+            return [NSString stringWithFormat:@"%.0f° / %.0f°", minTemperature.floatValue, maxTemperature.floatValue];
+        }];
 }
 
 @end
