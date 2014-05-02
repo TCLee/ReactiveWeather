@@ -24,6 +24,12 @@
     RAC(self, detailTextLabel.text) = [RACObserve(self, viewModel.temperature) map:^(NSNumber *temperature) {
         return [NSString stringWithFormat:@"%.0f°", temperature.floatValue];
     }];
+
+    RAC(self, imageView.image) = [[RACObserve(self, viewModel.iconName)
+        ignore:nil]
+        map:^(NSString *iconName) {
+            return [UIImage imageNamed:iconName];
+        }];
 }
 
 @end

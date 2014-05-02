@@ -21,6 +21,7 @@
     _date = [weather.date copy];
     _maxTemperature = [weather.tempHigh copy];
     _minTemperature = [weather.tempLow copy];
+    _iconName = [weather.imageName copy];
 
     return self;
 }

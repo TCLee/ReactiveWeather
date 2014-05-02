@@ -18,8 +18,9 @@
     self = [super init];
     if (nil == self) { return nil; }
 
-    _dateAndTime = weather.date;
-    _temperature = weather.temperature;
+    _dateAndTime = [weather.date copy];
+    _temperature = [weather.temperature copy];
+    _iconName = [weather.imageName copy];
 
     return self;
 }

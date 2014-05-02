@@ -21,14 +21,21 @@
         return [NSDateFormatter.sharedDateFormatter forecastDayStringFromDate:date];
     }];
 
-    RAC(self, detailTextLabel.text) =
-        [RACSignal
-         combineLatest:@[RACObserve(self, viewModel.minTemperature),
-                         RACObserve(self, viewModel.maxTemperature)]
-         reduce:^(NSNumber *minTemperature, NSNumber *maxTemperature) {
-             return [NSString stringWithFormat:@"%.0f° / %.0f°",
-                     minTemperature.floatValue, maxTemperature.floatValue];
-         }];
+    RAC(self, detailTextLabel.text) = [RACSignal
+        combineLatest:@[
+            RACObserve(self, viewModel.minTemperature),
+            RACObserve(self, viewModel.maxTemperature)
+        ]
+        reduce:^(NSNumber *minTemperature, NSNumber *maxTemperature) {
+            return [NSString stringWithFormat:@"%.0f° / %.0f°",
+                    minTemperature.floatValue, maxTemperature.floatValue];
+        }];
+
+    RAC(self, imageView.image) = [[RACObserve(self, viewModel.iconName)
+        ignore:nil]
+        map:^(NSString *iconName) {
+            return [UIImage imageNamed:iconName];
+        }];
 }
 
 @end
