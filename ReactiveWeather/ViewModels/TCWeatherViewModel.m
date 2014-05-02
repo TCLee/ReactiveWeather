@@ -46,14 +46,10 @@
     _locationService = locationService;
     _weatherService  = weatherService;
 
-    _fetchWeatherCommand =
-        [[RACCommand alloc] initWithSignalBlock:^(id _) {
-            // Do not bother fetching weather data if view model is
-            // not currently active.
-            return [self forwardSignalWhileActive:
-                    [self fetchWeatherWithHourlyForecastLimit:hourlyForecastCount
-                                           dailyForecastLimit:dailyForecastCount]];
-        }];
+    _fetchWeatherCommand = [[RACCommand alloc] initWithSignalBlock:^(id _) {
+        return [self fetchWeatherWithHourlyForecastLimit:hourlyForecastCount
+                                      dailyForecastLimit:dailyForecastCount];
+    }];
 
     // When this view model has become active, we want to
     // automatically fetch the weather data by executing the command.
