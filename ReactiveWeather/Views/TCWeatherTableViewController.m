@@ -140,12 +140,21 @@
         }]
         distinctUntilChanged]
         subscribeNext:^(NSNumber *isExecuting) {
-            if (isExecuting.boolValue) {
-                [refreshControl beginRefreshing];
-                [tableView setContentOffset:CGPointMake(0, -refreshControl.bounds.size.height) animated:YES];
+            // If refresh control is already refreshing, do not begin
+            // refreshing again. Otherwise, the animation will conflict with
+            // the user's drag gesture.
+            if (isExecuting.boolValue && !refreshControl.isRefreshing) {
+                [UIView animateWithDuration:0.5 animations:^{
+                    tableView.contentOffset = CGPointMake(0, -refreshControl.bounds.size.height);
+                } completion:^(BOOL finished) {
+                    [refreshControl beginRefreshing];
+                }];
             } else {
-                [refreshControl endRefreshing];
-                [tableView setContentOffset:CGPointZero animated:YES];
+                [UIView animateWithDuration:0.5 animations:^{
+                    tableView.contentOffset = CGPointZero;
+                } completion:^(BOOL finished) {
+                    [refreshControl endRefreshing];
+                }];
             }
         }];
 }
