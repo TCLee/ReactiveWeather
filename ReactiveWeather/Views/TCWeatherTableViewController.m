@@ -31,24 +31,33 @@
 
 @implementation TCWeatherTableViewController
 
+#pragma mark Initialize
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    RAC(self, viewModel.active) = [self viewModelShouldBeActive];
 
     // Table header view should fill up the table view.
     // We cannot specify this using autolayout in Interface Builder,
     // so we use RAC to do so.
     RAC(self.tableView.tableHeaderView, bounds) = RACObserve(self.tableView, bounds);
 
-    RAC(self, viewModel.active) = [self viewModelShouldBeActive];
+    // Bind the refresh control to the fetch weather command.
+    // The refresh control's state will be synchronized with the
+    // command's state.
+    self.refreshControl.rac_command = self.viewModel.fetchWeatherCommand;
+    [self bindRefreshControl:self.refreshControl
+                 inTableView:self.tableView
+          toCommandExecuting:self.viewModel.fetchWeatherCommand.executing];
 
+    // Bind the table view to the weather data.
     RAC(self.currentConditionView, viewModel) = RACObserve(self, viewModel.currentCondition);
-
-    [self bindTableViewToForecasts];
+    [self bindTableView:self.tableView toHourlyForecasts:RACObserve(self.viewModel, hourlyForecasts)];
+    [self bindTableView:self.tableView toDailyForecasts:RACObserve(self.viewModel, dailyForecasts)];
 
     RAC(self.tableView, rowHeight) = [self rowHeightFromForecastCount];
-
-    self.refreshControl.rac_command = self.viewModel.fetchWeatherCommand;
 
     // Redirect any errors from the view model to be displayed
     // on an alert view.
@@ -113,34 +122,66 @@
 }
 
 /**
- * Reload a table view's specific section when forecast data
- * is updated.
+ * Binds the @c UIRefreshControl in the @c UITableView to a @c RACCommand's 
+ * `executing` signal.
+ *
+ * @param refreshControl The @c UIRefreshControl to bind to the `executing` 
+ *                       signal.
+ * @param tableView      The @c UITableView that is associated with 
+ *                       `refreshControl`.
+ * @param executing      The @c RACCommand's `executing` signal.
  */
-- (void)bindTableViewToForecasts
+- (void)bindRefreshControl:(UIRefreshControl *)refreshControl inTableView:(UITableView *)tableView toCommandExecuting:(RACSignal *)executing
 {
-    @weakify(self);
-
-    // Hourly Forecasts
-    [[RACObserve(self.viewModel, hourlyForecasts)
+    [[[executing
+        skipWhileBlock:^BOOL(NSNumber *isExecuting) {
+            // Ignore until we start fetching weather data.
+            return !isExecuting.boolValue;
+        }]
         distinctUntilChanged]
-        subscribeNext:^(id _) {
-            @strongify(self);
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:TCTableSectionHourlyForecast]
-                          withRowAnimation:UITableViewRowAnimationFade];
-        }];
-
-    // Daily Forecasts
-    [[RACObserve(self.viewModel, dailyForecasts)
-        distinctUntilChanged]
-        subscribeNext:^(id _) {
-            @strongify(self);
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:TCTableSectionDailyForecast]
-                          withRowAnimation:UITableViewRowAnimationFade];
+        subscribeNext:^(NSNumber *isExecuting) {
+            if (isExecuting.boolValue) {
+                [refreshControl beginRefreshing];
+                [tableView setContentOffset:CGPointMake(0, -refreshControl.bounds.size.height) animated:YES];
+            } else {
+                [refreshControl endRefreshing];
+                [tableView setContentOffset:CGPointZero animated:YES];
+            }
         }];
 }
 
 /**
- * Shows the given @c NSError object's details on a @c UIAlertView.
+ * Binds `tableView` section to a signal of hourly forecast data.
+ */
+- (void)bindTableView:(UITableView *)tableView toHourlyForecasts:(RACSignal *)hourlyForecasts
+{
+    [[[hourlyForecasts
+        ignore:nil]
+        distinctUntilChanged]
+        subscribeNext:^(id _) {
+            [tableView reloadSections:[NSIndexSet indexSetWithIndex:TCTableSectionHourlyForecast]
+                     withRowAnimation:UITableViewRowAnimationFade];
+        }];
+}
+
+/**
+ * Binds `tableView` section to a signal of daily forecast data.
+ */
+- (void)bindTableView:(UITableView *)tableView toDailyForecasts:(RACSignal *)dailyForecasts
+{
+    [[[dailyForecasts
+        ignore:nil]
+        distinctUntilChanged]
+        subscribeNext:^(id _) {
+            [tableView reloadSections:[NSIndexSet indexSetWithIndex:TCTableSectionDailyForecast]
+                     withRowAnimation:UITableViewRowAnimationFade];
+        }];
+}
+
+/**
+ * Presents the given `error` on a @c UIAlertView.
+ *
+ * @param error The @c NSError object containing the error details.
  */
 - (void)presentError:(NSError *)error
 {
