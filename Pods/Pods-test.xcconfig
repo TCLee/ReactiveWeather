@@ -2,5 +2,5 @@ FRAMEWORK_SEARCH_PATHS = $(inherited) "$(SDKROOT)/Developer/Library/Frameworks" 
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers" "${PODS_ROOT}/Headers/FXBlurView" "${PODS_ROOT}/Headers/Kiwi" "${PODS_ROOT}/Headers/Mantle" "${PODS_ROOT}/Headers/ReactiveCocoa" "${PODS_ROOT}/Headers/ReactiveCocoa/ReactiveCocoa" "${PODS_ROOT}/Headers/ReactiveViewModel"
 OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers" -isystem "${PODS_ROOT}/Headers/FXBlurView" -isystem "${PODS_ROOT}/Headers/Kiwi" -isystem "${PODS_ROOT}/Headers/Mantle" -isystem "${PODS_ROOT}/Headers/ReactiveCocoa" -isystem "${PODS_ROOT}/Headers/ReactiveCocoa/ReactiveCocoa" -isystem "${PODS_ROOT}/Headers/ReactiveViewModel"
-OTHER_LDFLAGS = -ObjC -framework Accelerate -framework Foundation -framework QuartzCore -framework XCTest
+OTHER_LDFLAGS = -ObjC -framework XCTest
 PODS_ROOT = ${SRCROOT}/Pods

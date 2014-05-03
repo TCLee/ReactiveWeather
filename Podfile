@@ -7,7 +7,7 @@ pod 'ReactiveViewModel', '~> 0.2'
 pod 'Mantle', '~> 1.4'
 pod 'FXBlurView', '~> 1.6.1'
 
-target :test do
+target :test, :exclusive => true do
     link_with 'ReactiveWeatherTests'
     pod 'Kiwi/XCTest', '~> 2.2.4'
 end
