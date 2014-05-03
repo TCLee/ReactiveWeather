@@ -16,5 +16,8 @@
     #import <ReactiveCocoa/ReactiveCocoa.h>
     #import <ReactiveCocoa/RACEXTScope.h>
 
+    #define EXP_SHORTHAND
+    #import <Expecta/Expecta.h>
+
     #import <Kiwi/Kiwi.h>
 #endif

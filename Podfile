@@ -9,5 +9,6 @@ pod 'FXBlurView', '~> 1.6.1'
 
 target :test, :exclusive => true do
     link_with 'ReactiveWeatherTests'
-    pod 'Kiwi/XCTest', '~> 2.2.4'
+    pod 'Specta', '~> 0.2.1'
+    pod 'Expecta', '~> 0.3.0'
 end

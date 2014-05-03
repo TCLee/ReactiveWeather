@@ -1,10 +1,6 @@
 PODS:
+  - Expecta (0.3.0)
   - FXBlurView (1.6.1)
-  - Kiwi/ARC (2.2.4)
-  - Kiwi/NonARC (2.2.4)
-  - Kiwi/XCTest (2.2.4):
-    - Kiwi/ARC
-    - Kiwi/NonARC
   - Mantle (1.4.1):
     - Mantle/extobjc
   - Mantle/extobjc (1.4.1)
@@ -16,19 +12,22 @@ PODS:
   - ReactiveCocoa/no-arc (2.3)
   - ReactiveViewModel (0.2):
     - ReactiveCocoa (~> 2.1)
+  - Specta (0.2.1)
 
 DEPENDENCIES:
+  - Expecta (~> 0.3.0)
   - FXBlurView (~> 1.6.1)
-  - Kiwi/XCTest (~> 2.2.4)
   - Mantle (~> 1.4)
   - ReactiveCocoa (~> 2.3)
   - ReactiveViewModel (~> 0.2)
+  - Specta (~> 0.2.1)
 
 SPEC CHECKSUMS:
+  Expecta: 322f1dc42610106a5ba9871b4924cf1635d80833
   FXBlurView: 855a881c8b5f89829748070928aa9447c3d3c726
-  Kiwi: d60d7498b640a16f58b01925fc3c8d7c4d809f66
   Mantle: 0714cdb2b8559d9e6c2410d6a8529e3307bff189
   ReactiveCocoa: 1f6265f9d521923d3efcc37b00722cefc16df269
   ReactiveViewModel: f636ab3e06b5e69664b69c883fcdb457ab5cb0cb
+  Specta: 2d06220591110c6d9757d8be8ecf8e63aa40dc2a
 
 COCOAPODS: 0.32.1

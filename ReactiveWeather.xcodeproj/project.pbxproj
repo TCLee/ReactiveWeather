@@ -31,12 +31,12 @@
 		81D8EFED18F648C400072D47 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFEC18F648C400072D47 /* XCTest.framework */; };
 		81D8EFEE18F648C400072D47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD318F648C400072D47 /* Foundation.framework */; };
 		81D8EFEF18F648C400072D47 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD718F648C400072D47 /* UIKit.framework */; };
-		81D8EFF918F648C400072D47 /* ReactiveWeatherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 81D8EFF818F648C400072D47 /* ReactiveWeatherTests.m */; };
 		81D8F00A18F6495F00072D47 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81D8F00318F6495F00072D47 /* Images.xcassets */; };
 		81D8F00B18F6495F00072D47 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81D8F00518F6495F00072D47 /* InfoPlist.strings */; };
 		81D8F00C18F6495F00072D47 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 81D8F00718F6495F00072D47 /* main.m */; };
 		81E665DE190D03B400FCFB37 /* NSDateFormatter+TCForecastFormattingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 81E665DD190D03B400FCFB37 /* NSDateFormatter+TCForecastFormattingAdditions.m */; };
 		81E8C6CF19148AFF00F337E8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81E8C6CC19148AFF00F337E8 /* InfoPlist.strings */; };
+		81E8C6D4191499B500F337E8 /* TCLocationServiceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C6D3191499B500F337E8 /* TCLocationServiceSpec.m */; };
 		C83B22C337534828B4E1EFEB /* libPods-test.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D1EC2F0FE6A4EBC8D4EE505 /* libPods-test.a */; };
 /* End PBXBuildFile section */
 
@@ -93,7 +93,6 @@
 		81D8EFE318F648C400072D47 /* TCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TCAppDelegate.m; sourceTree = "<group>"; };
 		81D8EFEB18F648C400072D47 /* ReactiveWeatherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReactiveWeatherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		81D8EFEC18F648C400072D47 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		81D8EFF818F648C400072D47 /* ReactiveWeatherTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactiveWeatherTests.m; sourceTree = "<group>"; };
 		81D8F00318F6495F00072D47 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		81D8F00618F6495F00072D47 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		81D8F00718F6495F00072D47 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -104,6 +103,7 @@
 		81E8C6CD19148AFF00F337E8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		81E8C6CE19148AFF00F337E8 /* ReactiveWeatherTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ReactiveWeatherTests-Info.plist"; sourceTree = "<group>"; };
 		81E8C6D119148D0E00F337E8 /* ReactiveWeatherTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ReactiveWeatherTests-Prefix.pch"; sourceTree = "<group>"; };
+		81E8C6D3191499B500F337E8 /* TCLocationServiceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationServiceSpec.m; sourceTree = "<group>"; };
 		EB9D96D5E2444F2CAF6A49EE /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -198,7 +198,6 @@
 		81D8EFF218F648C400072D47 /* ReactiveWeatherTests */ = {
 			isa = PBXGroup;
 			children = (
-				81D8EFF818F648C400072D47 /* ReactiveWeatherTests.m */,
 				81E8C6D219148F0600F337E8 /* Specs */,
 				81E8C6CB19148AFF00F337E8 /* SupportingFiles */,
 			);
@@ -285,6 +284,7 @@
 		81E8C6D219148F0600F337E8 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				81E8C6D3191499B500F337E8 /* TCLocationServiceSpec.m */,
 			);
 			path = Specs;
 			sourceTree = "<group>";
@@ -478,7 +478,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81D8EFF918F648C400072D47 /* ReactiveWeatherTests.m in Sources */,
+				81E8C6D4191499B500F337E8 /* TCLocationServiceSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
