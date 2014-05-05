@@ -114,7 +114,7 @@
     // the location’s latitude and longitude are invalid.
     // CLLocationManager `desiredAccuracy` is negative if it is
     // `kCLLocationAccuracyBestForNavigation` or `kCLLocationAccuracyBest`.
-    BOOL isAccurateEnough = (location.horizontalAccuracy > 0 &&
+    BOOL isAccurateEnough = (location.horizontalAccuracy >= 0 &&
                              location.horizontalAccuracy <= MAX(desiredAccuracy, 0));
 
     return isRecentEnough && isAccurateEnough;
@@ -196,6 +196,11 @@
                 return args[1];
             }];
 }
+
+#pragma mark CLLocationManagerDelegate
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {}
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {}
 
 @end
 
