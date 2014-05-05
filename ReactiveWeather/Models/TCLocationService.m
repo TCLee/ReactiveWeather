@@ -80,7 +80,7 @@
     // concatenates subsequent values delivered to the delegate.
     return [[[[RACSignal return:@(CLLocationManager.authorizationStatus)]
              concat:[self valueForCLLocationManagerDelegateSelector:
-                     @selector(locationManager:didUpdateLocations:)]]
+                     @selector(locationManager:didChangeAuthorizationStatus:)]]
              map:^(NSNumber *authorizationStatus) {
                  CLAuthorizationStatus status = authorizationStatus.unsignedIntegerValue;
 
