@@ -11,4 +11,5 @@ target :test, :exclusive => true do
     link_with 'ReactiveWeatherTests'
     pod 'Specta', '~> 0.2.1'
     pod 'Expecta', '~> 0.3.0'
+    pod 'OCMockito', '~> 1.2.0'
 end
