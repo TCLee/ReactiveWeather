@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
+@import CoreLocation;
+
 #import "TCAppDelegate.h"
 
 #import "TCWeatherViewController.h"
@@ -19,11 +21,15 @@
 {
     // We do not need very high accuracy for the location services, since
     // we're only using the location to fetch weather data for a city.
-    TCLocationService *locationService =
-        [[TCLocationService alloc] initWithAccuracy:kCLLocationAccuracyKilometer
-                                     distanceFilter:1000.0f
-                                        maxCacheAge:15.0f];
+    CLLocationManager *locationManager = [[CLLocationManager alloc] init];
+    locationManager.distanceFilter = 1000;
+    locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
 
+    TCLocationService *locationService =
+        [[TCLocationService alloc] initWithLocationManager:locationManager
+                                            maxLocationAge:15];
+
+    // TODO: Create the NSURLSession and pass in to the weather service object.
     TCWeatherService *weatherService = [[TCWeatherService alloc] init];
 
     // Create the view model with the given service classes.

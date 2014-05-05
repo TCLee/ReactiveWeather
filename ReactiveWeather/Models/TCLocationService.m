@@ -12,7 +12,7 @@
 @interface TCLocationService ()
 
 @property (nonatomic, strong, readonly) CLLocationManager *locationManager;
-@property (nonatomic, assign, readonly) NSTimeInterval maxCacheAge;
+@property (nonatomic, assign, readonly) NSTimeInterval maxLocationAge;
 
 @end
 
@@ -20,34 +20,17 @@
 
 #pragma mark Public Methods
 
-- (instancetype)init
+- (instancetype)initWithLocationManager:(CLLocationManager *)locationManager
+                         maxLocationAge:(NSTimeInterval)maxLocationAge
 {
+    NSParameterAssert(locationManager != nil);
+    NSParameterAssert(maxLocationAge > 0);
+
     self = [super init];
     if (!self) { return nil; }
 
-    _locationManager = [[CLLocationManager alloc] init];
-
-    // Since we're getting the weather forecast for a city, we do not
-    // need very accurate location data.
-    _locationManager.delegate = self;
-    _locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
-    _locationManager.distanceFilter = 1000;
-
-    return self;
-}
-
-- (instancetype)initWithAccuracy:(CLLocationAccuracy)accuracy
-                  distanceFilter:(CLLocationDistance)distanceFilter
-                     maxCacheAge:(NSTimeInterval)maxCacheAge
-{
-    self = [super init];
-    if (!self) { return nil; }
-
-    _locationManager = [[CLLocationManager alloc] init];
-    _locationManager.delegate = self;
-    _locationManager.desiredAccuracy = accuracy;
-    _locationManager.distanceFilter = distanceFilter;
-    _maxCacheAge = maxCacheAge;
+    _locationManager = locationManager;
+    _maxLocationAge = maxLocationAge;
 
     return self;
 }
@@ -158,7 +141,7 @@
 
             return [self isAcceptableLocation:location
                                  withAccuracy:locationManager.desiredAccuracy
-                                    andMaxAge:self.maxCacheAge];
+                                    andMaxAge:self.maxLocationAge];
         }]
         map:^(RACTuple *locationManagerAndLatestLocation) {
             // We just want the latest location value.

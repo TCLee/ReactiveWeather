@@ -17,18 +17,19 @@
 /**
  * Initializes and returns a location service object.
  *
- * @param accuracy       The accuracy of the location data.
- * @param distanceFilter The minimum distance (measured in meters) a device must move 
- *                       horizontally before a location update event is generated.
- * @param maxCacheAge    Cached location data that is older than this 
- *                       maximum limit will be discarded. The age is 
- *                       calculated in seconds.
+ * @param locationManager The @c CLLocationManager instance that will be used 
+ *                        to find the user's current location. The location 
+ *                        service object will be set as the delegate of the
+ *                        @c CLLocationManager instance to receive location 
+ *                        updates. Must not be @c nil.
+ * @param maxLocationAge  Location data that is older than this limit will 
+ *                        be discarded. The age is measured in seconds.
  *
- * @return A location service object initialized with the given values.
+ * @return A location service object initialized with the given 
+ *         @c CLLocationManager instance.
  */
-- (instancetype)initWithAccuracy:(CLLocationAccuracy)accuracy
-                  distanceFilter:(CLLocationDistance)distanceFilter
-                     maxCacheAge:(NSTimeInterval)maxCacheAge;
+- (instancetype)initWithLocationManager:(CLLocationManager *)locationManager
+                         maxLocationAge:(NSTimeInterval)maxLocationAge;
 
 /**
  * A signal of location updates.
