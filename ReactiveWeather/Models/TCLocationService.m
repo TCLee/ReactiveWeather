@@ -26,11 +26,15 @@
     NSParameterAssert(locationManager != nil);
     NSParameterAssert(maxLocationAge > 0);
 
+    NSAssert(nil == locationManager.delegate, @"Do NOT set a delegate for `locationManager`. Location service should be the delegate for `locationManager`.");
+
     self = [super init];
     if (!self) { return nil; }
 
     _locationManager = locationManager;
     _maxLocationAge = maxLocationAge;
+
+    _locationManager.delegate = self;
 
     return self;
 }

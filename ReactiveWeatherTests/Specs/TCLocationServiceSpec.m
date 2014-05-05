@@ -6,15 +6,85 @@
 //  Copyright (c) 2014 Lee Tze Cheun. All rights reserved.
 //
 
-SPEC_BEGIN(TCLocationService)
+@import CoreLocation;
 
-describe(@"Math", ^{
-    it(@"is pretty cool", ^{
-        NSUInteger a = 16;
-        NSUInteger b = 26;
+#import "TCLocationService.h"
 
-        [[theValue(a + b) should] equal:theValue(42)];
+SpecBegin(TCLocationService)
+
+describe(@"init", ^{
+    __block CLLocationManager *fakeLocationManager = nil;
+
+    beforeEach(^{
+        fakeLocationManager = mock(CLLocationManager.class);
+    });
+
+    it(@"should raise an exception if location manager is nil", ^{
+        expect(^{
+            __unused TCLocationService *locationService = [[TCLocationService alloc] initWithLocationManager:nil maxLocationAge:10];
+        }).to.raise(NSInternalInconsistencyException);
+    });
+
+    it(@"should raise an exception if max location age is 0", ^{
+        expect(^{
+            __unused TCLocationService *locationService = [[TCLocationService alloc] initWithLocationManager:fakeLocationManager maxLocationAge:0];
+        }).to.raise(NSInternalInconsistencyException);
+    });
+
+    it(@"should raise an exception if location manager delegate is set", ^{
+        expect(^{
+            id<CLLocationManagerDelegate> fakeDelegate = mockProtocol(@protocol(CLLocationManagerDelegate));
+            [given([fakeLocationManager delegate]) willReturn:fakeDelegate];
+
+            __unused TCLocationService *locationService = [[TCLocationService alloc] initWithLocationManager:fakeLocationManager maxLocationAge:10];
+        }).to.raise(NSInternalInconsistencyException);
+    });
+
+    it(@"should set self as delegate of location manager", ^{
+        __unused TCLocationService *locationService = [[TCLocationService alloc] initWithLocationManager:fakeLocationManager maxLocationAge:10];
+
+        [MKTVerify(fakeLocationManager) setDelegate:locationService];
     });
 });
 
-SPEC_END
+describe(@"currentLocation", ^{
+    __block TCLocationService *locationService = nil;
+    __block CLLocationManager *fakeLocationManager = nil;
+
+    const CLLocationAccuracy expectedAccuracy = kCLLocationAccuracyKilometer;
+    const NSTimeInterval expectedAge = 15;
+
+    beforeEach(^{
+        fakeLocationManager = mock(CLLocationManager.class);
+        fakeLocationManager.desiredAccuracy = expectedAccuracy;
+        fakeLocationManager.distanceFilter = 1000;
+
+        locationService = [[TCLocationService alloc] initWithLocationManager:fakeLocationManager
+                                                              maxLocationAge:expectedAge];
+    });
+
+    it(@"should start location services when there is one or more subscribers", ^{
+        [[locationService currentLocation] subscribeNext:^(id _) {}];
+
+        [MKTVerify(fakeLocationManager) startUpdatingLocation];
+    });
+
+    it(@"should stop location services when there is no subscriber", ^{
+        RACDisposable *disposable = [[locationService currentLocation] subscribeNext:^(id _) {}];
+        [disposable dispose];
+
+        [MKTVerify(fakeLocationManager) stopUpdatingLocation];
+    });
+
+    it(@"should return a location that matches the accuracy and age", ^{
+        // TODO: Fix this test!
+        [[locationService currentLocation]
+            subscribeNext:^(CLLocation *location) {
+                NSTimeInterval locationAge = fabs([location.timestamp timeIntervalSinceNow]);
+                expect(locationAge).to.beLessThanOrEqualTo(expectedAge);
+                expect(location.horizontalAccuracy).to.beLessThanOrEqualTo(expectedAccuracy);
+            }];
+    });
+});
+
+SpecEnd
