@@ -199,8 +199,17 @@
 
 #pragma mark CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {}
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {}
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    // Empty implementation of CLLocationManagerDelegate protocol.
+    // Used as a test hook. Do NOT remove!
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    // Empty implementation of CLLocationManagerDelegate protocol.
+    // Used as a test hook. Do NOT remove!
+}
 
 @end
 
