@@ -14,6 +14,16 @@
 @interface TCWeatherService : NSObject
 
 /**
+ * Initializes a weather service object with the given session.
+ *
+ * @param session The @c NSURLSession object that will be used to fetch 
+ *                the weather data.
+ *
+ * @return An initialized weather service object.
+ */
+- (instancetype)initWithSession:(NSURLSession *)session;
+
+/**
  * Fetches the current weather condition for the given coordinates.
  *
  * @param coordinate The coordinate of a location.

@@ -29,8 +29,10 @@
         [[TCLocationService alloc] initWithLocationManager:locationManager
                                             maxLocationAge:15];
 
-    // TODO: Create the NSURLSession and pass in to the weather service object.
-    TCWeatherService *weatherService = [[TCWeatherService alloc] init];
+    // Create the NSURLSession for the weather service to fetch the weather data.
+    NSURLSessionConfiguration *defaultConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:defaultConfiguration];
+    TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:session];
 
     // Create the view model with the given service classes.
     // FIXME: Forecast limits should be configured from user settings.

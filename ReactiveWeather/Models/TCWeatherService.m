@@ -17,7 +17,7 @@
 /**
  * The single URL session for all API requests.
  */
-@property (nonatomic, strong) NSURLSession *session;
+@property (nonatomic, copy) NSURLSession *session;
 
 @end
 
@@ -25,13 +25,15 @@
 
 #pragma mark Initialize
 
-- (instancetype)init
+- (instancetype)initWithSession:(NSURLSession *)aSession
 {
+    NSParameterAssert(nil != aSession);
+
     self = [super init];
-    if (self) {
-        _session = [NSURLSession sessionWithConfiguration:
-                    [NSURLSessionConfiguration defaultSessionConfiguration]];
-    }
+    if (nil == self) { return nil; }
+
+    _session = [aSession copy];
+
     return self;
 }
 
