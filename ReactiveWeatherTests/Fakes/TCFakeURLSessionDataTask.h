@@ -8,10 +8,9 @@
 
 @interface TCFakeURLSessionDataTask : NSURLSessionDataTask
 
-@property (nonatomic, getter = isResumed, readonly) BOOL resumed;
+/**
+ * Returns @c YES when @c -cancel is called; @c NO otherwise.
+ */
 @property (nonatomic, getter = isCancelled, readonly) BOOL cancelled;
-
-- (void)resume;
-- (void)cancel;
 
 @end

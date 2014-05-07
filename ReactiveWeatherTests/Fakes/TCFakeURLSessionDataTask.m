@@ -15,7 +15,6 @@
     self = [super init];
     if (nil == self) { return nil; }
 
-    _resumed = NO;
     _cancelled = NO;
     
     return self;
@@ -23,7 +22,7 @@
 
 - (void)resume
 {
-    _resumed = YES;
+    _cancelled = NO;
 }
 
 - (void)cancel
