@@ -17,6 +17,12 @@
 		813D20EA18F6807500706C73 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 813D20E918F6807500706C73 /* MainStoryboard.storyboard */; };
 		8158363B190F97E300E2F5B0 /* TCCurrentConditionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8158363A190F97E300E2F5B0 /* TCCurrentConditionView.m */; };
 		8158363E190F9A2B00E2F5B0 /* TCCurrentConditionViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8158363D190F9A2B00E2F5B0 /* TCCurrentConditionViewModel.m */; };
+		8162F9801918E81600DB72B0 /* TCWeatherServiceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 8162F97F1918E81600DB72B0 /* TCWeatherServiceSpec.m */; };
+		8162F9881919ED6900DB72B0 /* TCFakeURLSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 8162F9871919ED6900DB72B0 /* TCFakeURLSession.m */; };
+		8162F98B1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 8162F98A1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m */; };
+		8162F98E191A153100DB72B0 /* CurrentCondition.json in Resources */ = {isa = PBXBuildFile; fileRef = 8162F98D191A153100DB72B0 /* CurrentCondition.json */; };
+		8162F990191A158000DB72B0 /* HourlyForecast.json in Resources */ = {isa = PBXBuildFile; fileRef = 8162F98F191A158000DB72B0 /* HourlyForecast.json */; };
+		8162F992191A161900DB72B0 /* DailyForecasts.json in Resources */ = {isa = PBXBuildFile; fileRef = 8162F991191A161900DB72B0 /* DailyForecasts.json */; };
 		81790996190B5AD4003166B5 /* TCWeatherTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81790995190B5AD4003166B5 /* TCWeatherTableViewController.m */; };
 		81790999190CE922003166B5 /* TCHourlyForecastCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 81790998190CE922003166B5 /* TCHourlyForecastCell.m */; };
 		8179099C190CEA37003166B5 /* TCDailyForecastViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8179099B190CEA37003166B5 /* TCDailyForecastViewModel.m */; };
@@ -71,6 +77,14 @@
 		8158363A190F97E300E2F5B0 /* TCCurrentConditionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCCurrentConditionView.m; sourceTree = "<group>"; };
 		8158363C190F9A2B00E2F5B0 /* TCCurrentConditionViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCCurrentConditionViewModel.h; sourceTree = "<group>"; };
 		8158363D190F9A2B00E2F5B0 /* TCCurrentConditionViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCCurrentConditionViewModel.m; sourceTree = "<group>"; };
+		8162F97F1918E81600DB72B0 /* TCWeatherServiceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherServiceSpec.m; sourceTree = "<group>"; };
+		8162F9861919ED6900DB72B0 /* TCFakeURLSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFakeURLSession.h; sourceTree = "<group>"; };
+		8162F9871919ED6900DB72B0 /* TCFakeURLSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFakeURLSession.m; sourceTree = "<group>"; };
+		8162F9891919EDE600DB72B0 /* TCFakeURLSessionDataTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFakeURLSessionDataTask.h; sourceTree = "<group>"; };
+		8162F98A1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFakeURLSessionDataTask.m; sourceTree = "<group>"; };
+		8162F98D191A153100DB72B0 /* CurrentCondition.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = CurrentCondition.json; sourceTree = "<group>"; };
+		8162F98F191A158000DB72B0 /* HourlyForecast.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = HourlyForecast.json; sourceTree = "<group>"; };
+		8162F991191A161900DB72B0 /* DailyForecasts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DailyForecasts.json; sourceTree = "<group>"; };
 		81790994190B5AD4003166B5 /* TCWeatherTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherTableViewController.h; sourceTree = "<group>"; };
 		81790995190B5AD4003166B5 /* TCWeatherTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherTableViewController.m; sourceTree = "<group>"; };
 		81790997190CE922003166B5 /* TCHourlyForecastCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCHourlyForecastCell.h; sourceTree = "<group>"; };
@@ -133,6 +147,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8162F9851919ED3C00DB72B0 /* Fakes */ = {
+			isa = PBXGroup;
+			children = (
+				8162F9861919ED6900DB72B0 /* TCFakeURLSession.h */,
+				8162F9871919ED6900DB72B0 /* TCFakeURLSession.m */,
+				8162F9891919EDE600DB72B0 /* TCFakeURLSessionDataTask.h */,
+				8162F98A1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m */,
+			);
+			path = Fakes;
+			sourceTree = "<group>";
+		};
+		8162F98C191A14CB00DB72B0 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				8162F98D191A153100DB72B0 /* CurrentCondition.json */,
+				8162F98F191A158000DB72B0 /* HourlyForecast.json */,
+				8162F991191A161900DB72B0 /* DailyForecasts.json */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 		81CFD1371908F3CB0012EACB /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,6 +234,8 @@
 			isa = PBXGroup;
 			children = (
 				81E8C6D219148F0600F337E8 /* Specs */,
+				8162F9851919ED3C00DB72B0 /* Fakes */,
+				8162F98C191A14CB00DB72B0 /* Data */,
 				81E8C6CB19148AFF00F337E8 /* SupportingFiles */,
 			);
 			path = ReactiveWeatherTests;
@@ -285,6 +322,7 @@
 			isa = PBXGroup;
 			children = (
 				81E8C6D3191499B500F337E8 /* TCLocationServiceSpec.m */,
+				8162F97F1918E81600DB72B0 /* TCWeatherServiceSpec.m */,
 			);
 			path = Specs;
 			sourceTree = "<group>";
@@ -379,7 +417,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8162F992191A161900DB72B0 /* DailyForecasts.json in Resources */,
 				81E8C6CF19148AFF00F337E8 /* InfoPlist.strings in Resources */,
+				8162F98E191A153100DB72B0 /* CurrentCondition.json in Resources */,
+				8162F990191A158000DB72B0 /* HourlyForecast.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -478,7 +519,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8162F9801918E81600DB72B0 /* TCWeatherServiceSpec.m in Sources */,
 				81E8C6D4191499B500F337E8 /* TCLocationServiceSpec.m in Sources */,
+				8162F9881919ED6900DB72B0 /* TCFakeURLSession.m in Sources */,
+				8162F98B1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
