@@ -19,9 +19,9 @@
   ],
   "base": "cmc stations",
   "main": {
-    "temp": 283.947,
-    "temp_min": 283.947,
-    "temp_max": 283.947,
+    "temp": 100,
+    "temp_min": 50,
+    "temp_max": 200,
     "pressure": 1010.86,
     "sea_level": 1020.99,
     "grnd_level": 1010.86,
