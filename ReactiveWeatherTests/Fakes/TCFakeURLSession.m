@@ -23,6 +23,7 @@
     if (nil == self) { return nil; }
 
     _dataTaskBlock = [block copy];
+    _fakeDataTask = [[TCFakeURLSessionDataTask alloc] init];
 
     return self;
 }
@@ -36,8 +37,7 @@
     // Calls the block that will replace this method's implementation.
     self.dataTaskBlock(url, completionHandler);
 
-    NSURLSessionDataTask *fakeDataTask = [[TCFakeURLSessionDataTask alloc] init];
-    return fakeDataTask;
+    return self.fakeDataTask;
 }
 
 @end
