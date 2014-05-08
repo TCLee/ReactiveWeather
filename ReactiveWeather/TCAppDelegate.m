@@ -19,35 +19,44 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // Create the view model with the given service classes.
+    TCWeatherViewModel *viewModel = [[TCWeatherViewModel alloc]
+        initWithLocationService:self.locationService
+        weatherService:self.weatherService
+        hourlyForecastLimit:6
+        dailyForecastLimit:6];
+
+    // Pass the view model to the view layer (view controller + view).
+    TCWeatherViewController *viewController = (TCWeatherViewController *)self.window.rootViewController;
+    viewController.viewModel = viewModel;
+
+    return YES;
+}
+
+- (TCLocationService *)locationService
+{
     // We do not need very high accuracy for the location services, since
     // we're only using the location to fetch weather data for a city.
     CLLocationManager *locationManager = [[CLLocationManager alloc] init];
     locationManager.distanceFilter = 1000;
     locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
 
-    TCLocationService *locationService =
-        [[TCLocationService alloc] initWithLocationManager:locationManager
-                                            maxLocationAge:15];
+    return [[TCLocationService alloc] initWithLocationManager:locationManager maxLocationAge:15];
+}
+
+- (TCWeatherService *)weatherService
+{
+    // Create the NSURLSession serial callback queue and give it a name
+    // for debugging.
+    NSOperationQueue *callbackQueue = [[NSOperationQueue alloc] init];
+    callbackQueue.name = @"com.ReactiveWeather.TCWeatherService.sessionCallbackQueue";
+    callbackQueue.maxConcurrentOperationCount = 1;
 
     // Create the NSURLSession for the weather service to fetch the weather data.
     NSURLSessionConfiguration *defaultConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:defaultConfiguration];
-    TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:session];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:defaultConfiguration delegate:nil delegateQueue:callbackQueue];
 
-    // Create the view model with the given service classes.
-    // FIXME: Forecast limits should be configured from user settings.
-    TCWeatherViewModel *viewModel =
-        [[TCWeatherViewModel alloc] initWithLocationService:locationService
-                                             weatherService:weatherService
-                                        hourlyForecastLimit:6
-                                         dailyForecastLimit:6];
-
-    // Pass the view model to the view layer (view controller + view).
-    TCWeatherViewController *viewController =
-        (TCWeatherViewController *) self.window.rootViewController;
-    viewController.viewModel = viewModel;
-
-    return YES;
+    return [[TCWeatherService alloc] initWithSession:session];
 }
 
 @end
