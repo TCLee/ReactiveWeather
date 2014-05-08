@@ -14,9 +14,6 @@
 
 @interface TCWeatherService ()
 
-/**
- * The single URL session for all API requests.
- */
 @property (nonatomic, copy) NSURLSession *session;
 
 @end
@@ -98,7 +95,9 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
 - (RACSignal *)JSONObjectFromURL:(NSURL *)serviceURL
 {
     return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
+        @weakify(self);
         NSURLSessionDataTask *dataTask = [self.session dataTaskWithURL:serviceURL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            @strongify(self);
             [self handleDataTaskCompletionWithSubscriber:subscriber responseData:data response:response error:error];
         }];
         [dataTask resume];
