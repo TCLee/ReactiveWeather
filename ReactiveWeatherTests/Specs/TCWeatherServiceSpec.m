@@ -65,17 +65,19 @@ describe(@"fetch weather data", ^{
     });
 
     describe(@"hourly forecasts", ^{
-        fit(@"should return an NSArray of TCWeather objects on success", ^{
-            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSessionWithTestData(@"HourlyForecast.json")];
+        fit(@"should return an NSArray of TCWeather objects on success", ^ {
             const NSUInteger expectedCount = 6;
+            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSessionWithTestData(@"HourlyForecast.json")];
+            RACSignal *hourlyForecastSignal = [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:expectedCount];
 
-            __block NSArray *hourlyForecasts = nil;
-            [[weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:expectedCount]
-                subscribeNext:^(NSArray *hourlyForecastsValue) {
-                    hourlyForecasts = hourlyForecastsValue;
-                }];
+            BOOL success = NO;
+            NSError *error = nil;
+            NSArray *hourlyForecasts = [hourlyForecastSignal asynchronousFirstOrDefault:nil success:&success error:&error];
 
             expect(hourlyForecasts).notTo.beNil();
+            expect(error).to.beNil();
+            expect(success).to.beTruthy();
+
             expect(hourlyForecasts.count).to.equal(expectedCount);
             expect(hourlyForecasts.firstObject).to.beKindOf(TCWeather.class);
 
