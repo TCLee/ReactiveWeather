@@ -14,6 +14,8 @@
 		810DAC6F18F8E49600959877 /* TCWeatherViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 810DAC6E18F8E49600959877 /* TCWeatherViewModel.m */; };
 		810DAC7218F9399C00959877 /* TCLocationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 810DAC7118F9399C00959877 /* TCLocationService.m */; };
 		811EBDE7190D30D20056B73A /* TCDailyForecastCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 811EBDE6190D30D20056B73A /* TCDailyForecastCell.m */; };
+		81364ABB191B34E60099F57A /* TCFakeLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 81364ABA191B34E60099F57A /* TCFakeLocationManager.m */; };
+		81364ABE191B37100099F57A /* TCFakeLocationManagerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 81364ABD191B37100099F57A /* TCFakeLocationManagerDelegate.m */; };
 		813D20EA18F6807500706C73 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 813D20E918F6807500706C73 /* MainStoryboard.storyboard */; };
 		8158363B190F97E300E2F5B0 /* TCCurrentConditionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8158363A190F97E300E2F5B0 /* TCCurrentConditionView.m */; };
 		8158363E190F9A2B00E2F5B0 /* TCCurrentConditionViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8158363D190F9A2B00E2F5B0 /* TCCurrentConditionViewModel.m */; };
@@ -72,6 +74,10 @@
 		810DAC7118F9399C00959877 /* TCLocationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationService.m; sourceTree = "<group>"; };
 		811EBDE5190D30D20056B73A /* TCDailyForecastCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCDailyForecastCell.h; sourceTree = "<group>"; };
 		811EBDE6190D30D20056B73A /* TCDailyForecastCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCDailyForecastCell.m; sourceTree = "<group>"; };
+		81364AB9191B34E60099F57A /* TCFakeLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFakeLocationManager.h; sourceTree = "<group>"; };
+		81364ABA191B34E60099F57A /* TCFakeLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFakeLocationManager.m; sourceTree = "<group>"; };
+		81364ABC191B37100099F57A /* TCFakeLocationManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFakeLocationManagerDelegate.h; sourceTree = "<group>"; };
+		81364ABD191B37100099F57A /* TCFakeLocationManagerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFakeLocationManagerDelegate.m; sourceTree = "<group>"; };
 		813D20E918F6807500706C73 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		81583639190F97E300E2F5B0 /* TCCurrentConditionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCCurrentConditionView.h; sourceTree = "<group>"; };
 		8158363A190F97E300E2F5B0 /* TCCurrentConditionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCCurrentConditionView.m; sourceTree = "<group>"; };
@@ -154,6 +160,10 @@
 				8162F9871919ED6900DB72B0 /* TCFakeURLSession.m */,
 				8162F9891919EDE600DB72B0 /* TCFakeURLSessionDataTask.h */,
 				8162F98A1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m */,
+				81364AB9191B34E60099F57A /* TCFakeLocationManager.h */,
+				81364ABA191B34E60099F57A /* TCFakeLocationManager.m */,
+				81364ABC191B37100099F57A /* TCFakeLocationManagerDelegate.h */,
+				81364ABD191B37100099F57A /* TCFakeLocationManagerDelegate.m */,
 			);
 			path = Fakes;
 			sourceTree = "<group>";
@@ -520,7 +530,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8162F9801918E81600DB72B0 /* TCWeatherServiceSpec.m in Sources */,
+				81364ABB191B34E60099F57A /* TCFakeLocationManager.m in Sources */,
 				81E8C6D4191499B500F337E8 /* TCLocationServiceSpec.m in Sources */,
+				81364ABE191B37100099F57A /* TCFakeLocationManagerDelegate.m in Sources */,
 				8162F9881919ED6900DB72B0 /* TCFakeURLSession.m in Sources */,
 				8162F98B1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m in Sources */,
 			);
