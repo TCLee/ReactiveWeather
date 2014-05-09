@@ -30,7 +30,12 @@ describe(@"init", ^{
     it(@"should give warning if location manager delegate is already set", ^{
         expect(^{
             TCFakeLocationManager *fakeLocationManager = [[TCFakeLocationManager alloc] init];
-            fakeLocationManager.delegate = TCFakeLocationManagerDelegate.new;
+
+            // Create the fake delegate and store it in a variable, so that it
+            // does not get deallocated before this test case completes.
+            TCFakeLocationManagerDelegate *fakeDelegate = [[TCFakeLocationManagerDelegate alloc] init];
+            fakeLocationManager.delegate = fakeDelegate;
+
             (void)[[TCLocationService alloc] initWithLocationManager:fakeLocationManager maxLocationAge:10];
         }).to.raise(NSInternalInconsistencyException);
     });
