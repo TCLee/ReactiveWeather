@@ -10,6 +10,10 @@
 
 @interface TCFakeLocationManager : CLLocationManager
 
+/**
+ * Returns @b YES after @c startUpdatingLocation is called.
+ * Returns @b NO after @c stopUpdatingLocation is called.
+ */
 @property (nonatomic, getter = isUpdatingLocation, readonly) BOOL updatingLocation;
 
 @end

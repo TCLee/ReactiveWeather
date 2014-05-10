@@ -10,6 +10,16 @@
 
 @implementation TCFakeLocationManager
 
+- (instancetype)init
+{
+    self = [super init];
+    if (nil == self) { return nil; }
+
+    _updatingLocation = NO;
+
+    return self;
+}
+
 - (void)startUpdatingLocation
 {
     _updatingLocation = YES;

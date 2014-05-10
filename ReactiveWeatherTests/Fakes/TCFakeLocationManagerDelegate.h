@@ -8,6 +8,9 @@
 
 @import CoreLocation;
 
+/**
+ * Just an empty fake delegate object for use in unit tests.
+ */
 @interface TCFakeLocationManagerDelegate : NSObject <CLLocationManagerDelegate>
 
 @end

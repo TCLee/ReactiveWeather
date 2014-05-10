@@ -10,4 +10,6 @@
 
 @implementation TCFakeLocationManagerDelegate
 
+// Nothing to do, really ...
+
 @end
