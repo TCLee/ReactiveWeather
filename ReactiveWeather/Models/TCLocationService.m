@@ -82,7 +82,7 @@
              concat:[self valueForCLLocationManagerDelegateSelector:
                      @selector(locationManager:didChangeAuthorizationStatus:)]]
              map:^(NSNumber *authorizationStatus) {
-                 CLAuthorizationStatus status = authorizationStatus.unsignedIntegerValue;
+                 CLAuthorizationStatus status = authorizationStatus.intValue;
 
                  // YES if we're authorized to use location service; NO otherwise.
                  return @(status == kCLAuthorizationStatusAuthorized ||
