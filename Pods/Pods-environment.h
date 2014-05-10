@@ -36,6 +36,12 @@
 #define COCOAPODS_VERSION_MINOR_ReactiveCocoa_Core 3
 #define COCOAPODS_VERSION_PATCH_ReactiveCocoa_Core 0
 
+// ReactiveCocoa/UI
+#define COCOAPODS_POD_AVAILABLE_ReactiveCocoa_UI
+#define COCOAPODS_VERSION_MAJOR_ReactiveCocoa_UI 2
+#define COCOAPODS_VERSION_MINOR_ReactiveCocoa_UI 3
+#define COCOAPODS_VERSION_PATCH_ReactiveCocoa_UI 0
+
 // ReactiveCocoa/no-arc
 #define COCOAPODS_POD_AVAILABLE_ReactiveCocoa_no_arc
 #define COCOAPODS_VERSION_MAJOR_ReactiveCocoa_no_arc 2
