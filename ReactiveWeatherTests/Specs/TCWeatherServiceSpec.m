@@ -43,16 +43,18 @@ describe(@"fetch weather data", ^{
     };
 
     describe(@"current condition", ^{
-        it(@"should return an initialized TCWeather object on success", ^{
+        it(@"should return an TCWeather object on success", ^{
             TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSessionWithTestData(@"CurrentCondition.json")];
+            RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
 
-            __block TCWeather *currentCondition = nil;
-            [[weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)]
-                subscribeNext:^(TCWeather *value) {
-                    currentCondition = value;
-                }];
+            BOOL success = NO;
+            NSError *error = nil;
+            TCWeather *currentCondition = [currentConditionSignal firstOrDefault:nil success:&success error:&error];
 
             expect(currentCondition).notTo.beNil();
+            expect(success).to.beTruthy();
+            expect(error).to.beNil();
+
             expect(currentCondition.date).to.equal([NSDate dateWithTimeIntervalSince1970:1399445555]);
             expect(currentCondition.temperature).to.equal(@100);
             expect(currentCondition.tempLow).to.equal(@50);
@@ -65,24 +67,25 @@ describe(@"fetch weather data", ^{
     });
 
     describe(@"hourly forecasts", ^{
-        fit(@"should return an NSArray of TCWeather objects on success", ^ {
-            const NSUInteger expectedCount = 6;
+        it(@"should send an array of TCWeather objects on success", ^ {
+            const NSUInteger forecastsLimit = 6;
             TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSessionWithTestData(@"HourlyForecast.json")];
-            RACSignal *hourlyForecastSignal = [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:expectedCount];
+            RACSignal *hourlyForecastsSignal = [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:forecastsLimit];
 
             BOOL success = NO;
             NSError *error = nil;
-            NSArray *hourlyForecasts = [hourlyForecastSignal asynchronousFirstOrDefault:nil success:&success error:&error];
+            NSArray *hourlyForecasts = [hourlyForecastsSignal firstOrDefault:nil success:&success error:&error];
 
-            expect(hourlyForecasts).notTo.beNil();
             expect(error).to.beNil();
             expect(success).to.beTruthy();
 
-            expect(hourlyForecasts.count).to.equal(expectedCount);
-            expect(hourlyForecasts.firstObject).to.beKindOf(TCWeather.class);
+            expect(hourlyForecasts).notTo.beNil();
+            expect(hourlyForecasts.count).to.equal(forecastsLimit);
 
             TCWeather *firstForecast = hourlyForecasts.firstObject;
+            expect(firstForecast).to.beKindOf(TCWeather.class);
             expect(firstForecast.date).to.equal([NSDate dateWithTimeIntervalSince1970:1399442400]);
+            expect(firstForecast.temperature).to.equal(@283.95);
         });
     });
 
@@ -91,20 +94,19 @@ describe(@"fetch weather data", ^{
     });
 
     it(@"should send an error event on failure", ^{
+        NSError *testError = [[NSError alloc] initWithDomain:NSURLErrorDomain code:NSURLErrorNotConnectedToInternet userInfo:nil];
         TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSession(^(NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
-            NSError *error = [[NSError alloc] initWithDomain:NSURLErrorDomain code:NSURLErrorNotConnectedToInternet userInfo:nil];
-            completionHandler(nil, nil, error);
+            completionHandler(nil, nil, testError);
         })];
 
-        __block NSError *error = nil;
-        [[weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)]
-            subscribeError:^(NSError *theError) {
-                error = theError;
-            }];
+        BOOL success = NO;
+        NSError *error = nil;
+        RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
+        TCWeather *currentCondition = [currentConditionSignal firstOrDefault:nil success:&success error:&error];
 
-        expect(error).notTo.beNil();
-        expect(error.domain).to.equal(NSURLErrorDomain);
-        expect(error.code).to.equal(NSURLErrorNotConnectedToInternet);
+        expect(currentCondition).to.beNil();
+        expect(success).to.beFalsy();
+        expect(error).to.equal(testError);
     });
 
     it(@"should cancel fetch when subscription is disposed", ^{
