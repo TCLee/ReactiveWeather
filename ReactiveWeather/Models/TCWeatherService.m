@@ -9,7 +9,6 @@
 #import "TCWeatherService.h"
 #import "TCWeather.h"
 #import "TCDailyForecast.h"
-#import "RACSignal+TCOperatorAdditions.h"
 #import "CLLocation+TCDebugAdditions.h"
 
 @interface TCWeatherService ()
