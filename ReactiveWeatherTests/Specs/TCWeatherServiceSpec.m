@@ -22,7 +22,12 @@ describe(@"init with session", ^{
 });
 
 describe(@"fetch weather data", ^{
-    TCFakeURLSession *(^fakeURLSession)(TCFakeURLSessionDataTaskBlock) = ^TCFakeURLSession *(TCFakeURLSessionDataTaskBlock block) {
+    /**
+     * Returns a new fake @c NSURLSession object. The @c 
+     * dataTaskWithURL:completionHandler: method implementation will be 
+     * replaced with the given @c block.
+     */
+    TCFakeURLSession *(^createFakeURLSession)(TCFakeURLSessionDataTaskBlock) = ^TCFakeURLSession *(TCFakeURLSessionDataTaskBlock block) {
         return [[TCFakeURLSession alloc] initWithDataTaskBlock:block];
     };
 
@@ -30,8 +35,8 @@ describe(@"fetch weather data", ^{
      * Returns a new fake @c NSURLSession object that sends the
      * contents of @c filename as the response data.
      */
-    TCFakeURLSession *(^fakeURLSessionWithTestData)(NSString *) = ^TCFakeURLSession *(NSString *filename) {
-        return fakeURLSession(^(NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
+    TCFakeURLSession *(^createFakeURLSessionWithTestData)(NSString *) = ^TCFakeURLSession *(NSString *filename) {
+        return createFakeURLSession(^(NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
             NSURL *testFileURL = [[NSBundle bundleForClass:self.class] URLForResource:filename.stringByDeletingPathExtension withExtension:filename.pathExtension];
             expect(testFileURL).notTo.beNil();
 
@@ -42,9 +47,53 @@ describe(@"fetch weather data", ^{
         });
     };
 
+    NSString * const TCWeatherServiceCancelAndErrorExamples = @"TCWeatherServiceCancelAndErrorExamples";
+    NSString * const TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock = @"TCWeatherServiceCancelAndErrorExamplesSignal";
+
+    sharedExamplesFor(TCWeatherServiceCancelAndErrorExamples, ^(NSDictionary *data) {
+        __block RACSignal *(^getSignal)(TCWeatherService *) = nil;
+
+        beforeEach(^{
+            getSignal = [data[TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock] copy];
+            expect(getSignal).notTo.beNil();
+        });
+
+        it(@"should send an error event on failure", ^{
+            NSError *testError = [[NSError alloc] initWithDomain:NSURLErrorDomain code:NSURLErrorNotConnectedToInternet userInfo:nil];
+            TCFakeURLSession *fakeSession = createFakeURLSession(^(NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
+                completionHandler(nil, nil, testError);
+            });
+            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
+
+            BOOL success = YES;
+            NSError *error = nil;
+            RACSignal *signal = getSignal(weatherService);
+            id result = [signal firstOrDefault:nil success:&success error:&error];
+
+            expect(result).to.beNil();
+            expect(success).to.beFalsy();
+            expect(error).to.equal(testError);
+        });
+
+        it(@"should cancel fetch when subscription is disposed", ^{
+            TCFakeURLSession *fakeSession = createFakeURLSession(^(NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
+                // Never calls `completionHandler` block!
+                // This is so that we can test the cancelling behavior.
+            });
+            TCFakeURLSessionDataTask *fakeTask = fakeSession.fakeDataTask;
+            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
+
+            RACSignal *signal = getSignal(weatherService);
+            RACDisposable *disposable = [signal subscribeCompleted:^{}];
+            [disposable dispose];
+
+            expect(fakeTask.isCancelled).to.beTruthy();
+        });
+    });
+
     describe(@"current condition", ^{
         it(@"should return an TCWeather object on success", ^{
-            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSessionWithTestData(@"CurrentCondition.json")];
+            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:createFakeURLSessionWithTestData(@"CurrentCondition.json")];
             RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
 
             BOOL success = NO;
@@ -64,12 +113,18 @@ describe(@"fetch weather data", ^{
             expect(currentCondition.condition).to.equal(@"Clouds");
             expect(currentCondition.icon).to.equal(@"03d");
         });
+
+        itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
+            TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock: ^RACSignal *(TCWeatherService *weatherService) {
+                return [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
+            }
+        });
     });
 
     describe(@"hourly forecasts", ^{
         it(@"should send an array of TCWeather objects on success", ^ {
             const NSUInteger forecastsLimit = 6;
-            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSessionWithTestData(@"HourlyForecast.json")];
+            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:createFakeURLSessionWithTestData(@"HourlyForecast.json")];
             RACSignal *hourlyForecastsSignal = [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:forecastsLimit];
 
             BOOL success = NO;
@@ -87,42 +142,17 @@ describe(@"fetch weather data", ^{
             expect(firstForecast.date).to.equal([NSDate dateWithTimeIntervalSince1970:1399442400]);
             expect(firstForecast.temperature).to.equal(@283.95);
         });
+
+        itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
+            TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock: ^RACSignal *(TCWeatherService *weatherService) {
+                return [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:1];
+            }
+        });
     });
 
     describe(@"daily forecasts", ^{
         
     });
-
-    it(@"should send an error event on failure", ^{
-        NSError *testError = [[NSError alloc] initWithDomain:NSURLErrorDomain code:NSURLErrorNotConnectedToInternet userInfo:nil];
-        TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeURLSession(^(NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
-            completionHandler(nil, nil, testError);
-        })];
-
-        BOOL success = NO;
-        NSError *error = nil;
-        RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
-        TCWeather *currentCondition = [currentConditionSignal firstOrDefault:nil success:&success error:&error];
-
-        expect(currentCondition).to.beNil();
-        expect(success).to.beFalsy();
-        expect(error).to.equal(testError);
-    });
-
-    it(@"should cancel fetch when subscription is disposed", ^{
-        TCFakeURLSession *fakeSession = fakeURLSession(^(NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
-            // Never calls `completionHandler` block!
-            // This is so that we can test the cancelling behavior.
-        });
-        TCFakeURLSessionDataTask *fakeTask = fakeSession.fakeDataTask;
-        TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
-
-        RACDisposable *disposable = [[weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)] subscribeNext:^(id _) {}];
-        [disposable dispose];
-
-        expect(fakeTask.isCancelled).to.beTruthy();
-    });
-
 });
 
 SpecEnd
