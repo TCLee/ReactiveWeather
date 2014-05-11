@@ -22,18 +22,14 @@ describe(@"init with session", ^{
 });
 
 describe(@"fetch weather data", ^{
-
     TCFakeURLSession * const fakeSession = [[TCFakeURLSession alloc] init];
-
-    afterEach(^{
-        fakeSession.fakeDataTaskBlock = nil;
-    });
+    TCWeatherService * const weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
 
     /**
      * Returns a fake data task block that returns the response data from the 
      * given filename.
      */
-    TCFakeURLSessionDataTaskBlock (^fakeDataTaskBlockWithResponse)(NSString *) = ^TCFakeURLSessionDataTaskBlock (NSString *filename) {
+    TCFakeURLSessionDataTaskBlock (^ const fakeDataTaskBlockWithResponse)(NSString *) = ^TCFakeURLSessionDataTaskBlock (NSString *filename) {
         return ^(__unused NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
             NSURL *testFileURL = [[NSBundle bundleForClass:self.class] URLForResource:filename.stringByDeletingPathExtension withExtension:filename.pathExtension];
             expect(testFileURL).notTo.beNil();
@@ -61,12 +57,11 @@ describe(@"fetch weather data", ^{
             fakeSession.fakeDataTaskBlock = ^(__unused NSURL *url, TCFakeURLSessionDataTaskCompletionHandler completionHandler) {
                 completionHandler(nil, nil, testError);
             };
-            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
 
             BOOL success = YES;
             NSError *error = nil;
             RACSignal *signal = getSignal(weatherService);
-            id result = [signal firstOrDefault:nil success:&success error:&error];
+            id result = [signal asynchronousFirstOrDefault:nil success:&success error:&error];
 
             expect(result).to.beNil();
             expect(success).to.beFalsy();
@@ -78,7 +73,6 @@ describe(@"fetch weather data", ^{
                 // Never calls `completionHandler` block!
                 // This is so that we can test the cancelling behavior.
             };
-            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
 
             RACSignal *signal = getSignal(weatherService);
             RACDisposable *disposable = [signal subscribeCompleted:^{}];
@@ -92,12 +86,12 @@ describe(@"fetch weather data", ^{
     describe(@"current condition", ^{
         it(@"should return an TCWeather object on success", ^{
             fakeSession.fakeDataTaskBlock = fakeDataTaskBlockWithResponse(@"CurrentCondition.json");
-            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
+
             RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
 
             BOOL success = NO;
             NSError *error = nil;
-            TCWeather *currentCondition = [currentConditionSignal firstOrDefault:nil success:&success error:&error];
+            TCWeather *currentCondition = [currentConditionSignal asynchronousFirstOrDefault:nil success:&success error:&error];
 
             expect(currentCondition).notTo.beNil();
             expect(success).to.beTruthy();
@@ -122,20 +116,19 @@ describe(@"fetch weather data", ^{
 
     describe(@"hourly forecasts", ^{
         it(@"should send an array of TCWeather objects on success", ^ {
-            const NSUInteger forecastsLimit = 6;
-
             fakeSession.fakeDataTaskBlock = fakeDataTaskBlockWithResponse(@"HourlyForecast.json");
-            TCWeatherService *weatherService = [[TCWeatherService alloc] initWithSession:fakeSession];
+
+            const NSUInteger forecastsLimit = 6;
             RACSignal *hourlyForecastsSignal = [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:forecastsLimit];
 
             BOOL success = NO;
             NSError *error = nil;
-            NSArray *hourlyForecasts = [hourlyForecastsSignal firstOrDefault:nil success:&success error:&error];
-
-            expect(error).to.beNil();
-            expect(success).to.beTruthy();
+            NSArray *hourlyForecasts = [hourlyForecastsSignal asynchronousFirstOrDefault:nil success:&success error:&error];
 
             expect(hourlyForecasts).notTo.beNil();
+            expect(success).to.beTruthy();
+            expect(error).to.beNil();
+
             expect(hourlyForecasts.count).to.equal(forecastsLimit);
 
             TCWeather *firstForecast = hourlyForecasts.firstObject;
@@ -153,6 +146,10 @@ describe(@"fetch weather data", ^{
 
     describe(@"daily forecasts", ^{
         
+    });
+
+    afterEach(^{
+        fakeSession.fakeDataTaskBlock = nil;
     });
 });
 
