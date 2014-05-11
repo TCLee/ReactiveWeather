@@ -23,7 +23,6 @@
 		8162F9881919ED6900DB72B0 /* TCFakeURLSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 8162F9871919ED6900DB72B0 /* TCFakeURLSession.m */; };
 		8162F98B1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 8162F98A1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m */; };
 		8162F98E191A153100DB72B0 /* CurrentCondition.json in Resources */ = {isa = PBXBuildFile; fileRef = 8162F98D191A153100DB72B0 /* CurrentCondition.json */; };
-		8162F990191A158000DB72B0 /* HourlyForecast.json in Resources */ = {isa = PBXBuildFile; fileRef = 8162F98F191A158000DB72B0 /* HourlyForecast.json */; };
 		8162F992191A161900DB72B0 /* DailyForecasts.json in Resources */ = {isa = PBXBuildFile; fileRef = 8162F991191A161900DB72B0 /* DailyForecasts.json */; };
 		81790996190B5AD4003166B5 /* TCWeatherTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81790995190B5AD4003166B5 /* TCWeatherTableViewController.m */; };
 		81790999190CE922003166B5 /* TCHourlyForecastCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 81790998190CE922003166B5 /* TCHourlyForecastCell.m */; };
@@ -45,6 +44,7 @@
 		81E665DE190D03B400FCFB37 /* NSDateFormatter+TCForecastFormattingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 81E665DD190D03B400FCFB37 /* NSDateFormatter+TCForecastFormattingAdditions.m */; };
 		81E8C6CF19148AFF00F337E8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 81E8C6CC19148AFF00F337E8 /* InfoPlist.strings */; };
 		81E8C6D4191499B500F337E8 /* TCLocationServiceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C6D3191499B500F337E8 /* TCLocationServiceSpec.m */; };
+		81F634B8191F66A4005F35A4 /* HourlyForecasts.json in Resources */ = {isa = PBXBuildFile; fileRef = 81F634B7191F66A3005F35A4 /* HourlyForecasts.json */; };
 		C83B22C337534828B4E1EFEB /* libPods-test.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D1EC2F0FE6A4EBC8D4EE505 /* libPods-test.a */; };
 /* End PBXBuildFile section */
 
@@ -89,7 +89,6 @@
 		8162F9891919EDE600DB72B0 /* TCFakeURLSessionDataTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFakeURLSessionDataTask.h; sourceTree = "<group>"; };
 		8162F98A1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFakeURLSessionDataTask.m; sourceTree = "<group>"; };
 		8162F98D191A153100DB72B0 /* CurrentCondition.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = CurrentCondition.json; sourceTree = "<group>"; };
-		8162F98F191A158000DB72B0 /* HourlyForecast.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = HourlyForecast.json; sourceTree = "<group>"; };
 		8162F991191A161900DB72B0 /* DailyForecasts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DailyForecasts.json; sourceTree = "<group>"; };
 		81790994190B5AD4003166B5 /* TCWeatherTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCWeatherTableViewController.h; sourceTree = "<group>"; };
 		81790995190B5AD4003166B5 /* TCWeatherTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherTableViewController.m; sourceTree = "<group>"; };
@@ -124,6 +123,7 @@
 		81E8C6CE19148AFF00F337E8 /* ReactiveWeatherTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ReactiveWeatherTests-Info.plist"; sourceTree = "<group>"; };
 		81E8C6D119148D0E00F337E8 /* ReactiveWeatherTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ReactiveWeatherTests-Prefix.pch"; sourceTree = "<group>"; };
 		81E8C6D3191499B500F337E8 /* TCLocationServiceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCLocationServiceSpec.m; sourceTree = "<group>"; };
+		81F634B7191F66A3005F35A4 /* HourlyForecasts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = HourlyForecasts.json; sourceTree = "<group>"; };
 		EB9D96D5E2444F2CAF6A49EE /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -172,7 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				8162F98D191A153100DB72B0 /* CurrentCondition.json */,
-				8162F98F191A158000DB72B0 /* HourlyForecast.json */,
+				81F634B7191F66A3005F35A4 /* HourlyForecasts.json */,
 				8162F991191A161900DB72B0 /* DailyForecasts.json */,
 			);
 			path = Data;
@@ -428,9 +428,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8162F992191A161900DB72B0 /* DailyForecasts.json in Resources */,
+				81F634B8191F66A4005F35A4 /* HourlyForecasts.json in Resources */,
 				81E8C6CF19148AFF00F337E8 /* InfoPlist.strings in Resources */,
 				8162F98E191A153100DB72B0 /* CurrentCondition.json in Resources */,
-				8162F990191A158000DB72B0 /* HourlyForecast.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
