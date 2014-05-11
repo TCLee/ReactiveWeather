@@ -8,6 +8,7 @@
 
 #import "TCWeatherService.h"
 #import "TCWeather.h"
+#import "TCDailyForecast.h"
 #import "TCFakeURLSession.h"
 #import "TCFakeURLSessionDataTask.h"
 
@@ -41,7 +42,7 @@ describe(@"fetch weather data", ^{
         };
     };
 
-    NSString * const TCWeatherServiceCancelAndErrorExamples = @"TCWeatherServiceCancelAndErrorExamples";
+    NSString * const TCWeatherServiceCancelAndErrorExamples                  = @"TCWeatherServiceCancelAndErrorExamples";
     NSString * const TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock = @"TCWeatherServiceCancelAndErrorExamplesSignal";
 
     sharedExamplesFor(TCWeatherServiceCancelAndErrorExamples, ^(NSDictionary *data) {
@@ -84,7 +85,7 @@ describe(@"fetch weather data", ^{
     });
 
     describe(@"current condition", ^{
-        it(@"should return an TCWeather object on success", ^{
+        it(@"should send an TCWeather object on success", ^{
             fakeSession.fakeDataTaskBlock = fakeDataTaskBlockWithResponse(@"CurrentCondition.json");
 
             RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
@@ -114,27 +115,58 @@ describe(@"fetch weather data", ^{
         });
     });
 
-    describe(@"hourly forecasts", ^{
-        it(@"should send an array of TCWeather objects on success", ^ {
-            fakeSession.fakeDataTaskBlock = fakeDataTaskBlockWithResponse(@"HourlyForecast.json");
+    NSString * const TCWeatherServiceForecastExamples                                    = @"TCWeatherServiceForecastExamples";
+    NSString * const TCWeatherServiceForecastExamplesResponseFilename                    = @"TCWeatherServiceForecastExamplesResponseFilename";
+    NSString * const TCWeatherServiceForecastExamplesLimit                               = @"TCWeatherServiceForecastExamplesLimit";
+    NSString * const TCWeatherServiceForecastExamplesSignal                              = @"TCWeatherServiceForecastExamplesSignal";
+    NSString * const TCWeatherServiceForecastExamplesModelClass                          = @"TCWeatherServiceForecastExamplesModelClass";
+    NSString * const TCWeatherServiceForecastExamplesFirstForecastExpectedDate           = @"TCWeatherServiceForecastExamplesFirstForecastExpectedDate";
+    NSString * const TCWeatherServiceForecastExamplesFirstForecastExpectedTemperature    = @"TCWeatherServiceForecastExamplesFirstForecastExpectedTemperature";
+    NSString * const TCWeatherServiceForecastExamplesFirstForecastExpectedMinTemperature = @"TCWeatherServiceForecastExamplesFirstForecastExpectedMinTemperature";
+    NSString * const TCWeatherServiceForecastExamplesFirstForecastExpectedMaxTemperature = @"TCWeatherServiceForecastExamplesFirstForecastExpectedMaxTemperature";
 
-            const NSUInteger forecastsLimit = 6;
-            RACSignal *hourlyForecastsSignal = [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:forecastsLimit];
+    sharedExamplesFor(TCWeatherServiceForecastExamples, ^(NSDictionary *data) {
+        it(@"should send an array of weather objects on success", ^{
+            fakeSession.fakeDataTaskBlock = fakeDataTaskBlockWithResponse(data[TCWeatherServiceForecastExamplesResponseFilename]);
+
+            RACSignal *forecastsSignal = data[TCWeatherServiceForecastExamplesSignal];
 
             BOOL success = NO;
             NSError *error = nil;
-            NSArray *hourlyForecasts = [hourlyForecastsSignal asynchronousFirstOrDefault:nil success:&success error:&error];
+            NSArray *forecasts = [forecastsSignal asynchronousFirstOrDefault:nil success:&success error:&error];
 
-            expect(hourlyForecasts).notTo.beNil();
             expect(success).to.beTruthy();
             expect(error).to.beNil();
+            expect(forecasts).notTo.beNil();
 
-            expect(hourlyForecasts.count).to.equal(forecastsLimit);
+            // Verify that the signal returned the correct number
+            // of forecast objects.
+            expect(forecasts.count).to.equal(data[TCWeatherServiceForecastExamplesLimit]);
 
-            TCWeather *firstForecast = hourlyForecasts.firstObject;
-            expect(firstForecast).to.beInstanceOf(TCWeather.class);
-            expect(firstForecast.date).to.equal([NSDate dateWithTimeIntervalSince1970:1399442400]);
-            expect(firstForecast.temperature).to.equal(@283.95);
+            // Verify that the model objects are of the correct class.
+            expect(forecasts.firstObject).to.beInstanceOf(data[TCWeatherServiceForecastExamplesModelClass]);
+
+            TCWeather *firstForecast = forecasts.firstObject;
+            expect(firstForecast.date).to.equal(data[TCWeatherServiceForecastExamplesFirstForecastExpectedDate]);
+            expect(firstForecast.temperature).to.equal(data[TCWeatherServiceForecastExamplesFirstForecastExpectedTemperature]);
+            expect(firstForecast.tempHigh).to.equal(data[TCWeatherServiceForecastExamplesFirstForecastExpectedMaxTemperature]);
+            expect(firstForecast.tempLow).to.equal(data[TCWeatherServiceForecastExamplesFirstForecastExpectedMinTemperature]);
+        });
+    });
+
+    describe(@"hourly forecasts", ^{
+        itShouldBehaveLike(TCWeatherServiceForecastExamples, ^{
+            const NSUInteger numberOfForecasts = 5;
+            return @{
+                TCWeatherServiceForecastExamplesResponseFilename: @"HourlyForecasts.json",
+                TCWeatherServiceForecastExamplesLimit: @(numberOfForecasts),
+                TCWeatherServiceForecastExamplesSignal: [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:numberOfForecasts],
+                TCWeatherServiceForecastExamplesModelClass: TCWeather.class,
+                TCWeatherServiceForecastExamplesFirstForecastExpectedDate: [NSDate dateWithTimeIntervalSince1970:1399788000],
+                TCWeatherServiceForecastExamplesFirstForecastExpectedTemperature: @282.68,
+                TCWeatherServiceForecastExamplesFirstForecastExpectedMinTemperature: @281.591,
+                TCWeatherServiceForecastExamplesFirstForecastExpectedMaxTemperature: @282.68
+            };
         });
 
         itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
@@ -145,7 +177,24 @@ describe(@"fetch weather data", ^{
     });
 
     describe(@"daily forecasts", ^{
-        
+        itShouldBehaveLike(TCWeatherServiceForecastExamples, ^{
+            const NSUInteger numberOfForecasts = 7;
+            return @{
+                TCWeatherServiceForecastExamplesResponseFilename: @"DailyForecasts.json",
+                TCWeatherServiceForecastExamplesLimit: @(numberOfForecasts),
+                TCWeatherServiceForecastExamplesSignal: [weatherService dailyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:numberOfForecasts],
+                TCWeatherServiceForecastExamplesModelClass: TCDailyForecast.class,
+                TCWeatherServiceForecastExamplesFirstForecastExpectedDate: [NSDate dateWithTimeIntervalSince1970:1399806000],
+                TCWeatherServiceForecastExamplesFirstForecastExpectedMinTemperature: @283.01,
+                TCWeatherServiceForecastExamplesFirstForecastExpectedMaxTemperature: @284.29
+            };
+        });
+
+        itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
+            TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock: ^RACSignal *(TCWeatherService *weatherService) {
+                return [weatherService dailyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:1];
+            }
+        });
     });
 
     afterEach(^{
