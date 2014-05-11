@@ -132,7 +132,7 @@ describe(@"fetch weather data", ^{
             expect(hourlyForecasts.count).to.equal(forecastsLimit);
 
             TCWeather *firstForecast = hourlyForecasts.firstObject;
-            expect(firstForecast).to.beKindOf(TCWeather.class);
+            expect(firstForecast).to.beInstanceOf(TCWeather.class);
             expect(firstForecast.date).to.equal([NSDate dateWithTimeIntervalSince1970:1399442400]);
             expect(firstForecast.temperature).to.equal(@283.95);
         });
