@@ -20,9 +20,12 @@ typedef void(^TCFakeURLSessionDataTaskBlock)(NSURL *url, TCFakeURLSessionDataTas
 @property (nonatomic, strong, readonly) TCFakeURLSessionDataTask *fakeDataTask;
 
 /**
- * Initializes the fake session object with a block object that will replace 
- * the @c dataTaskWithURL:completionHandler: method.
+ * The block that will replace the default implementation of 
+ * @c dataTaskWithURL:completionHandler:.
+ *
+ * This block must not be @c nil, otherwise assertion will fail when calling 
+ * @c dataTaskWithURL:completionHandler:.
  */
-- (instancetype)initWithDataTaskBlock:(TCFakeURLSessionDataTaskBlock)block;
+@property (nonatomic, copy) TCFakeURLSessionDataTaskBlock fakeDataTaskBlock;
 
 @end
