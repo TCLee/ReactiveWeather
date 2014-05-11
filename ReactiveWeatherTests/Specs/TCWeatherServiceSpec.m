@@ -42,15 +42,15 @@ describe(@"fetch weather data", ^{
         };
     };
 
-    NSString * const TCWeatherServiceCancelAndErrorExamples                  = @"TCWeatherServiceCancelAndErrorExamples";
-    NSString * const TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock = @"TCWeatherServiceCancelAndErrorExamplesSignal";
+    NSString * const TCWeatherServiceCancelAndErrorExamples       = @"TCWeatherServiceCancelAndErrorExamples";
+    NSString * const TCWeatherServiceCancelAndErrorExamplesSignal = @"TCWeatherServiceCancelAndErrorExamplesSignal";
 
     sharedExamplesFor(TCWeatherServiceCancelAndErrorExamples, ^(NSDictionary *data) {
-        __block RACSignal *(^getSignal)(TCWeatherService *) = nil;
+        __block RACSignal *signal = nil;
 
         beforeEach(^{
-            getSignal = [data[TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock] copy];
-            expect(getSignal).notTo.beNil();
+            signal = data[TCWeatherServiceCancelAndErrorExamplesSignal];
+            expect(signal).notTo.beNil();
         });
 
         it(@"should send an error event on failure", ^{
@@ -61,7 +61,6 @@ describe(@"fetch weather data", ^{
 
             BOOL success = YES;
             NSError *error = nil;
-            RACSignal *signal = getSignal(weatherService);
             id result = [signal asynchronousFirstOrDefault:nil success:&success error:&error];
 
             expect(result).to.beNil();
@@ -75,43 +74,11 @@ describe(@"fetch weather data", ^{
                 // This is so that we can test the cancelling behavior.
             };
 
-            RACSignal *signal = getSignal(weatherService);
             RACDisposable *disposable = [signal subscribeCompleted:^{}];
             [disposable dispose];
 
             TCFakeURLSessionDataTask *fakeTask = fakeSession.fakeDataTask;
             expect(fakeTask.isCancelled).to.beTruthy();
-        });
-    });
-
-    describe(@"current condition", ^{
-        it(@"should send an TCWeather object on success", ^{
-            fakeSession.fakeDataTaskBlock = fakeDataTaskBlockWithResponse(@"CurrentCondition.json");
-
-            RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
-
-            BOOL success = NO;
-            NSError *error = nil;
-            TCWeather *currentCondition = [currentConditionSignal asynchronousFirstOrDefault:nil success:&success error:&error];
-
-            expect(currentCondition).notTo.beNil();
-            expect(success).to.beTruthy();
-            expect(error).to.beNil();
-
-            expect(currentCondition.date).to.equal([NSDate dateWithTimeIntervalSince1970:1399445555]);
-            expect(currentCondition.temperature).to.equal(@100);
-            expect(currentCondition.tempLow).to.equal(@50);
-            expect(currentCondition.tempHigh).to.equal(@200);
-            expect(currentCondition.locationName).to.equal(@"London");
-            expect(currentCondition.conditionDescription).to.equal(@"scattered clouds");
-            expect(currentCondition.condition).to.equal(@"Clouds");
-            expect(currentCondition.icon).to.equal(@"03d");
-        });
-
-        itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
-            TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock: ^RACSignal *(TCWeatherService *weatherService) {
-                return [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
-            }
         });
     });
 
@@ -154,6 +121,35 @@ describe(@"fetch weather data", ^{
         });
     });
 
+    describe(@"current condition", ^{
+        it(@"should send an TCWeather object on success", ^{
+            fakeSession.fakeDataTaskBlock = fakeDataTaskBlockWithResponse(@"CurrentCondition.json");
+
+            RACSignal *currentConditionSignal = [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)];
+
+            BOOL success = NO;
+            NSError *error = nil;
+            TCWeather *currentCondition = [currentConditionSignal asynchronousFirstOrDefault:nil success:&success error:&error];
+
+            expect(currentCondition).notTo.beNil();
+            expect(success).to.beTruthy();
+            expect(error).to.beNil();
+
+            expect(currentCondition.date).to.equal([NSDate dateWithTimeIntervalSince1970:1399445555]);
+            expect(currentCondition.temperature).to.equal(@100);
+            expect(currentCondition.tempLow).to.equal(@50);
+            expect(currentCondition.tempHigh).to.equal(@200);
+            expect(currentCondition.locationName).to.equal(@"London");
+            expect(currentCondition.conditionDescription).to.equal(@"scattered clouds");
+            expect(currentCondition.condition).to.equal(@"Clouds");
+            expect(currentCondition.icon).to.equal(@"03d");
+        });
+
+        itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
+            TCWeatherServiceCancelAndErrorExamplesSignal: [weatherService currentConditionForLocation:CLLocationCoordinate2DMake(100, 100)]
+        });
+    });
+
     describe(@"hourly forecasts", ^{
         itShouldBehaveLike(TCWeatherServiceForecastExamples, ^{
             const NSUInteger numberOfForecasts = 5;
@@ -170,9 +166,7 @@ describe(@"fetch weather data", ^{
         });
 
         itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
-            TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock: ^RACSignal *(TCWeatherService *weatherService) {
-                return [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:1];
-            }
+            TCWeatherServiceCancelAndErrorExamplesSignal: [weatherService hourlyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:1]
         });
     });
 
@@ -191,9 +185,7 @@ describe(@"fetch weather data", ^{
         });
 
         itShouldBehaveLike(TCWeatherServiceCancelAndErrorExamples, @{
-            TCWeatherServiceCancelAndErrorExamplesCreateSignalBlock: ^RACSignal *(TCWeatherService *weatherService) {
-                return [weatherService dailyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:1];
-            }
+            TCWeatherServiceCancelAndErrorExamplesSignal:[weatherService dailyForecastsForLocation:CLLocationCoordinate2DMake(100, 100) limitTo:1]
         });
     });
 
