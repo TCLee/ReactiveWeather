@@ -7,6 +7,7 @@
 //
 
 #import "RACSignal+TCOperatorAdditions.h"
+#import "NSArray+TCSignalSupport.h"
 
 @implementation RACSignal (TCOperatorAdditions)
 
@@ -31,7 +32,7 @@
         NSAssert([value isKindOfClass:NSArray.class],
                  @"-tc_mapEach: only works with an array value.");
         
-        return [[value.rac_sequence.signal map:block] collect];
+        return [[value.rac_signal map:block] collect];
     }]
     setNameWithFormat:@"[%@] -tc_mapEach:", self.name];
 }

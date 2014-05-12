@@ -10,6 +10,7 @@
 #import "TCWeather.h"
 #import "TCDailyForecast.h"
 #import "CLLocation+TCDebugAdditions.h"
+#import "NSArray+TCSignalSupport.h"
 
 @interface TCWeatherService ()
 
@@ -171,7 +172,7 @@ static NSString * const TCOpenWeatherMapURLTemplate = @"http://api.openweatherma
 
             // Maps each JSON item in the array into its equivalent
             // model class.
-            return [[forecastList.rac_sequence.signal
+            return [[forecastList.rac_signal
                 take:count]
                 tryMap:^(NSDictionary *forecastItem, NSError **errorPtr) {
                     return [MTLJSONAdapter modelOfClass:modelClass fromJSONDictionary:forecastItem error:errorPtr];
