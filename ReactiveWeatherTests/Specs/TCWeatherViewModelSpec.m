@@ -79,7 +79,12 @@ describe(@"fetch weather command", ^{
                                          hourlyForecastLimit:3
                                          dailyForecastLimit:3];
 
-        [viewModel.fetchWeatherCommand execute:nil];
+        NSError *error = nil;
+        RACSignal *resultSignal = [viewModel.fetchWeatherCommand execute:nil];
+        BOOL success = [resultSignal asynchronouslyWaitUntilCompleted:&error];
+
+        expect(success).to.beTruthy();
+        expect(error).to.beNil();
 
         expect(viewModel.currentCondition).to.equal(expectedCurrentCondition);
         expect(viewModel.hourlyForecasts).to.equal(expectedHourlyForecasts);
