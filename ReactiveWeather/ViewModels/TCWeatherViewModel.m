@@ -40,6 +40,9 @@
                     hourlyForecastLimit:(NSUInteger)hourlyForecastCount
                      dailyForecastLimit:(NSUInteger)dailyForecastCount
 {
+    NSParameterAssert(nil != locationService);
+    NSParameterAssert(nil != weatherService);
+
     self = [super init];
     if (nil == self) { return nil; }
 
