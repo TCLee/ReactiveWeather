@@ -26,4 +26,34 @@
     return self;
 }
 
+- (BOOL)isEqualToDailyForecastViewModel:(TCDailyForecastViewModel *)other
+{
+    return (
+        (self.date == other.date || [self.date isEqualToDate:other.date]) &&
+        (self.maxTemperature == other.maxTemperature || [self.maxTemperature isEqualToNumber:other.maxTemperature]) &&
+        (self.minTemperature == other.minTemperature || [self.minTemperature isEqualToNumber:other.minTemperature]) &&
+        (self.iconName == other.iconName || [self.iconName isEqualToString:other.iconName])
+    );
+}
+
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == self) { return YES; }
+    if (![object isKindOfClass:self.class]) { return NO; }
+
+    return [self isEqualToDailyForecastViewModel:object];
+}
+
+- (NSUInteger)hash
+{
+    return (
+        self.date.hash ^
+        self.maxTemperature.hash ^
+        self.minTemperature.hash ^
+        self.iconName.hash
+    );
+}
+
 @end

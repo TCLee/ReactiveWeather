@@ -25,4 +25,32 @@
     return self;
 }
 
+- (BOOL)isEqualToHourlyForecastViewModel:(TCHourlyForecastViewModel *)other
+{
+    return (
+        (self.dateAndTime == other.dateAndTime || [self.dateAndTime isEqualToDate:other.dateAndTime]) &&
+        (self.temperature == other.temperature || [self.temperature isEqualToNumber:other.temperature]) &&
+        (self.iconName == other.iconName || [self.iconName isEqualToString:other.iconName])
+    );
+}
+
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == self) { return YES; }
+    if (![object isKindOfClass:self.class]) { return NO; }
+
+    return [self isEqualToHourlyForecastViewModel:object];
+}
+
+- (NSUInteger)hash
+{
+    return (
+        self.dateAndTime.hash ^
+        self.temperature.hash ^
+        self.iconName.hash
+    );
+}
+
 @end

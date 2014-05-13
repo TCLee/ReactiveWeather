@@ -21,6 +21,4 @@
 
 - (instancetype)initWithWeather:(TCWeather *)weather;
 
-- (BOOL)isEqualToCurrentConditionViewModel:(TCCurrentConditionViewModel *)other;
-
 @end
