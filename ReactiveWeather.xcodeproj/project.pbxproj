@@ -32,6 +32,9 @@
 		81876C4818F67412000F0F06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD318F648C400072D47 /* Foundation.framework */; };
 		81C460B21920790E000E437F /* NSArray+TCSignalSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C460B11920790E000E437F /* NSArray+TCSignalSupport.m */; };
 		81C460B419208495000E437F /* NSArrayRACSignalSupportSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C460B319208495000E437F /* NSArrayRACSignalSupportSpec.m */; };
+		81C460B61920D7D6000E437F /* TCWeatherViewModelSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C460B51920D7D6000E437F /* TCWeatherViewModelSpec.m */; };
+		81C460B91921C11A000E437F /* TCFakeLocationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C460B81921C11A000E437F /* TCFakeLocationService.m */; };
+		81C460BC1921C887000E437F /* TCFakeWeatherService.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C460BB1921C887000E437F /* TCFakeWeatherService.m */; };
 		81CBEC70190F4606009EFABF /* CLLocation+TCDebugAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 81CBEC6F190F4606009EFABF /* CLLocation+TCDebugAdditions.m */; };
 		81CFD13A1908F3F10012EACB /* RACSignal+TCOperatorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 81CFD1391908F3F10012EACB /* RACSignal+TCOperatorAdditions.m */; };
 		81D8EFD618F648C400072D47 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D8EFD518F648C400072D47 /* CoreGraphics.framework */; };
@@ -106,6 +109,11 @@
 		81C460B01920790E000E437F /* NSArray+TCSignalSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+TCSignalSupport.h"; sourceTree = "<group>"; };
 		81C460B11920790E000E437F /* NSArray+TCSignalSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+TCSignalSupport.m"; sourceTree = "<group>"; };
 		81C460B319208495000E437F /* NSArrayRACSignalSupportSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSArrayRACSignalSupportSpec.m; sourceTree = "<group>"; };
+		81C460B51920D7D6000E437F /* TCWeatherViewModelSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCWeatherViewModelSpec.m; sourceTree = "<group>"; };
+		81C460B71921C11A000E437F /* TCFakeLocationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFakeLocationService.h; sourceTree = "<group>"; };
+		81C460B81921C11A000E437F /* TCFakeLocationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFakeLocationService.m; sourceTree = "<group>"; };
+		81C460BA1921C887000E437F /* TCFakeWeatherService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCFakeWeatherService.h; sourceTree = "<group>"; };
+		81C460BB1921C887000E437F /* TCFakeWeatherService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCFakeWeatherService.m; sourceTree = "<group>"; };
 		81CBEC6E190F4606009EFABF /* CLLocation+TCDebugAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+TCDebugAdditions.h"; sourceTree = "<group>"; };
 		81CBEC6F190F4606009EFABF /* CLLocation+TCDebugAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+TCDebugAdditions.m"; sourceTree = "<group>"; };
 		81CFD1381908F3F10012EACB /* RACSignal+TCOperatorAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RACSignal+TCOperatorAdditions.h"; sourceTree = "<group>"; };
@@ -171,6 +179,10 @@
 				81364ABA191B34E60099F57A /* TCFakeLocationManager.m */,
 				81364ABC191B37100099F57A /* TCFakeLocationManagerDelegate.h */,
 				81364ABD191B37100099F57A /* TCFakeLocationManagerDelegate.m */,
+				81C460B71921C11A000E437F /* TCFakeLocationService.h */,
+				81C460B81921C11A000E437F /* TCFakeLocationService.m */,
+				81C460BA1921C887000E437F /* TCFakeWeatherService.h */,
+				81C460BB1921C887000E437F /* TCFakeWeatherService.m */,
 			);
 			path = Fakes;
 			sourceTree = "<group>";
@@ -344,6 +356,7 @@
 				81F634B9192061E6005F35A4 /* RACSignalOperatorAdditionsSpec.m */,
 				81E8C6D3191499B500F337E8 /* TCLocationServiceSpec.m */,
 				8162F97F1918E81600DB72B0 /* TCWeatherServiceSpec.m */,
+				81C460B51920D7D6000E437F /* TCWeatherViewModelSpec.m */,
 			);
 			path = Specs;
 			sourceTree = "<group>";
@@ -541,13 +554,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81C460B91921C11A000E437F /* TCFakeLocationService.m in Sources */,
 				8162F9801918E81600DB72B0 /* TCWeatherServiceSpec.m in Sources */,
 				81364ABB191B34E60099F57A /* TCFakeLocationManager.m in Sources */,
 				81F634BA192061E6005F35A4 /* RACSignalOperatorAdditionsSpec.m in Sources */,
 				81E8C6D4191499B500F337E8 /* TCLocationServiceSpec.m in Sources */,
 				81C460B419208495000E437F /* NSArrayRACSignalSupportSpec.m in Sources */,
 				81364ABE191B37100099F57A /* TCFakeLocationManagerDelegate.m in Sources */,
+				81C460B61920D7D6000E437F /* TCWeatherViewModelSpec.m in Sources */,
 				8162F9881919ED6900DB72B0 /* TCFakeURLSession.m in Sources */,
+				81C460BC1921C887000E437F /* TCFakeWeatherService.m in Sources */,
 				8162F98B1919EDE600DB72B0 /* TCFakeURLSessionDataTask.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
