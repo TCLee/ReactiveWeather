@@ -49,7 +49,9 @@
     _locationService = locationService;
     _weatherService  = weatherService;
 
+    @weakify(self);
     _fetchWeatherCommand = [[RACCommand alloc] initWithSignalBlock:^(id _) {
+        @strongify(self);
         return [self fetchWeatherWithHourlyForecastLimit:hourlyForecastCount
                                       dailyForecastLimit:dailyForecastCount];
     }];
