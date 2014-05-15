@@ -12,7 +12,7 @@
 #import "TCDailyForecastViewModel.h"
 #import "TCWeatherService.h"
 #import "TCLocationService.h"
-#import "RACSignal+TCOperatorAdditions.h"
+#import "NSArray+TCSignalSupport.h"
 
 @interface TCWeatherViewModel ()
 
@@ -82,15 +82,11 @@
         // With the current location, we can fetch the latest weather data and
         // update the view model's properties.
         map:^(CLLocation *location) {
-            return [[RACSignal
-                merge:@[
-                    [self updateCurrentConditionForLocation:location],
-                    [self updateHourlyForecastForLocation:location withLimit:hourlyForecastCount],
-                    [self updateDailyForecastForLocation:location withLimit:dailyForecastCount]
-                ]]
-                // Not interested in any values from the signal, since
-                // we're updating the view model's properties only.
-                ignoreValues];
+            return [RACSignal merge:@[
+                [self updateCurrentConditionForLocation:location],
+                [self updateHourlyForecastForLocation:location withLimit:hourlyForecastCount],
+                [self updateDailyForecastForLocation:location withLimit:dailyForecastCount]
+            ]];
         }]
         // If current location changes, we want to cancel any in-flight
         // weather data requests.
@@ -104,7 +100,7 @@
  */
 - (RACSignal *)updateCurrentConditionForLocation:(CLLocation *)location
 {
-    return [[[[[self.weatherService currentConditionForLocation:location.coordinate]
+    return [[[[[[self.weatherService currentConditionForLocation:location.coordinate]
         map:^(TCWeather *weather) {
             return [[TCCurrentConditionViewModel alloc] initWithWeather:weather];
         }]
@@ -112,6 +108,9 @@
         doNext:^(TCCurrentConditionViewModel *currentCondition) {
             self.currentCondition = currentCondition;
         }]
+        // Not interested in any values from the signal, since
+        // we're updating the view model's properties only.
+        ignoreValues]
         setNameWithFormat:@"%@ -updateCurrentConditionForLocation: %@", self, location];
 }
 
@@ -122,13 +121,12 @@
 - (RACSignal *)updateHourlyForecastForLocation:(CLLocation *)location
                                      withLimit:(NSUInteger)count
 {
-    return [[[[[self.weatherService hourlyForecastsForLocation:location.coordinate limitTo:count]
-        tc_mapEach:^(TCWeather *weather) {
+    return [[self updateForecastsWithSignal:[self.weatherService hourlyForecastsForLocation:location.coordinate limitTo:count]
+        mapEach:^(TCWeather *weather) {
             return [[TCHourlyForecastViewModel alloc] initWithWeather:weather];
-        }]
-        deliverOn:RACScheduler.mainThreadScheduler]
-        doNext:^(NSArray *forecastViewModels) {
-            self.hourlyForecasts = forecastViewModels;
+        }
+        doUpdate:^(NSArray *viewModels) {
+            self.hourlyForecasts = viewModels;
         }]
         setNameWithFormat:@"%@ -updateHourlyForecastForLocation: %@ withLimit: %lu", self, location, (unsigned long)count];
 }
@@ -140,15 +138,31 @@
 - (RACSignal *)updateDailyForecastForLocation:(CLLocation *)location
                                     withLimit:(NSUInteger)count
 {
-    return [[[[[self.weatherService dailyForecastsForLocation:location.coordinate limitTo:count]
-        tc_mapEach:^(TCWeather *weather) {
+    return [[self updateForecastsWithSignal:[self.weatherService dailyForecastsForLocation:location.coordinate limitTo:count]
+        mapEach:^(TCWeather *weather) {
             return [[TCDailyForecastViewModel alloc] initWithWeather:weather];
-        }]
-        deliverOn:RACScheduler.mainThreadScheduler]
-        doNext:^(NSArray *forecastViewModels) {
-            self.dailyForecasts = forecastViewModels;
+        }
+        doUpdate:^(NSArray *viewModels) {
+            self.dailyForecasts = viewModels;
         }]
         setNameWithFormat:@"%@ -updateDailyForecastForLocation: %@ withLimit: %lu", self, location, (unsigned long)count];
+}
+
+- (RACSignal *)updateForecastsWithSignal:(RACSignal *)signal
+                                 mapEach:(id (^)(id value))mapBlock
+                                doUpdate:(void (^)(id value))doUpdateBlock
+{
+    return [[[[signal
+        flattenMap:^(NSArray *forecasts) {
+            // Map each model element in the array into a
+            // corresponding view model.
+            return [[forecasts.rac_signal map:mapBlock] collect];
+        }]
+        deliverOn:RACScheduler.mainThreadScheduler]
+        doNext:doUpdateBlock]
+        // Not interested in any values from the signal, since
+        // we're updating the view model's properties only.
+        ignoreValues];
 }
 
 @end
