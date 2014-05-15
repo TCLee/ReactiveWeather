@@ -17,6 +17,15 @@
 @property (nonatomic, weak) IBOutlet UIImageView *backgroundImageView;
 @property (nonatomic, weak) IBOutlet FXBlurView *blurFXView;
 
+/**
+ * The child table view controller or @c nil if it is not created 
+ * yet by the storyboard.
+ *
+ * Declared as a @b weak reference because the base view controller already 
+ * has a @b strong reference to its child view controllers.
+ */
+@property (nonatomic, weak) TCWeatherTableViewController *childTableViewController;
+
 @end
 
 @implementation TCWeatherViewController
@@ -62,7 +71,7 @@
  */
 - (RACSignal *)verticalContentOffsetToAlpha
 {
-    TCWeatherTableViewController *childTableViewController = self.childViewControllers.firstObject;
+    TCWeatherTableViewController *childTableViewController = self.childTableViewController;
     const CGFloat tableHeight = childTableViewController.tableView.bounds.size.height;
 
     return [[[RACObserve(childTableViewController, tableView.contentOffset)
@@ -86,8 +95,13 @@ static NSString * const TCChildSegueIdentifier = @"TCChildTableViewController";
 {
     if ([segue.identifier isEqualToString:TCChildSegueIdentifier]) {
         // Pass the view model to the child table view controller.
-        TCWeatherTableViewController *childTableViewController = segue.destinationViewController;
-        childTableViewController.viewModel = self.viewModel;
+        self.childTableViewController = segue.destinationViewController;
+        self.childTableViewController.viewModel = self.viewModel;
+
+        // Don't need a strong reference to the view model anymore.
+        // The child table view controller will have a strong reference
+        // to the view model instead.
+        self.viewModel = nil;
     }
 }
 

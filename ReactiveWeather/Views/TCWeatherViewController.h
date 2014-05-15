@@ -9,8 +9,13 @@
 @class TCWeatherViewModel;
 
 /**
- * The view controller is responsible for presenting the weather data
- * to the user on its views.
+ * This view controller is the parent of a child table view 
+ * controller that will present the weather data. We need to do 
+ * this because if we used a @c UITableViewController directly we 
+ * will not be able to customize the view.
+ *
+ * It also manages the view that applies blur effects to a
+ * background image.
  */
 @interface TCWeatherViewController : UIViewController
 
