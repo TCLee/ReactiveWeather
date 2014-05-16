@@ -48,7 +48,6 @@
             // If this is the first subscriber to this signal, start the
             // location updates.
             if (++subscriberCount == 1) {
-                NSLog(@"Location Services Started");
                 [self.locationManager startUpdatingLocation];
             }
         }
@@ -66,7 +65,6 @@
                 // location updates. It will be restarted again, when
                 // this signal has new subscribers.
                 if (--subscriberCount == 0) {
-                    NSLog(@"Location Services Stopped");
                     [self.locationManager stopUpdatingLocation];
                 }
             }
