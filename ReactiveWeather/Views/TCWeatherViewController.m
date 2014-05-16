@@ -17,15 +17,6 @@
 @property (nonatomic, weak) IBOutlet UIImageView *backgroundImageView;
 @property (nonatomic, weak) IBOutlet FXBlurView *blurFXView;
 
-/**
- * The child table view controller or @c nil if it is not created 
- * yet by the storyboard.
- *
- * Declared as a @b weak reference because the base view controller already 
- * has a @b strong reference to its child view controllers.
- */
-@property (nonatomic, weak) TCWeatherTableViewController *childTableViewController;
-
 @end
 
 @implementation TCWeatherViewController
@@ -40,68 +31,34 @@
     [super viewDidLoad];
 
     self.blurFXView.underlyingView = self.backgroundImageView;
-    RAC(self.blurFXView, blurEnabled) = [self shouldEnableBlur];
-    RAC(self.blurFXView, alpha) = [self verticalContentOffsetToAlpha];
-}
-
-#pragma mark Blur View Effect
-
-/**
- * Returns a signal of @c NSNumber BOOL values indicating if the blur
- * effect should be enabled or not.
- */
-- (RACSignal *)shouldEnableBlur
-{
-    return [[[RACObserve(self.blurFXView, alpha)
-        distinctUntilChanged]
-        map:^(NSNumber *alpha) {
-            // Only enable blur effects if blur view's alpha has changed.
-            return (alpha.floatValue > 0 ? @YES : @NO);
-        }]
-        startWith:@NO];
-}
-
-/**
- * Returns a signal of @c NSNumber values from @c 0.0 to @c 1.0
- * representing the alpha of a UIView.
- *
- * The alpha value is inversely proportional to the table view's content
- * offset's Y position. E.g. Scroll down to get alpha values towards
- * 1.0; scroll up to get alpha values towards 0.0.
- */
-- (RACSignal *)verticalContentOffsetToAlpha
-{
-    TCWeatherTableViewController *childTableViewController = self.childTableViewController;
-    const CGFloat tableHeight = childTableViewController.tableView.bounds.size.height;
-
-    return [[[RACObserve(childTableViewController, tableView.contentOffset)
-        distinctUntilChanged]
-        map:^(NSValue *contentOffset) {
-            // Scrolling past the top of the table must not affect the
-            // blur alpha.
-            CGFloat scrollPosition = MAX(0, contentOffset.CGPointValue.y);
-
-            // Alpha should not exceed 1.0
-            return @(MIN(1, scrollPosition / tableHeight));
-        }]
-        startWith:@0];
 }
 
 #pragma mark Storyboard Segue
 
-static NSString * const TCChildSegueIdentifier = @"TCChildTableViewController";
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // The child table view controller has been created when the
+    // `prepareForSegue:` method is called.
+    if ([segue.identifier isEqualToString:NSStringFromClass(TCWeatherTableViewController.class)] &&
+        segue.sourceViewController == self) {
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([segue.identifier isEqualToString:TCChildSegueIdentifier]) {
         // Pass the view model to the child table view controller.
-        self.childTableViewController = segue.destinationViewController;
-        self.childTableViewController.viewModel = self.viewModel;
+        TCWeatherTableViewController *childTableViewController = segue.destinationViewController;
+        childTableViewController.viewModel = self.viewModel;
 
-        // Don't need a strong reference to the view model anymore.
-        // The child table view controller will have a strong reference
-        // to the view model instead.
-        self.viewModel = nil;
+        // Bind the blur effect to the child's table view scrolling.
+        // E.g. Scrolling towards the bottom will blur the background image,
+        //      scrolling back towards the top will make it clear again.
+        RAC(self.blurFXView, alpha) = [childTableViewController.tableViewDidScroll
+            map:^(UITableView *tableView) {
+                // Scrolling past the top of the table (negative offset)
+                // must not affect the blur alpha.
+                CGFloat scrollPosition = MAX(0, tableView.contentOffset.y);
+                CGFloat tableHeight = tableView.bounds.size.height;
+
+                // Alpha should not exceed 1.0
+                // (even if it does exceed UIKit doesn't seem to care)
+                return @(MIN(1, scrollPosition / tableHeight));
+            }];
     }
 }
 

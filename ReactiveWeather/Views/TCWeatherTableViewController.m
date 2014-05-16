@@ -27,6 +27,8 @@
 
 @property (nonatomic, weak) IBOutlet TCCurrentConditionView *currentConditionView;
 
+@property (nonatomic, strong) RACSignal *tableViewDidScroll;
+
 @end
 
 @implementation TCWeatherTableViewController
@@ -205,7 +207,7 @@
 	[alertView show];
 }
 
-#pragma mark Table View Data Source
+#pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -255,6 +257,22 @@
     TCDailyForecastCell *dailyForecastCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(TCDailyForecastCell.class)];
     dailyForecastCell.viewModel = self.viewModel.dailyForecasts[dataRow];
     return dailyForecastCell;
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (RACSignal *)tableViewDidScroll
+{
+    if (_tableViewDidScroll) { return _tableViewDidScroll; }
+
+    _tableViewDidScroll = [[[self rac_signalForSelector:@selector(scrollViewDidScroll:) fromProtocol:@protocol(UIScrollViewDelegate)]
+        map:^(RACTuple *args) {
+            NSAssert([args[0] isKindOfClass:UITableView.class], @"Expected argument to be an instance of UITableView but instead got: %@", args[0]);
+            return (UITableView *)args[0];
+        }]
+        setNameWithFormat:@"%@ -tableViewDidScroll", self];
+
+    return _tableViewDidScroll;
 }
 
 @end

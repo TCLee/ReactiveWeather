@@ -19,6 +19,12 @@
 @interface TCWeatherTableViewController : UITableViewController
 
 /**
+ * A signal that sends a @c UITableView when the user scrolls the 
+ * table view.
+ */
+@property (nonatomic, strong, readonly) RACSignal *tableViewDidScroll;
+
+/**
  * The view model for this view layer.
  */
 @property (nonatomic, strong) TCWeatherViewModel *viewModel;

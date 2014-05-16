@@ -27,7 +27,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="blurEnabled" value="NO"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="blurEnabled" value="YES"/>
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="dynamic" value="NO"/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="blurRadius">
                                         <integer key="value" value="20"/>
@@ -39,7 +39,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
-                                    <segue destination="OCV-9H-S6O" kind="embed" identifier="TCChildTableViewController" id="JHm-Yk-4me"/>
+                                    <segue destination="OCV-9H-S6O" kind="embed" identifier="TCWeatherTableViewController" id="JHm-Yk-4me"/>
                                 </connections>
                             </containerView>
                         </subviews>
