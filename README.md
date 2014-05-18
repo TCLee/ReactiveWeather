@@ -1,6 +1,13 @@
 #ReactiveWeather
 
-ReactiveWeather is a sample project to demonstrate the awesomeness of Functional Reactive Programming (FRP) using Objective-C. 
+ReactiveWeather is a sample iOS project to demonstrate the awesomeness of [Functional Reactive Programming](http://elm-lang.org/learn/What-is-FRP.elm) (FRP) using ReactiveCocoa (RAC).
+
+This app was originally based on the tutorial at http://www.raywenderlich.com/55384 but I've decided to take it much further. This sample project adds additional features such as:
+
+- Pull-to-Refresh to fetch the latest weather data.
+- Classes are organize according to the Model-View-ViewModel (MVVM) design pattern. (e.g. UI code will only be in the View layer, instead of being all over the place etc...)
+- ReactiveCocoa is used more extensively to demonstrate FRP style of programming.
+- Unit tests written using BDD (Behavior-Driven Development) style. Examples of how to test ReactiveCocoa code.
 
 ##Requirements
 
@@ -13,7 +20,7 @@ XCode 5 and iOS 7.0 SDK or later
 iOS 7 or later
 
 ##Build and Run
-The required frameworks are already included in the [Pods](https://github.com/tclee/ReactiveWeather/Pods) sub-directory.
+The required frameworks are already included in the [Pods](https://github.com/tclee/ReactiveWeather/Pods) directory.
 
 If you want to fetch the latest version of all the frameworks, just run from the command line:
 
@@ -22,15 +29,22 @@ If you want to fetch the latest version of all the frameworks, just run from the
 If you don't care about all that, just build and run in Xcode and you're good to go.
 
 ##Unit Tests
-ReactiveWeather includes a suite of unit tests in the [ReactiveWeatherTests](https://github.com/tclee/ReactiveWeather/ReactiveWeatherTests) sub-directory. It demonstrates how you can test code written using the ReactiveCocoa framework.
+ReactiveWeather includes a suite of unit tests in the [ReactiveWeatherTests](https://github.com/tclee/ReactiveWeather/ReactiveWeatherTests) directory. It demonstrates how you can test code written using the ReactiveCocoa framework.
 
 Just build and run the tests in Xcode. Simple.
 
+##Instruments
+Included in the [Instruments](https://github.com/tclee/ReactiveWeather/Instruments) directory are `*.trace` files that profile the performance impact of using ReactiveCocoa in this project.
+
+Just double-click to open in Instruments to view the trace data.
+
 ##Frameworks
+The list of frameworks used to build this app:
+
 - [Mantle](https://github.com/Mantle/Mantle) - A lightweight model framework.
 - [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa) (RAC) - Functional Reactive Programming (FRP) in Cocoa and Cocoa Touch.
-- [ReactiveViewModel](https://github.com/ReactiveCocoa/ReactiveViewModel) - Model-View-ViewModel (MVVM) pattern using ReactiveCocoa. 
+- [ReactiveViewModel](https://github.com/ReactiveCocoa/ReactiveViewModel) - RAC library for implementing Model-View-ViewModel (MVVM).
 
-###Unit Test Frameworks
-* [Specta](https://github.com/specta/specta) - A light-weight BDD framework for Objective-C.
-* [Expecta](https://github.com/specta/expecta) - A simple Matcher framework that integrates perfectly with Specta.
+- **Unit Test Frameworks**
+  * [Specta](https://github.com/specta/specta) - A light-weight BDD framework for Objective-C.
+  * [Expecta](https://github.com/specta/expecta) - A simple Matcher framework that integrates perfectly with Specta.
