@@ -41,35 +41,20 @@
 
 - (RACSignal *)currentLocation
 {
-    __block NSUInteger subscriberCount = 0;
+    return [[[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
+        [self.locationManager startUpdatingLocation];
 
-    return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
-        @synchronized(self) {
-            // If this is the first subscriber to this signal, start the
-            // location updates.
-            if (++subscriberCount == 1) {
-                [self.locationManager startUpdatingLocation];
-            }
-        }
-
-        // We need to replay the last location value to later
-        // subscribers. Otherwise, later subscribers may miss the
-        // location update event.
-        [[[self locationUpdate]
-          tc_replayLastLazily]
-          subscribe:subscriber];
+        [[self locationUpdate] subscribe:subscriber];
 
         return [RACDisposable disposableWithBlock:^{
-            @synchronized(self) {
-                // If we have no more subscribers, we will stop the
-                // location updates. It will be restarted again, when
-                // this signal has new subscribers.
-                if (--subscriberCount == 0) {
-                    [self.locationManager stopUpdatingLocation];
-                }
-            }
+            [self.locationManager stopUpdatingLocation];
         }];
-    }] setNameWithFormat:@"%@ -currentLocation", self];
+    }]
+    // Signal will start location services only when there is at
+    // least one subscriber. Location services will be stopped when
+    // there are no more subscribers.
+    tc_shareWhileActive]
+    setNameWithFormat:@"%@ -currentLocation", self];
 }
 
 - (RACSignal *)isAuthorized
