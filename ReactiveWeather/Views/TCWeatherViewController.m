@@ -48,18 +48,29 @@
         // Bind the blur effect to the child's table view scrolling.
         // E.g. Scrolling towards the bottom will blur the background image,
         //      scrolling back towards the top will make it clear again.
-        RAC(self.blurFXView, alpha) = [childTableViewController.tableViewDidScroll
-            map:^(UITableView *tableView) {
-                // Scrolling past the top of the table (negative offset)
-                // must not affect the blur alpha.
-                CGFloat scrollPosition = MAX(0, tableView.contentOffset.y);
-                CGFloat tableHeight = tableView.bounds.size.height;
-
-                // Alpha should not exceed 1.0
-                // (even if it does exceed UIKit doesn't seem to care)
-                return @(MIN(1, scrollPosition / tableHeight));
-            }];
+        RAC(self.blurFXView, alpha) = [self alphaFromTableViewDidScrollSignal:childTableViewController.tableViewDidScroll];
     }
+}
+
+/**
+ * Returns a signal of alpha values mapped from the table view's content offset.
+ *
+ * @param tableViewDidScroll A signal that sends @c next each time the 
+ *                           table view is scrolled.
+ */
+- (RACSignal *)alphaFromTableViewDidScrollSignal:(RACSignal *)tableViewDidScroll
+{
+    return [tableViewDidScroll
+        map:^(UITableView *tableView) {
+            // Scrolling past the top of the table (negative offset)
+            // must not affect the blur alpha.
+            CGFloat scrollPosition = MAX(0, tableView.contentOffset.y);
+            CGFloat tableHeight = tableView.bounds.size.height;
+
+            // Alpha should not exceed 1.0
+            // (even if it does exceed UIKit doesn't seem to care)
+            return @(MIN(1, scrollPosition / tableHeight));
+        }];
 }
 
 @end
