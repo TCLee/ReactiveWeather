@@ -34,4 +34,19 @@
  */
 - (RACSignal *)tc_replayLastLazily;
 
+/**
+ * Returns a signal that will have at most one subscription to the receiver at
+ * any time. When the returned signal gets its first subscriber, the underlying
+ * signal is subscribed to. When the returned signal has no subscribers, the
+ * underlying subscription is disposed. Whenever an underlying subscription is
+ * already open, new subscribers to the returned signal will receive all events
+ * sent so far.
+ *
+ * @note
+ * This operator is a backport of @c shareWhileActive method in 
+ * @c ReactiveCocoa@3.0-development branch. Therefore, this method 
+ * will be removed when RAC 3.0 is released.
+ */
+- (RACSignal *)tc_shareWhileActive;
+
 @end
