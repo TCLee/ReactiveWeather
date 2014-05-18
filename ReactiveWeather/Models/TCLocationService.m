@@ -14,6 +14,9 @@
 @property (nonatomic, strong, readonly) CLLocationManager *locationManager;
 @property (nonatomic, assign, readonly) NSTimeInterval maxLocationAge;
 
+@property (nonatomic, strong) RACSignal *locationError;
+@property (nonatomic, strong) RACSignal *locationUpdate;
+
 @end
 
 @implementation TCLocationService
@@ -44,7 +47,7 @@
     return [[[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
         [self.locationManager startUpdatingLocation];
 
-        [[self locationUpdate] subscribe:subscriber];
+        [self.locationUpdate subscribe:subscriber];
 
         return [RACDisposable disposableWithBlock:^{
             [self.locationManager stopUpdatingLocation];
@@ -77,12 +80,10 @@
 #pragma mark Private Methods
 
 /**
- * Returns @c YES if @c location matches the given accuracy and age; 
+ * Returns @c YES if @c location matches the given accuracy and age;
  * @c NO otherwise.
  */
-- (BOOL)isAcceptableLocation:(CLLocation *)location
-                withAccuracy:(CLLocationAccuracy)desiredAccuracy
-                   andMaxAge:(NSTimeInterval)maxAge
+static BOOL TCIsLocationAcceptable(CLLocation *location, CLLocationAccuracy desiredAccuracy, NSTimeInterval maxAge)
 {
     // `nil` is definitely unacceptable!
     if (nil == location) { return NO; }
@@ -112,23 +113,24 @@
  */
 - (RACSignal *)locationUpdate
 {
-    return [[[[[[self rac_signalForSelector:@selector(locationManager:didUpdateLocations:)
-                               fromProtocol:@protocol(CLLocationManagerDelegate)]
+    if (nil != _locationUpdate) { return _locationUpdate; }
+
+    // Avoid capturing `self` in the blocks below.
+    const NSTimeInterval TCMaxLocationAge = self.maxLocationAge;
+
+    _locationUpdate = [[[[[[self
+        rac_signalForSelector:@selector(locationManager:didUpdateLocations:) fromProtocol:@protocol(CLLocationManagerDelegate)]
         map:^(RACTuple *locationManagerAndLocationArray) {
-            RACTupleUnpack(CLLocationManager *locationManager,
-                           NSArray *locations) = locationManagerAndLocationArray;
+            RACTupleUnpack(CLLocationManager *locationManager, NSArray *locations) = locationManagerAndLocationArray;
 
             // Get the most recent location data, which is at the end of
             // the array.
             return RACTuplePack(locationManager, locations.lastObject);
         }]
         filter:^BOOL(RACTuple *locationManagerAndLatestLocation) {
-            RACTupleUnpack(CLLocationManager *locationManager,
-                           CLLocation *location) = locationManagerAndLatestLocation;
+            RACTupleUnpack(CLLocationManager *locationManager, CLLocation *location) = locationManagerAndLatestLocation;
 
-            return [self isAcceptableLocation:location
-                                 withAccuracy:locationManager.desiredAccuracy
-                                    andMaxAge:self.maxLocationAge];
+            return TCIsLocationAcceptable(location, locationManager.desiredAccuracy, TCMaxLocationAge);
         }]
         map:^(RACTuple *locationManagerAndLatestLocation) {
             // We just want the latest location value.
@@ -138,6 +140,8 @@
         // Merge it with the error signal to get the error events.
         merge:self.locationError]
         setNameWithFormat:@"%@ -locationUpdate", self];
+
+    return _locationUpdate;
 }
 
 /**
@@ -146,21 +150,25 @@
  */
 - (RACSignal *)locationError
 {
-    return [[[[self valueForCLLocationManagerDelegateSelector:
-               @selector(locationManager:didFailWithError:)]
-            filter:^BOOL(NSError *error) {
-                // If the location service is unable to retrieve a location
-                // right away, it reports a kCLErrorLocationUnknown error and
-                // keeps trying. In such a situation, you can simply ignore the
-                // error and wait for a new event.
-                return !(error.domain == kCLErrorDomain &&
-                         error.code == kCLErrorLocationUnknown);
-            }]
-            flattenMap:^(NSError *error) {
-                // Terminate this signal with an error event.
-                return [RACSignal error:error];
-            }]
-            setNameWithFormat:@"%@ -locationError", self];
+    if (nil != _locationError) { return _locationError; }
+
+    _locationError = [[[[self
+        valueForCLLocationManagerDelegateSelector:@selector(locationManager:didFailWithError:)]
+        filter:^BOOL(NSError *error) {
+            // If the location service is unable to retrieve a location
+            // right away, it reports a kCLErrorLocationUnknown error and
+            // keeps trying. In such a situation, you can simply ignore the
+            // error and wait for a new event.
+            return !(error.domain == kCLErrorDomain &&
+                     error.code == kCLErrorLocationUnknown);
+        }]
+        flattenMap:^(NSError *error) {
+            // Terminate this signal with an error event.
+            return [RACSignal error:error];
+        }]
+        setNameWithFormat:@"%@ -locationError", self];
+
+    return _locationError;
 }
 
 /**
@@ -171,13 +179,13 @@
  */
 - (RACSignal *)valueForCLLocationManagerDelegateSelector:(SEL)selector
 {
-    return [[self rac_signalForSelector:selector
-                          fromProtocol:@protocol(CLLocationManagerDelegate)]
-            map:^(RACTuple *args) {
-                // The use of args.second will be deprecated in RAC 3.0,
-                // so we use subscripting instead.
-                return args[1];
-            }];
+    return [[self
+        rac_signalForSelector:selector fromProtocol:@protocol(CLLocationManagerDelegate)]
+        map:^(RACTuple *args) {
+            // The use of args.second will be deprecated in RAC 3.0,
+            // so we use subscripting instead.
+            return args[1];
+        }];
 }
 
 #pragma mark CLLocationManagerDelegate

@@ -51,6 +51,7 @@ describe(@"init", ^{
 describe(@"get current location", ^{
     __block TCLocationService *locationService = nil;
     __block TCFakeLocationManager *fakeLocationManager = nil;
+    __block RACSignal *currentLocationSignal = nil;
 
     const CLLocationAccuracy expectedAccuracy = kCLLocationAccuracyKilometer;
     const NSTimeInterval expectedAge = 15;
@@ -61,31 +62,25 @@ describe(@"get current location", ^{
         fakeLocationManager.distanceFilter = 1000;
 
         locationService = [[TCLocationService alloc] initWithLocationManager:fakeLocationManager maxLocationAge:expectedAge];
+        currentLocationSignal = [locationService currentLocation];
     });
 
     describe(@"automatically start and stop location services", ^{
-        it(@"should start location services when there is one or more subscribers", ^{
-            [[locationService currentLocation] subscribeCompleted:^{}];
-            
-            expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(1);
-        });
-
-        it(@"should not start location services again for the second or later subscribers", ^{
-            [[locationService currentLocation] subscribeCompleted:^{}];
-            [[locationService currentLocation] subscribeCompleted:^{}];
-            [[locationService currentLocation] subscribeCompleted:^{}];
-
-            expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(1);
-        });
-
-        it(@"should not stop location services when there are still subscribers", ^{
-            RACSignal *currentLocationSignal = [locationService currentLocation];
-
-            RACDisposable *firstDisposable = [currentLocationSignal subscribeCompleted:^{}];
+        it(@"should start updating location once even if there are multiple subscribers", ^{
             [currentLocationSignal subscribeCompleted:^{}];
+            [currentLocationSignal subscribeCompleted:^{}];
+            [currentLocationSignal subscribeCompleted:^{}];
+
+            expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(1);
+        });
+
+        it(@"should not stop location updates when there is still at least one subscriber", ^{
+            RACDisposable *firstDisposable  = [currentLocationSignal subscribeCompleted:^{}];
+            RACDisposable *secondDisposable = [currentLocationSignal subscribeCompleted:^{}];
             [currentLocationSignal subscribeCompleted:^{}];
 
             [firstDisposable dispose];
+            [secondDisposable dispose];
 
             expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(1);
         });
