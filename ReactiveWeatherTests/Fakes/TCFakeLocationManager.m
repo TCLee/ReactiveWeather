@@ -15,19 +15,19 @@
     self = [super init];
     if (nil == self) { return nil; }
 
-    _updatingLocation = NO;
+    _numberOfLocationUpdatesInProgress = 0;
 
     return self;
 }
 
 - (void)startUpdatingLocation
 {
-    _updatingLocation = YES;
+    _numberOfLocationUpdatesInProgress++;
 }
 
 - (void)stopUpdatingLocation
 {
-    _updatingLocation = NO;
+    _numberOfLocationUpdatesInProgress--;
 }
 
 @end

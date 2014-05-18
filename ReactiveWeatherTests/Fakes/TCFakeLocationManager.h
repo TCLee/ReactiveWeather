@@ -11,9 +11,11 @@
 @interface TCFakeLocationManager : CLLocationManager
 
 /**
- * Returns @b YES after @c startUpdatingLocation is called.
- * Returns @b NO after @c stopUpdatingLocation is called.
+ * The number of location updates that are currently running.
+ *
+ * Each time @c startUpdatingLocation is called this value is incremented.
+ * Each time @c stopUpdatingLocation is called this value is decremented.
  */
-@property (nonatomic, getter = isUpdatingLocation, readonly) BOOL updatingLocation;
+@property (nonatomic, assign, readonly) NSInteger numberOfLocationUpdatesInProgress;
 
 @end

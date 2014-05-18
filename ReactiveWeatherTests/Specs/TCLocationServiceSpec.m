@@ -67,14 +67,34 @@ describe(@"get current location", ^{
         it(@"should start location services when there is one or more subscribers", ^{
             [[locationService currentLocation] subscribeCompleted:^{}];
             
-            expect(fakeLocationManager.isUpdatingLocation).to.beTruthy();
+            expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(1);
+        });
+
+        it(@"should not start location services again for the second or later subscribers", ^{
+            [[locationService currentLocation] subscribeCompleted:^{}];
+            [[locationService currentLocation] subscribeCompleted:^{}];
+            [[locationService currentLocation] subscribeCompleted:^{}];
+
+            expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(1);
+        });
+
+        it(@"should not stop location services when there are still subscribers", ^{
+            RACSignal *currentLocationSignal = [locationService currentLocation];
+
+            RACDisposable *firstDisposable = [currentLocationSignal subscribeCompleted:^{}];
+            [currentLocationSignal subscribeCompleted:^{}];
+            [currentLocationSignal subscribeCompleted:^{}];
+
+            [firstDisposable dispose];
+
+            expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(1);
         });
 
         it(@"should stop location services when there is no subscriber", ^{
             RACDisposable *disposable = [[locationService currentLocation] subscribeCompleted:^{}];
             [disposable dispose];
 
-            expect(fakeLocationManager.isUpdatingLocation).to.beFalsy();
+            expect(fakeLocationManager.numberOfLocationUpdatesInProgress).to.equal(0);
         });
     });
 
