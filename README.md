@@ -30,7 +30,9 @@ The required frameworks are already included in the [Pods](https://github.com/tc
 
 If you want to fetch the latest version of all the frameworks, just run from the command line:
 
-  $ pod install
+```
+$ pod install
+```
 
 If you don't care about all that, just build and run in Xcode and you're good to go.
 
