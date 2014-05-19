@@ -1,5 +1,7 @@
 #ReactiveWeather
 
+**TODO: Screenshots of App**
+
 ReactiveWeather is a sample iOS project to demonstrate the awesomeness of Functional Reactive Programming (FRP) using ReactiveCocoa (RAC).
 
 This app was originally based on the tutorial at http://www.raywenderlich.com/55384 but I've decided to take it much further. This sample project adds additional features such as:
@@ -8,10 +10,10 @@ This app was originally based on the tutorial at http://www.raywenderlich.com/55
 - Classes are organize according to the Model-View-ViewModel (MVVM) design pattern. (e.g. UI code will only be in the View layer, instead of being all over the place etc...)
 - ReactiveCocoa is used more extensively to demonstrate FRP style of programming.
 - Unit tests written using BDD (Behavior-Driven Development) style. Examples of how to test ReactiveCocoa code.
-- Documentation and pretty diagrams for the sample project.
+- The sample code is well documented.
 
-##Architecture
-
+##Model-View-ViewModel
+**TODO: Image to be place here.**
 
 ##Requirements
 
@@ -54,4 +56,4 @@ The list of frameworks used to build this app:
   * [Expecta](https://github.com/specta/expecta) - A simple Matcher framework that integrates perfectly with Specta.
   
 ##License
-This project is released under the MIT license. View the [LICENSE.md](https://github.com/tclee/ReactiveWeather/blob/master/LICENSE.md) file for more info.
+This project is released under the MIT license. Read the [LICENSE.md](https://github.com/tclee/ReactiveWeather/blob/master/LICENSE.md) file for more info.
