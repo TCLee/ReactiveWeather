@@ -76,21 +76,18 @@
 - (RACSignal *)fetchWeatherWithHourlyForecastLimit:(NSUInteger)hourlyForecastCount
                                 dailyForecastLimit:(NSUInteger)dailyForecastCount
 {
-    return [[[[[self.locationService currentLocation]
+    return [[[[self.locationService currentLocation]
         // Take only 1 location value, since we don't need to track the user.
         take:1]
-        // With the current location, we can fetch the latest weather data and
-        // update the view model's properties.
-        map:^(CLLocation *location) {
+        flattenMap:^(CLLocation *location) {
+            // The merged signal will only contain one complete or error event,
+            // since all the update signals will `ignoreValues`.
             return [RACSignal merge:@[
                 [self updateCurrentConditionForLocation:location],
                 [self updateHourlyForecastForLocation:location withLimit:hourlyForecastCount],
                 [self updateDailyForecastForLocation:location withLimit:dailyForecastCount]
             ]];
         }]
-        // If current location changes, we want to cancel any in-flight
-        // weather data requests.
-        switchToLatest]
         setNameWithFormat:@"%@ -fetchWeatherWithHourlyForecastLimit: %lu dailyForecastLimit: %lu", self, (unsigned long)hourlyForecastCount, (unsigned long)dailyForecastCount];
 }
 
