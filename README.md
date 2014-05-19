@@ -26,7 +26,7 @@ XCode 5 and iOS 7.0 SDK or later
 iOS 7 or later
 
 ##Build and Run
-The required frameworks are already included in the [Pods](https://github.com/tclee/ReactiveWeather/Pods) directory.
+The required frameworks are already included in the [Pods](Pods) directory.
 
 If you want to fetch the latest version of all the frameworks, just run from the command line:
 
@@ -37,12 +37,12 @@ $ pod install
 If you don't care about all that, just build and run in Xcode and you're good to go.
 
 ##Unit Tests
-ReactiveWeather includes a suite of unit tests in the [ReactiveWeatherTests](https://github.com/tclee/ReactiveWeather/ReactiveWeatherTests) directory. It demonstrates how you can test code written using the ReactiveCocoa framework.
+ReactiveWeather includes a suite of unit tests in the [ReactiveWeatherTests](ReactiveWeatherTests) directory. It demonstrates how you can test code written using the ReactiveCocoa framework.
 
 Just build and run the tests in Xcode. Simple.
 
 ##Instruments
-Included in the [Instruments](https://github.com/tclee/ReactiveWeather/Instruments) directory are `*.trace` files that profile the performance impact of using ReactiveCocoa in this project.
+Included in the [Instruments](Instruments) directory are `*.trace` files that profile the performance impact of using ReactiveCocoa in this project.
 
 Just double-click to open in Instruments to view the trace data.
 
