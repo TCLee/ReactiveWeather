@@ -1,6 +1,6 @@
 #ReactiveWeather
 
-**TODO: Screenshots of App**
+![Screenshot](http://tclee.github.io/ReactiveWeather/images/current-condition.png)
 
 ReactiveWeather is a sample iOS project to demonstrate the awesomeness of Functional Reactive Programming (FRP) using ReactiveCocoa (RAC).
 
