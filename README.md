@@ -1,7 +1,7 @@
 #ReactiveWeather
 
 ![Screenshot](http://tclee.github.io/ReactiveWeather/images/current-condition.png)` `
-![Screenshot](http://tclee.github.io/ReactiveWeather/images/hourly-forecasts.png)
+![Screenshot](http://tclee.github.io/ReactiveWeather/images/hourly-forecasts.png)` `
 ![Screenshot](http://tclee.github.io/ReactiveWeather/images/daily-forecasts.png)
 
 ReactiveWeather is a sample iOS project to demonstrate the awesomeness of Functional Reactive Programming (FRP) using ReactiveCocoa (RAC).
@@ -14,8 +14,12 @@ This app was originally based on the tutorial at http://www.raywenderlich.com/55
 - Unit tests written using BDD (Behavior-Driven Development) style. Examples of how to test ReactiveCocoa code.
 - The sample code is well documented.
 
-##Model-View-ViewModel
+##Model-View-ViewModel (MVVM)
 ![MVVM](http://tclee.github.io/ReactiveWeather/images/mvvm-pattern.png)
+
+ReactiveWeather classes are organized according to the MVVM design pattern. The **View** owns the **View Model** which in turn owns the **Model**. However, there is no dependency in the reverse direction (i.e. **View Model** does not know about the **View** that owns it).
+
+See also: https://github.com/ReactiveCocoa/ReactiveViewModel
 
 ##Requirements
 
