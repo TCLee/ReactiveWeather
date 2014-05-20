@@ -1,6 +1,8 @@
 #ReactiveWeather
 
-![Screenshot](http://tclee.github.io/ReactiveWeather/images/current-condition.png)
+![Screenshot](http://tclee.github.io/ReactiveWeather/images/current-condition.png)` `
+![Screenshot](http://tclee.github.io/ReactiveWeather/images/hourly-forecasts.png)
+![Screenshot](http://tclee.github.io/ReactiveWeather/images/daily-forecasts.png)
 
 ReactiveWeather is a sample iOS project to demonstrate the awesomeness of Functional Reactive Programming (FRP) using ReactiveCocoa (RAC).
 
@@ -13,7 +15,7 @@ This app was originally based on the tutorial at http://www.raywenderlich.com/55
 - The sample code is well documented.
 
 ##Model-View-ViewModel
-**TODO: Image to be place here.**
+![MVVM](http://tclee.github.io/ReactiveWeather/images/mvvm-pattern.png)
 
 ##Requirements
 
