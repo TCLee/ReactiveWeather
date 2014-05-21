@@ -40,7 +40,7 @@ If you want to fetch the latest version of all the frameworks, just run from the
 $ pod install
 ```
 
-If you don't care about all that, just build and run in Xcode and you're good to go.
+If you don't care about all that, just open `ReactiveWeather.xcworkspace`. Build and run. Done!
 
 ##Unit Tests
 ReactiveWeather includes a suite of unit tests in the [ReactiveWeatherTests](ReactiveWeatherTests) directory. It demonstrates how you can test code written using the ReactiveCocoa framework.
