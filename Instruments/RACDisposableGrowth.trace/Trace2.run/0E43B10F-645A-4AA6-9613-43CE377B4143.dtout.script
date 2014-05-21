@@ -1,0 +1,54 @@
+
+#pragma D option switchrate=1msec
+#pragma D option bufsize=25m
+#pragma D option stackindent=0
+#pragma D option quiet
+#pragma D option stacksymbols=no
+int AppleProbeSwitch[int];
+syscall::getpriority:entry/execname=="Instruments"/ {AppleProbeSwitch[(int)arg0] = arg1;}
+
+BEGIN{
+AppleProbeSwitch[-1] = 1;
+}
+
+/*
+MARKER:0:PROBE
+*/
+
+/*
+MARKER:0:DESCRIPTOR:0
+*/
+RACCompoundDisposable*:::added/(AppleProbeSwitch[-1] == 1) && (
+/*
+MARKER:1:PREDICATE
+*/
+(pid == 4385)
+)/{
+/*
+MARKER:0:SCRIPT:0
+*/
+/*
+MARKER:0:EVENT:0
+*/
+printf("<e> -1 0 %d %u %-14d\n%s\n%d\n%s\n%s \n</e>\n",cpu, tid, walltimestamp, stringof(copyinstr(arg0)), arg2, "added", stringof(copyinstr(arg1)));printf("<s>\n");ustack(128);printf("</s>\n");
+}
+
+/*
+MARKER:0:DESCRIPTOR:1
+*/
+RACCompoundDisposable*:::removed/(AppleProbeSwitch[-1] == 1) && (
+/*
+MARKER:1:PREDICATE
+*/
+(pid == 4385)
+)/{
+/*
+MARKER:0:SCRIPT:1
+*/
+/*
+MARKER:0:EVENT:1
+*/
+printf("<e> -1 1 %d %u %-14d\n%s\n%s\n%s\n%d \n</e>\n",cpu, tid, walltimestamp, "removed", stringof(copyinstr(arg1)), stringof(copyinstr(arg0)), arg2);printf("<s>\n");ustack(128);printf("</s>\n");
+}
+
+
