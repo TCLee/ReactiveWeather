@@ -1,0 +1,6 @@
+language: objective-c
+xcode_workspace: ReactiveWeather.xcworkspace
+xcode_scheme: ReactiveWeather
+xcode_sdk: 
+    - "iphonesimulator7.0"
+    - "iphonesimulator7.1"
