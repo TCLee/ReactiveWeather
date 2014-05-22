@@ -1,4 +1,4 @@
-#ReactiveWeather
+#ReactiveWeather [![Build Status](https://travis-ci.org/TCLee/ReactiveWeather.svg?branch=master)](https://travis-ci.org/TCLee/ReactiveWeather)
 
 ![Screenshot](http://tclee.github.io/ReactiveWeather/images/current-condition.png)` `
 ![Screenshot](http://tclee.github.io/ReactiveWeather/images/hourly-forecasts.png)` `
