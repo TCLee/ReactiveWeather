@@ -1,15 +1,15 @@
 language: objective-c
-xcode_workspace: ReactiveWeather.xcworkspace
-xcode_scheme: ReactiveWeather
-xcode_sdk: 
-    - iphonesimulator7.0
-    - iphonesimulator7.1
 notifications:
     email: false    
+    
+# Build and run tests for iOS 7.0 and iOS 7.1 SDKs.
+env:
+    - XCODE_SDK=iphonesimulator7.0
+    - XCODE_SDK=iphonesimulator7.1
 
 # Nothing to install, since dependent Pods are already provided in 
 # the repository.
 install: true
 
 # Build and run the tests.
-script: xctool test -workspace $XCODE_WORKSPACE -scheme $XCODE_SCHEME -sdk $XCODE_SDK
+script: xctool test -workspace ReactiveWeather.xcworkspace -scheme ReactiveWeather -sdk $XCODE_SDK
