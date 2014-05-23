@@ -7,11 +7,6 @@ xcode_sdk:
 notifications:
     email: false    
 
-# Install the latest version of xctool rather than use Travis default.    
-before_install:
-    - brew update
-    - brew install xctool
-
 # Nothing to install, since dependent Pods are already provided in 
 # the repository.
 install: true
