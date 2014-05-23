@@ -7,6 +7,11 @@ env:
     - XCODE_SDK=iphonesimulator7.0
     - XCODE_SDK=iphonesimulator7.1
 
+# Update to latest xctool.
+before_install:
+  - brew update
+  - brew upgrade xctool
+  
 # Nothing to install, since dependent Pods are already provided in 
 # the repository.
 install: true
