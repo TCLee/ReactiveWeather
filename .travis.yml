@@ -1,12 +1,3 @@
-# Travis uses an outdated version of CocoaPods by default.
-# We want the latest version, so we have to install it manually.
-before_install:
-    - gem install cocoapods -v '0.33.1'
-
-# CocoaPods requires the terminal output to be using UTF-8 encoding.
-before_script:
-  - export LANG=en_US.UTF-8
-    
 language: objective-c
 xcode_workspace: ReactiveWeather.xcworkspace
 xcode_scheme: ReactiveWeather
@@ -14,4 +5,16 @@ xcode_sdk:
     - iphonesimulator7.0
     - iphonesimulator7.1
 notifications:
-    email: false
+    email: false    
+
+# Install the latest version of xctool rather than use Travis default.    
+before_install:
+    - brew update
+    - brew install xctool
+
+# Nothing to install, since dependent Pods are already provided in 
+# the repository.
+install: true
+
+# Build and run the tests.
+script: xctool test -workspace $XCODE_WORKSPACE -scheme $XCODE_SCHEME -sdk $XCODE_SDK
