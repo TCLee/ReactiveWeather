@@ -14,6 +14,13 @@ This app was originally based on the tutorial at http://www.raywenderlich.com/55
 - Unit tests written using BDD (Behavior-Driven Development) style. Examples of how to test ReactiveCocoa code.
 - The sample code is well documented.
 
+##Functional Reactive Programming (FRP)
+Since [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa) is based on Microsoft .NET's Reactive Extensions, you can learn more
+about it at:
+
+- [MSDN - Beginner's Guide to the Reactive Extensions](http://msdn.microsoft.com/en-us/data/gg577611)
+- [Intro to Microsoft Rx](http://www.introtorx.com)
+
 ##Model-View-ViewModel (MVVM)
 ![MVVM](http://tclee.github.io/ReactiveWeather/images/mvvm-pattern.png)
 
